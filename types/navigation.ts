@@ -1,4 +1,3 @@
-
 export type TabName = 'home' | 'read' | 'discover' | 'write' | 'social';
 export type DrawerScreenName = 
     'profile' | 
@@ -11,7 +10,7 @@ export type DrawerScreenName =
     'email' |
     'adminDashboard';
     
-export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch';
+export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'bookflow';
 
 // A flexible params type for navigation
 export interface NavigationParams {

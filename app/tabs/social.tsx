@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import AppNav from '../../components/navigation/AppNav';
 import Fab from '../../components/ui/Fab';
@@ -46,7 +47,7 @@ const SocialScreen: React.FC = () => {
         
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasNextPage) {
-                // Fix: The mock `fetchNextPage` function from `useInfiniteQuery` was called without arguments, but it expects one. Passing an empty object to trigger fetching the next page.
+                // FIX: The mock `fetchNextPage` function from `useInfiniteQuery` was called without arguments, but it expects one. Passing an empty object to trigger fetching the next page.
                 fetchNextPage({});
             }
         });

@@ -104,6 +104,12 @@ export const mockQuickRecs: QuickRecommendations = {
     bookIds: ['book4', 'book2', 'book3'],
     timestamp: new Date().toISOString()
 };
+export const mockBookFlowIds = [
+    'book2', 'book1', 'book3', 'book5', 'book4',
+    'book2', 'book1', 'book3', 'book5', 'book4',
+    'book2', 'book1', 'book3', 'book5', 'book4',
+    'book2', 'book1', 'book3', 'book5', 'book4'
+];
 
 export const mockShelves: Record<string, Shelf> = {
     'currently-reading': { id: 'currently-reading', titleEn: 'Currently Reading', titleAr: 'أقرأ حاليًا' },

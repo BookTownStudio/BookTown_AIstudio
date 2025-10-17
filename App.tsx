@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 // FIX: Added file extensions to imports
 import { I18nProvider } from './store/i18n.tsx';
@@ -31,6 +29,9 @@ import VenuesScreen from './app/drawer/venues.tsx';
 import FeedbackScreen from './app/drawer/feedback.tsx';
 import EmailScreen from './app/drawer/email.tsx';
 import AdminDashboardScreen from './app/drawer/admin.tsx';
+import BookFlowFeedScreen from './app/bookflow/feed.tsx';
+import BookFlowButton from './components/navigation/BookFlowButton.tsx';
+import { TabName } from './types/navigation.ts';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -57,6 +58,7 @@ const TabScreens: React.FC = () => {
                 <div style={{ display: activeTab === 'write' ? 'block' : 'none', height: '100%' }}><WriteScreen /></div>
                 <div style={{ display: activeTab === 'social' ? 'block' : 'none', height: '100%' }}><SocialScreen /></div>
             </div>
+            {activeTab === 'home' && <BookFlowButton />}
             <BottomNavBar activeTab={activeTab} />
         </>
     );
@@ -102,6 +104,7 @@ const AppContent: React.FC = () => {
                     case 'bookDetails': return <BookDetailsScreen />;
                     case 'editor': return <EditorScreen />;
                     case 'reader': return <ReaderScreen />;
+                    case 'bookflow': return <BookFlowFeedScreen />;
                     default: return <TabScreens />; // Fallback
                 }
             default:

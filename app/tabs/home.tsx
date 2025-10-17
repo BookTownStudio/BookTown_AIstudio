@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import AppNav from '../../components/navigation/AppNav.tsx';
 import BilingualText from '../../components/ui/BilingualText.tsx';
@@ -20,6 +19,7 @@ import { XCircleIcon } from '../../components/icons/XCircleIcon.tsx';
 import { CameraIcon } from '../../components/icons/CameraIcon.tsx';
 import { MicIcon } from '../../components/icons/MicIcon.tsx';
 import { BookIcon } from '../../components/icons/BookIcon.tsx';
+import { SurpriseIcon } from '../../components/icons/SurpriseIcon.tsx';
 
 
 const useCollapsibleState = (keys: string[], storageKey: string) => {
@@ -58,7 +58,38 @@ const QuickRecsCarousel: React.FC = () => {
     const handleBookClick = (bookId: string) => {
         navigate({ type: 'immersive', id: 'bookDetails', params: { bookId, from: currentView } });
     };
+
+    const handleSurpriseMe = () => {
+        navigate({ type: 'immersive', id: 'bookDetails', params: { bookId: 'surprise', from: currentView } });
+    };
     
+    const SurpriseMeCard = (
+        <div className="flex-shrink-0 w-32 mr-4">
+            <button
+                onClick={handleSurpriseMe}
+                className="w-full aspect-[2/3] rounded-card bg-primary text-white p-3 flex flex-col items-center justify-center text-center shadow-lg shadow-black/30 hover:bg-opacity-80 transition-all duration-300"
+                aria-label={lang === 'en' ? 'Surprise me with a book' : 'فاجئني بكتاب'}
+            >
+                <SurpriseIcon className="w-8 h-8 mb-2" />
+                <BilingualText className="font-bold text-sm leading-tight !text-white">
+                    {lang === 'en' ? 'Surprise me with a book' : 'فاجئني بكتاب'}
+                </BilingualText>
+                <BilingualText role="Caption" className="!text-xs !text-white/80 mt-1">
+                    {lang === 'en' ? 'Get a random AI-powered recommendation' : 'احصل على توصية عشوائية'}
+                </BilingualText>
+            </button>
+        </div>
+    );
+
+    const renderBookCard = (bookId: string) => (
+        <div key={bookId} onClick={() => handleBookClick(bookId)} className="cursor-pointer">
+            <BookCard 
+                bookId={bookId}
+                layout="list"
+            />
+        </div>
+    );
+
     return (
         <section>
             {isFallback && (
@@ -68,21 +99,32 @@ const QuickRecsCarousel: React.FC = () => {
             )}
            
             <div className="flex overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-                {isLoading && Array.from({ length: 3 }).map((_, i) => (
-                    <BookCard key={i} bookId="" layout="list" />
-                ))}
-                {bookIds?.map(bookId => (
-                    <div key={bookId} onClick={() => handleBookClick(bookId)} className="cursor-pointer">
-                        <BookCard 
-                            bookId={bookId}
-                            layout="list"
-                        />
-                    </div>
-                ))}
+                {isLoading && (
+                    <>
+                        <BookCard bookId="" layout="list" />
+                        <div className="flex-shrink-0 w-32 mr-4">
+                            <div className="w-full aspect-[2/3] rounded-card bg-primary/50 animate-pulse" />
+                        </div>
+                        <BookCard bookId="" layout="list" />
+                        <BookCard bookId="" layout="list" />
+                    </>
+                )}
+                {!isLoading && bookIds && bookIds.length > 0 && (
+                    <>
+                        {renderBookCard(bookIds[0])}
+                        
+                        {SurpriseMeCard}
+
+                        {bookIds.slice(1).map(bookId => renderBookCard(bookId))}
+                    </>
+                )}
+                 {!isLoading && (!bookIds || bookIds.length === 0) && (
+                    SurpriseMeCard
+                )}
             </div>
         </section>
-    )
-}
+    );
+};
 
 const TrendingCarousel: React.FC = () => {
     const { data: books, isLoading } = useDiscoveryFeeds();

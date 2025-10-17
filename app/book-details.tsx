@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo } from 'react';
 // FIX: Added file extensions to imports
 import { useNavigation } from '../../store/navigation.tsx';
 import { useI18n } from '../../store/i18n.tsx';
@@ -19,12 +20,24 @@ import { useBookReviews } from '../../lib/hooks/useBookReviews.ts';
 import { useSubmitReview } from '../../lib/hooks/useSubmitReview.ts';
 import StarRatingInput from '../../components/ui/StarRatingInput.tsx';
 import ReviewCard from '../../components/content/ReviewCard.tsx';
+import { mockBooks } from '../../data/mocks.ts';
 
 const BookDetailsScreen: React.FC = () => {
     const { currentView, navigate } = useNavigation();
     const { lang, isRTL } = useI18n();
 
-    const bookId = currentView.type === 'immersive' ? currentView.params?.bookId : undefined;
+    const originalBookId = currentView.type === 'immersive' ? currentView.params?.bookId : undefined;
+
+    // Memoize the random book ID selection to prevent it from changing on re-renders
+    const randomBookId = useMemo(() => {
+        if (originalBookId !== 'surprise') return null;
+        const bookKeys = Object.keys(mockBooks);
+        if (bookKeys.length === 0) return null;
+        return bookKeys[Math.floor(Math.random() * bookKeys.length)];
+    }, [originalBookId]);
+    
+    const bookId = originalBookId === 'surprise' ? randomBookId : originalBookId;
+
     const { data: book, isLoading: isLoadingBook } = useBookCatalog(bookId);
 
     const { data: shelves } = useUserShelves();
