@@ -1,5 +1,6 @@
 // FIX: Add file extension to mock import
 import { mockPosts } from '../data/mocks.ts';
+// FIX: Add file extension to mock import
 import { MOCK_DATA } from '../data/mocks.ts';
 
 // A VERY simple mock of Firestore to make the hooks work.

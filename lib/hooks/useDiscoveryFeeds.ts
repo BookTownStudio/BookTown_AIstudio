@@ -1,6 +1,8 @@
 
+
 import { useQuery } from '../react-query.ts';
 import { db } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
 
 // In a real app, this would be a more complex query or a call to a dedicated backend service.

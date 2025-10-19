@@ -1,20 +1,17 @@
-// FIX: Import React to provide types for component props.
-import React from 'react';
-
 export interface User {
-    id: string;
+    uid: string;
+    email: string;
     name: string;
     handle: string;
-    email: string;
     avatarUrl: string;
     bannerUrl: string;
+    joinDate: string; // ISO string
     bioEn: string;
     bioAr: string;
-    role: 'user' | 'admin' | 'superuser';
     followers: number;
     following: number;
-    joinDate: string; // ISO Date string
-    lastActive?: string; // ISO Date string
+    role: 'user' | 'admin' | 'superuser';
+    lastActive: string; // ISO string
 }
 
 export interface Book {
@@ -30,96 +27,20 @@ export interface Book {
     genresAr: string[];
     rating: number;
     ratingsCount: number;
-    isEbookAvailable?: boolean;
+    isEbookAvailable: boolean;
+}
+
+export interface ShelfEntry {
+    bookId: string;
+    addedAt: string; // ISO string
+    progress?: number; // 0-100 for 'currently-reading'
 }
 
 export interface Shelf {
     id: string;
     titleEn: string;
     titleAr: string;
-    // This allows the mock DB to attach entries to the shelf object.
-    entries?: Record<string, ShelfEntry>;
-}
-
-export interface ShelfEntry {
-    bookId: string;
-    addedAt: string; // ISO Date string
-    progress?: number; // 0-100 for 'currently-reading'
-}
-
-export interface Quote {
-    id: string;
-    textEn: string;
-    textAr: string;
-    sourceEn: string; // e.g., "Book Title, Author"
-    sourceAr: string;
-}
-
-export interface Project {
-    id: string;
-    titleEn: string;
-    titleAr: string;
-    content?: string;
-    typeEn: 'Novel' | 'Short Story' | 'Poetry';
-    typeAr: 'رواية' | 'قصة قصيرة' | 'شعر';
-    status: 'Idea' | 'Draft' | 'Revision' | 'Final';
-    wordCount: number;
-    updatedAt: string; // ISO Date string
-}
-
-export interface Post {
-    id: string;
-    authorId: string;
-    authorName: string;
-    authorHandle: string;
-    authorAvatar: string;
-    content: string;
-    timestamp: string; // ISO Date string
-    bookTagId?: string; // ID of a book tagged in the post
-    stats: {
-        likes: number;
-        comments: number;
-        reposts: number;
-    };
-}
-
-export interface Review {
-    id: string;
-    bookId: string;
-    userId: string;
-    authorName: string;
-    authorHandle: string;
-    authorAvatar: string;
-    rating: number; // 1-5
-    text: string;
-    timestamp: string; // ISO Date string
-}
-
-export interface ChatMessage {
-    id: string;
-    role: 'user' | 'model';
-    text: string;
-    timestamp: string; // ISO Date string
-}
-
-export interface Agent {
-    id: 'mentor' | 'librarian' | 'quotes' | 'lore';
-    name: string;
-    descriptionEn: string;
-    descriptionAr: string;
-    avatarUrl: string;
-    isPremium: boolean;
-    icon: React.FC<React.SVGProps<SVGSVGElement>>;
-    color: string;
-    examplePromptsEn: string[];
-    examplePromptsAr: string[];
-    placeholderEn: string;
-    placeholderAr: string;
-}
-
-export interface QuickRecommendations {
-    bookIds: string[];
-    timestamp: string; // ISO Date string
+    entries: { [bookId: string]: ShelfEntry };
 }
 
 export interface RecommendedShelf {
@@ -129,4 +50,111 @@ export interface RecommendedShelf {
     ownerName: string;
     bookCovers: string[];
     followerCount: number;
+}
+
+
+export interface Quote {
+    id: string;
+    textEn: string;
+    textAr: string;
+    sourceEn: string;
+    sourceAr: string;
+}
+
+export interface Project {
+    id: string;
+    titleEn: string;
+    titleAr: string;
+    typeEn: string;
+    typeAr: string;
+    status: 'Idea' | 'Draft' | 'Revision' | 'Final';
+    wordCount: number;
+    updatedAt: string; // ISO string
+    content: string; // The actual content of the project
+}
+
+export type PostAttachment = 
+  | { type: 'book'; bookId: string }
+  | { type: 'quote'; quoteId: string, quoteOwnerId: string }
+  | { type: 'media'; url: string }
+  | { type: 'author'; authorId: string }
+  | { type: 'shelf'; shelfId: string, ownerId: string }
+  | { type: 'venue'; name: string, location: string }
+  | { type: 'post'; postId: string };
+
+
+export interface Post {
+    id: string;
+    authorId: string;
+    authorName: string;
+    authorHandle: string;
+    authorAvatar: string;
+    content: string;
+    timestamp: string; // ISO string
+    stats: {
+        likes: number;
+        comments: number;
+        reposts: number;
+    };
+    bookTagId?: string; // Optional book tag
+    attachment?: PostAttachment;
+}
+
+export interface Agent {
+    id: string;
+    name: string;
+    descriptionEn: string;
+    descriptionAr: string;
+    avatarUrl: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    color: string;
+    isPremium: boolean;
+    examplePromptsEn: string[];
+    examplePromptsAr: string[];
+    placeholderEn: string;
+    placeholderAr: string;
+}
+
+export interface ChatMessage {
+    id: string;
+    role: 'user' | 'model';
+    text: string;
+    timestamp: string; // ISO string
+}
+
+export interface Review {
+    id: string;
+    bookId: string;
+    userId: string;
+    rating: number; // 1-5
+    text: string;
+    authorName: string;
+    authorHandle: string;
+    authorAvatar: string;
+    timestamp: string; // ISO string
+}
+
+export interface QuickRecommendations {
+    userId: string;
+    bookIds: string[];
+    timestamp: string; // ISO string
+}
+
+export interface Template {
+    id: string;
+    titleEn: string;
+    titleAr: string;
+    descriptionEn: string;
+    descriptionAr: string;
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    boilerplateContent: string;
+}
+
+export interface BookFlowItem {
+  bookId: string;
+  bookCoverUrl: string;
+  quoteTextEn: string;
+  quoteTextAr: string;
+  authorEn: string;
+  authorAr: string;
 }

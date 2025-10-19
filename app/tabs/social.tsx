@@ -1,3 +1,10 @@
+
+
+
+
+
+
+
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import AppNav from '../../components/navigation/AppNav.tsx';
 import Fab from '../../components/ui/Fab.tsx';
@@ -56,7 +63,8 @@ const SocialScreen: React.FC = () => {
         
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasNextPage) {
-                // FIX: The `fetchNextPage` function from `useInfiniteQuery` expects an options object. Passing an empty object satisfies the hook's signature.
+                // FIX: The mock implementation of `fetchNextPage` takes an optional argument, so it can be called without arguments.
+                // FIX: Pass an empty object to satisfy the function signature, which the mock implementation handles correctly.
                 fetchNextPage({});
             }
         });
@@ -100,7 +108,8 @@ const SocialScreen: React.FC = () => {
                 )}
                 {!isSearching && activeSearchTab === 'users' && (
                     <div>
-                        {searchResults?.users.map(user => <UserSearchResultCard key={user.id} user={user} />)}
+                        {/* FIX: The User entity uses `uid` for its unique identifier, not `id`. */}
+                        {searchResults?.users.map(user => <UserSearchResultCard key={user.uid} user={user} />)}
                     </div>
                 )}
                  {!isSearching && activeSearchTab === 'topics' && (

@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import AppNav from '../../components/navigation/AppNav.tsx';
 import BilingualText from '../../components/ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
+// FIX: Add file extension to mocks.ts import
 import { mockAgents } from '../../data/mocks.ts';
+// FIX: Add file extension to entities.ts import
 import { Agent } from '../../types/entities.ts';
 import AgentGridCard from '../../components/content/AgentGridCard.tsx';
 import Button from '../../components/ui/Button.tsx';

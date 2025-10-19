@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '../react-query.ts';
 import { db } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Post } from '../../types/entities.ts';
 
 const POSTS_PER_PAGE = 5;

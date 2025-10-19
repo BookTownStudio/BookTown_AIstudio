@@ -1,530 +1,539 @@
-import { User, Book, Shelf, ShelfEntry, Quote, Project, Post, Agent, QuickRecommendations, Review, RecommendedShelf } from '../types/entities.ts';
+import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem } from '../types/entities.ts';
 import { MentorIcon } from '../components/icons/MentorIcon.tsx';
-import { BookIcon } from '../components/icons/BookIcon.tsx';
+import { ChatIcon } from '../components/icons/ChatIcon.tsx';
 import { QuoteIcon } from '../components/icons/QuoteIcon.tsx';
 import { LoreIcon } from '../components/icons/LoreIcon.tsx';
+import { NovelIcon } from '../components/icons/NovelIcon.tsx';
+import { ShortStoryIcon } from '../components/icons/ShortStoryIcon.tsx';
+import { EssayIcon } from '../components/icons/EssayIcon.tsx';
+import { JournalIcon } from '../components/icons/JournalIcon.tsx';
+import { MemoirIcon } from '../components/icons/MemoirIcon.tsx';
+import { PoetryIcon } from '../components/icons/PoetryIcon.tsx';
+import { BookReviewIcon } from '../components/icons/BookReviewIcon.tsx';
+import { ScreenplayIcon } from '../components/icons/ScreenplayIcon.tsx';
+import { ResearchPaperIcon } from '../components/icons/ResearchPaperIcon.tsx';
+import { BlogPostIcon } from '../components/icons/BlogPostIcon.tsx';
+import { PlayIcon } from '../components/icons/PlayIcon.tsx';
+import { CharacterProfileIcon } from '../components/icons/CharacterProfileIcon.tsx';
 
-export const mockUser: User = {
-    id: 'alex_doe',
-    name: 'Alex',
-    handle: '@alex_doe',
-    email: 'test@booktown.com',
-    avatarUrl: '/avatars/solofilms.png',
-    bannerUrl: '/covers/profile-banner.jpg',
-    bioEn: 'Avid reader and aspiring novelist. Exploring worlds one page at a time.',
-    bioAr: 'قارئ نهم وروائي طموح. أستكشف العوالم صفحة بصفحة.',
-    role: 'admin',
-    followers: 125,
-    following: 78,
-    joinDate: '2025-09-01T00:00:00.000Z',
-    lastActive: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(), // 36 hours ago
-};
-
+// --- USERS ---
 export const mockUsers: User[] = [
-    mockUser,
     {
-        id: 'user2',
-        name: 'Sarah J.',
-        handle: '@sarahreads',
-        email: 'sarah@example.com',
-        avatarUrl: 'https://i.pravatar.cc/150?u=sarahreads',
-        bannerUrl: '/covers/profile-banner.jpg',
-        bioEn: 'Lover of sci-fi and fantasy. Always looking for the next great adventure.',
-        bioAr: 'محبة للخيال العلمي والفانتازيا. أبحث دائمًا عن المغامرة الرائعة التالية.',
+        uid: 'alex_doe',
+        email: 'test@booktown.com',
+        name: 'Alex Doe',
+        handle: '@alexdoe',
+        avatarUrl: 'https://randomuser.me/api/portraits/men/32.jpg',
+        bannerUrl: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+        joinDate: '2023-01-15T10:00:00Z',
+        bioEn: 'Just a reader trying to find the next great story. Sci-fi and fantasy enthusiast. Trying my hand at writing.',
+        bioAr: 'مجرد قارئ يحاول العثور على القصة الرائعة التالية. من عشاق الخيال العلمي والفانتازيا. أجرب الكتابة.',
+        followers: 125,
+        following: 88,
+        role: 'superuser',
+        lastActive: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(), // 48 hours ago
+    },
+    {
+        uid: 'jane_smith',
+        name: 'Jane Smith',
+        email: 'jane@example.com',
+        handle: '@janesmith',
+        avatarUrl: 'https://randomuser.me/api/portraits/women/44.jpg',
+        bannerUrl: 'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=800&q=80',
+        joinDate: '2022-11-20T14:30:00Z',
+        bioEn: 'Literary critic and coffee lover.',
+        bioAr: 'ناقدة أدبية ومحبة للقهوة.',
+        followers: 1200,
+        following: 300,
         role: 'user',
-        followers: 582,
-        following: 120,
-        joinDate: '2025-08-15T00:00:00.000Z',
-    },
-    {
-        id: 'user3',
-        name: 'Omar K.',
-        handle: '@omark',
-        email: 'omar@example.com',
-        avatarUrl: 'https://i.pravatar.cc/150?u=omark',
-        bannerUrl: '/covers/profile-banner.jpg',
-        bioEn: 'Classic literature enthusiast and coffee aficionado.',
-        bioAr: 'متحمس للأدب الكلاسيكي وعاشق للقهوة.',
-        role: 'user',
-        followers: 310,
-        following: 250,
-        joinDate: '2025-07-20T00:00:00.000Z',
-    },
-     {
-        id: 'user4',
-        name: 'Lena Petrova',
-        handle: '@lenap',
-        email: 'lena@example.com',
-        avatarUrl: 'https://i.pravatar.cc/150?u=lenap',
-        bannerUrl: '/covers/profile-banner.jpg',
-        bioEn: 'Mystery and thriller are my jam. I read way past my bedtime.',
-        bioAr: 'الغموض والإثارة هما تخصصي. أقرأ إلى ما بعد وقت نومي.',
-        role: 'user',
-        followers: 890,
-        following: 95,
-        joinDate: '2025-06-10T00:00:00.000Z',
+        lastActive: new Date().toISOString(),
     },
 ];
 
-
-const booksData: Omit<Book, 'id'>[] = [
-  {
-    titleEn: "Project Hail Mary",
-    titleAr: "مشروع هايل ماري",
-    authorEn: "Andy Weir",
-    authorAr: "أندي وير",
-    coverUrl: "/covers/hail-mary.jpg",
-    descriptionEn: "A lone astronaut must save the earth from disaster in this cinematic thriller.",
-    descriptionAr: "رائد فضاء وحيد يجب أن ينقذ الأرض من كارثة في هذا الفيلم المثير.",
-    genresEn: ["Sci-Fi", "Thriller"],
-    genresAr: ["خيال علمي", "إثارة"],
-    rating: 4.5,
-    ratingsCount: 285000,
-    isEbookAvailable: true,
-  },
-  {
-    titleEn: "Dune",
-    titleAr: "كثيب",
-    authorEn: "Frank Herbert",
-    authorAr: "فرانك هربرت",
-    coverUrl: "/covers/dune.jpg",
-    descriptionEn: "The story of a young man's journey on a desert planet to avenge his family.",
-    descriptionAr: "قصة رحلة شاب على كوكب صحراوي للانتقام من عائلته.",
-    genresEn: ["Sci-Fi", "Fantasy", "Classic"],
-    genresAr: ["خيال علمي", "فانتازيا", "كلاسيكي"],
-    rating: 4.8,
-    ratingsCount: 950000
-  },
-  {
-    titleEn: "The Silent Patient",
-    titleAr: "المريضة الصامتة",
-    authorEn: "Alex Michaelides",
-    authorAr: "أليكس ميخائيليدس",
-    coverUrl: "/covers/silent-patient.jpg",
-    descriptionEn: "A shocking psychological thriller of a woman's act of violence against her husband.",
-    descriptionAr: "فيلم إثارة نفسي صادم عن عنف امرأة ضد زوجها.",
-    genresEn: ["Thriller", "Mystery"],
-    genresAr: ["إثارة", "غموض"],
-    rating: 4.3,
-    ratingsCount: 1200000,
-    isEbookAvailable: true,
-  },
-  {
-    titleEn: "Atomic Habits",
-    titleAr: "العادات الذرية",
-    authorEn: "James Clear",
-    authorAr: "جيمس كلير",
-    coverUrl: "/covers/atomic-habits.jpg",
-    descriptionEn: "An easy and proven way to build good habits and break bad ones.",
-    descriptionAr: "طريقة سهلة ومثبتة لبناء عادات جيدة وكسر العادات السيئة.",
-    genresEn: ["Self-Help", "Productivity"],
-    genresAr: ["مساعدة ذاتية", "إنتاجية"],
-    rating: 4.9,
-    ratingsCount: 750000,
-    isEbookAvailable: true,
-  },
-  {
-    titleEn: "Children of Time",
-    titleAr: "أطفال الزمن",
-    authorEn: "Adrian Tchaikovsky",
-    authorAr: "أدريان تشايكوفسكي",
-    coverUrl: "/covers/children-of-time.jpg",
-    descriptionEn: "A space opera about the last remnants of humanity and a new, evolved intelligence.",
-    descriptionAr: "أوبرا فضاء عن آخر بقايا البشرية وذكاء جديد ومتطور.",
-    genresEn: ["Sci-Fi"],
-    genresAr: ["خيال علمي"],
-    rating: 4.6,
-    ratingsCount: 150000
-  },
-];
-
-export const mockBooks: Record<string, Book> = booksData.reduce((acc, book, i) => {
-    const id = `book${i + 1}`;
-    acc[id] = { ...book, id };
-    return acc;
-}, {} as Record<string, Book>);
-
-
-export const mockTrendingBookIds = ['book1', 'book3'];
-export const mockNewInSciFiIds = ['book1', 'book2', 'book5'];
-export const mockQuickRecs: QuickRecommendations = {
-    bookIds: ['book4', 'book2', 'book3'],
-    timestamp: new Date().toISOString()
-};
-export const mockBookFlowIds = [
-    'book2', 'book1', 'book3', 'book5', 'book4',
-    'book2', 'book1', 'book3', 'book5', 'book4',
-    'book2', 'book1', 'book3', 'book5', 'book4',
-    'book2', 'book1', 'book3', 'book5', 'book4'
-];
-
-export const mockShelves: Record<string, Shelf> = {
-    'currently-reading': { id: 'currently-reading', titleEn: 'Currently Reading', titleAr: 'أقرأ حاليًا' },
-    'want-to-read': { id: 'want-to-read', titleEn: 'Want to Read', titleAr: 'أرغب في قراءتها' },
-    'finished': { id: 'finished', titleEn: 'Finished', titleAr: 'انتهيت منها' },
-};
-
-export const mockShelfEntries: Record<string, Record<string, ShelfEntry>> = {
-    'currently-reading': {
-        'book1': { bookId: 'book1', addedAt: new Date().toISOString(), progress: 65 }
+// --- BOOKS ---
+export const mockBooks: Record<string, Book> = {
+    'book1': {
+        id: 'book1',
+        titleEn: 'The Midnight Library',
+        titleAr: 'مكتبة منتصف الليل',
+        authorEn: 'Matt Haig',
+        authorAr: 'مات هيغ',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1602190253l/52578297.jpg',
+        descriptionEn: 'Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived.',
+        descriptionAr: 'بين الحياة والموت توجد مكتبة، وفي تلك المكتبة، تمتد الأرفف إلى ما لا نهاية. كل كتاب يوفر فرصة لتجربة حياة أخرى كان بإمكانك أن تعيشها.',
+        genresEn: ['Fantasy', 'Contemporary'],
+        genresAr: ['خيال', 'معاصر'],
+        rating: 4.8,
+        ratingsCount: 12053,
+        isEbookAvailable: true,
     },
-    'want-to-read': {
-        'book2': { bookId: 'book2', addedAt: new Date().toISOString() },
-        'book3': { bookId: 'book3', addedAt: new Date().toISOString() }
+    'book2': {
+        id: 'book2',
+        titleEn: 'Project Hail Mary',
+        titleAr: 'مشروع هيل ماري',
+        authorEn: 'Andy Weir',
+        authorAr: 'آندي وير',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1597818439l/54493401.jpg',
+        descriptionEn: 'Ryland Grace is the sole survivor on a desperate, last-chance mission—and if he fails, humanity and the earth itself will perish.',
+        descriptionAr: 'ريلاند جريس هو الناجي الوحيد في مهمة يائسة وأخيرة - وإذا فشل، فإن البشرية والأرض نفسها ستفنى.',
+        genresEn: ['Sci-Fi', 'Thriller'],
+        genresAr: ['خيال علمي', 'إثارة'],
+        rating: 4.9,
+        ratingsCount: 25890,
+        isEbookAvailable: true,
     },
-    'finished': {
-        'book5': { bookId: 'book5', addedAt: new Date().toISOString() }
-    }
-};
-
-export const mockQuoteOfTheDay: Quote = {
-    id: 'qotd1',
-    textEn: "The mystery of life isn't a problem to solve, but a reality to experience.",
-    textAr: "سر الحياة ليس مشكلة يجب حلها، بل حقيقة يجب تجربتها.",
-    sourceEn: "Dune, Frank Herbert",
-    sourceAr: "كثيب، فرانك هربرت"
-};
-
-export const mockUserQuotes: Record<string, Omit<Quote, 'id'>> = {
-    'q1': {
-        textEn: "I must not fear. Fear is the mind-killer.",
-        textAr: "يجب ألا أخاف. الخوف هو قاتل العقل.",
-        sourceEn: "Dune",
-        sourceAr: "كثيب"
+    'book3': {
+        id: 'book3',
+        titleEn: 'Dune',
+        titleAr: 'كثيب',
+        authorEn: 'Frank Herbert',
+        authorAr: 'فرانك هربرت',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1555447414l/44767458.jpg',
+        descriptionEn: 'Set on the desert planet Arrakis, Dune is the story of the boy Paul Atreides, heir to a noble family tasked with ruling an inhospitable world where the only thing of value is the “spice” melange.',
+        descriptionAr: 'تدور أحداث القصة على كوكب أراكيس الصحراوي، وهي قصة الصبي بول أتريديز، وريث عائلة نبيلة مكلفة بحكم عالم غير مضياف حيث الشيء الوحيد ذو القيمة هو "بهار" الميلانج.',
+        genresEn: ['Sci-Fi', 'Classic'],
+        genresAr: ['خيال علمي', 'كلاسيكي'],
+        rating: 4.6,
+        ratingsCount: 98765,
+        isEbookAvailable: false,
     },
-    'q2': {
-        textEn: "It is a mistake to think you can solve any major problems just with potatoes.",
-        textAr: "من الخطأ الاعتقاد بأنه يمكنك حل أي مشاكل كبيرة بالبطاطس فقط.",
-        sourceEn: "Project Hail Mary",
-        sourceAr: "مشروع هايل ماري"
-    }
-};
-
-export const mockProjects: Record<string, Omit<Project, 'id'>> = {
-    'proj1': {
-        titleEn: "The Crimson Nebula",
-        titleAr: "السديم القرمزي",
-        content: "<h1>Chapter 1</h1><p>The void whispered secrets only the dead could hear. On the bridge of the Star-drifter, Captain Eva Rostova watched the swirling colors of the nebula paint streaks of light across the viewport. <b>Silence</b>. It was a heavy, oppressive thing in the deep of space, broken only by the low hum of the life support systems and the frantic beating of her own heart. <i>This was a mistake</i>, she thought, her fingers tightening around the worn leather of the command chair.</p>",
-        typeEn: 'Novel',
-        typeAr: 'رواية',
-        status: 'Draft',
-        wordCount: 45200,
-        updatedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+    'book4': {
+        id: 'book4',
+        titleEn: 'The Silent Patient',
+        titleAr: 'المريض الصامت',
+        authorEn: 'Alex Michaelides',
+        authorAr: 'أليكس ميكايليديس',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582132389l/40097951.jpg',
+        descriptionEn: 'Alicia Berenson’s life is seemingly perfect. A famous painter married to an in-demand fashion photographer, she lives in a grand house with big windows overlooking a park in one of London’s most desirable areas.',
+        descriptionAr: 'حياة أليسيا بيرينسون تبدو مثالية. رسامة مشهورة متزوجة من مصور أزياء مطلوب، تعيش في منزل كبير بنوافذ كبيرة تطل على حديقة في واحدة من أكثر مناطق لندن المرغوبة.',
+        genresEn: ['Thriller', 'Mystery'],
+        genresAr: ['إثارة', 'غموض'],
+        rating: 4.1,
+        ratingsCount: 890123,
+        isEbookAvailable: true,
     },
-    'proj2': {
-        titleEn: "Echoes in the Void",
-        titleAr: "أصداء في الفراغ",
-        content: "<p>It started with a flicker on the deep space sensors, a ghost in the machine that no one could explain. A single, repeating signal from a sector of space that was supposed to be empty. Lifeless. We were wrong.</p>",
-        typeEn: 'Short Story',
-        typeAr: 'قصة قصيرة',
-        status: 'Revision',
-        wordCount: 8100,
-        updatedAt: new Date().toISOString(),
-    }
+    'book5': {
+        id: 'book5',
+        titleEn: 'Circe',
+        titleAr: 'سيرسي',
+        authorEn: 'Madeline Miller',
+        authorAr: 'مادلين ميلر',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1565909496l/35959740.jpg',
+        descriptionEn: 'In the house of Helios, god of the sun and mightiest of the Titans, a daughter is born. But Circe is a strange child--not powerful, like her father, nor viciously alluring like her mother.',
+        descriptionAr: 'في منزل هيليوس، إله الشمس وأقوى الجبابرة، ولدت ابنة. لكن سيرسي طفلة غريبة - ليست قوية مثل والدها، ولا جذابة بوحشية مثل والدتها.',
+        genresEn: ['Fantasy', 'Mythology'],
+        genresAr: ['خيال', 'أساطير'],
+        rating: 4.3,
+        ratingsCount: 750321,
+        isEbookAvailable: true,
+    },
+    'book6': {
+        id: 'book6',
+        titleEn: 'Atomic Habits',
+        titleAr: 'العادات الذرية',
+        authorEn: 'James Clear',
+        authorAr: 'جيمس كلير',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1535115320l/40121378.jpg',
+        descriptionEn: 'Tiny Changes, Remarkable Results. An easy & proven way to build good habits & break bad ones.',
+        descriptionAr: 'تغييرات صغيرة، نتائج ملحوظة. طريقة سهلة ومثبتة لبناء عادات جيدة وكسر عادات سيئة.',
+        genresEn: ['Self Help', 'Non-fiction'],
+        genresAr: ['مساعدة ذاتية', 'واقعي'],
+        rating: 4.4,
+        ratingsCount: 500123,
+        isEbookAvailable: true,
+    },
+    'book7': {
+        id: 'book7',
+        titleEn: 'Educated',
+        titleAr: 'متعلمة',
+        authorEn: 'Tara Westover',
+        authorAr: 'تارا ويستوفر',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635l/35133922.jpg',
+        descriptionEn: 'A memoir about a young girl who, kept out of school, leaves her survivalist family and goes on to earn a PhD from Cambridge University.',
+        descriptionAr: 'مذكرات عن فتاة صغيرة، مُنعت من الذهاب إلى المدرسة، تترك عائلتها الانعزالية وتذهب للحصول على درجة الدكتوراه من جامعة كامبريدج.',
+        genresEn: ['Memoir', 'Non-fiction'],
+        genresAr: ['مذكرات', 'واقعي'],
+        rating: 4.5,
+        ratingsCount: 680456,
+        isEbookAvailable: false,
+    },
+    'book8': {
+        id: 'book8',
+        titleEn: 'Where the Crawdads Sing',
+        titleAr: 'حيث يغني جراد البحر',
+        authorEn: 'Delia Owens',
+        authorAr: 'ديليا أوينز',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1585839728l/36809135.jpg',
+        descriptionEn: 'For years, rumors of the “Marsh Girl” have haunted Barkley Cove, a quiet town on the North Carolina coast.',
+        descriptionAr: 'لسنوات، طاردت شائعات "فتاة المستنقع" باركلي كوف، وهي بلدة هادئة على ساحل كارولينا الشمالية.',
+        genresEn: ['Fiction', 'Mystery'],
+        genresAr: ['خيال', 'غموض'],
+        rating: 4.4,
+        ratingsCount: 1200000,
+        isEbookAvailable: true,
+    },
+    'book9': {
+        id: 'book9',
+        titleEn: 'Klara and the Sun',
+        titleAr: 'كلارا والشمس',
+        authorEn: 'Kazuo Ishiguro',
+        authorAr: 'كازو إيشيغورو',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1603206535l/54120408.jpg',
+        descriptionEn: 'A novel that looks at our changing world through the eyes of an unforgettable narrator, and explores the fundamental question: what does it mean to love?',
+        descriptionAr: 'رواية تنظر إلى عالمنا المتغير من خلال عيون راوية لا تُنسى، وتستكشف السؤال الأساسي: ماذا يعني أن تحب؟',
+        genresEn: ['Sci-Fi', 'Fiction'],
+        genresAr: ['خيال علمي', 'خيال'],
+        rating: 3.9,
+        ratingsCount: 345678,
+        isEbookAvailable: true,
+    },
+    'book10': {
+        id: 'book10',
+        titleEn: 'The Four Winds',
+        titleAr: 'الرياح الأربع',
+        authorEn: 'Kristin Hannah',
+        authorAr: 'كريستين هانا',
+        coverUrl: 'https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1601925686l/53138081.jpg',
+        descriptionEn: 'An epic novel of love and heroism and hope, set during the Great Depression, a time when the country was in crisis and at war with itself, when millions were out of work and even the land seemed to have turned against them.',
+        descriptionAr: 'رواية ملحمية عن الحب والبطولة والأمل، تدور أحداثها خلال فترة الكساد الكبير، وهي فترة كانت فيها البلاد في أزمة وفي حرب مع نفسها، عندما كان الملايين عاطلين عن العمل وحتى الأرض بدت وكأنها انقلبت عليهم.',
+        genresEn: ['Historical Fiction', 'Fiction'],
+        genresAr: ['خيال تاريخي', 'خيال'],
+        rating: 4.3,
+        ratingsCount: 450123,
+        isEbookAvailable: false,
+    },
 };
 
-export const mockPosts: Post[] = [
-    {
-        id: 'post1',
-        authorId: 'user2',
-        authorName: 'Sarah J.',
-        authorHandle: '@sarahreads',
-        authorAvatar: 'https://i.pravatar.cc/150?u=sarahreads',
-        content: 'Just finished Project Hail Mary. Absolutely blown away! Rocky is the best character ever. 👽',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        bookTagId: 'book1',
-        stats: { likes: 125, comments: 12, reposts: 5 }
-    },
-    {
-        id: 'post2',
-        authorId: 'user3',
-        authorName: 'Omar K.',
-        authorHandle: '@omark',
-        authorAvatar: 'https://i.pravatar.cc/150?u=omark',
-        content: 'Rereading Dune in preparation for the new movie. The world-building is just unparalleled.',
-        timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
-        bookTagId: 'book2',
-        stats: { likes: 302, comments: 45, reposts: 22 }
-    },
-    {
-        id: 'post3',
-        authorId: 'alex_doe',
-        authorName: 'Alex',
-        authorHandle: '@alex_doe',
-        authorAvatar: '/avatars/solofilms.png',
-        content: 'Anyone else a huge fan of Atomic Habits? Changed the way I approach my writing goals.',
-        timestamp: new Date(Date.now() - 86400000 * 3).toISOString(),
-        bookTagId: 'book4',
-        stats: { likes: 98, comments: 20, reposts: 8 }
-    },
-    {
-        id: 'post4',
-        authorId: 'user4',
-        authorName: 'Lena Petrova',
-        authorHandle: '@lenap',
-        authorAvatar: 'https://i.pravatar.cc/150?u=lenap',
-        content: 'The ending of "The Silent Patient" left me speechless for a good ten minutes. A must-read for mystery lovers!',
-        timestamp: new Date(Date.now() - 86400000 * 4).toISOString(),
-        bookTagId: 'book3',
-        stats: { likes: 215, comments: 33, reposts: 15 }
-    },
-    {
-        id: 'post5',
-        authorId: 'user5',
-        authorName: 'Kenji Tanaka',
-        authorHandle: '@kenjit',
-        authorAvatar: 'https://i.pravatar.cc/150?u=kenjit',
-        content: 'Children of Time is one of the most original sci-fi concepts I have ever read. The evolution of the spiders is fascinating.',
-        timestamp: new Date(Date.now() - 86400000 * 5).toISOString(),
-        bookTagId: 'book5',
-        stats: { likes: 180, comments: 28, reposts: 11 }
-    },
-     {
-        id: 'post6',
-        authorId: 'user2',
-        authorName: 'Sarah J.',
-        authorHandle: '@sarahreads',
-        authorAvatar: 'https://i.pravatar.cc/150?u=sarahreads',
-        content: 'Looking for my next big sci-fi read after Project Hail Mary. Any suggestions?',
-        timestamp: new Date(Date.now() - 86400000 * 6).toISOString(),
-        stats: { likes: 75, comments: 40, reposts: 2 }
-    },
-    {
-        id: 'post7',
-        authorId: 'user3',
-        authorName: 'Omar K.',
-        authorHandle: '@omark',
-        authorAvatar: 'https://i.pravatar.cc/150?u=omark',
-        content: 'The Litany Against Fear is something I think about almost daily. "Fear is the mind-killer."',
-        timestamp: new Date(Date.now() - 86400000 * 7).toISOString(),
-        bookTagId: 'book2',
-        stats: { likes: 450, comments: 60, reposts: 50 }
-    },
-    {
-        id: 'post8',
-        authorId: 'alex_doe',
-        authorName: 'Alex',
-        authorHandle: '@alex_doe',
-        authorAvatar: '/avatars/solofilms.png',
-        content: 'Small changes, big results. That\'s the core message I took from Atomic Habits.',
-        timestamp: new Date(Date.now() - 86400000 * 8).toISOString(),
-        bookTagId: 'book4',
-        stats: { likes: 112, comments: 15, reposts: 10 }
-    },
-    {
-        id: 'post9',
-        authorId: 'user4',
-        authorName: 'Lena Petrova',
-        authorHandle: '@lenap',
-        authorAvatar: 'https://i.pravatar.cc/150?u=lenap',
-        content: 'That twist... I did not see it coming AT ALL. #SilentPatient',
-        timestamp: new Date(Date.now() - 86400000 * 9).toISOString(),
-        bookTagId: 'book3',
-        stats: { likes: 199, comments: 25, reposts: 18 }
-    },
-    {
-        id: 'post10',
-        authorId: 'user5',
-        authorName: 'Kenji Tanaka',
-        authorHandle: '@kenjit',
-        authorAvatar: 'https://i.pravatar.cc/150?u=kenjit',
-        content: 'If you enjoy grand-scale sci-fi like Dune, you owe it to yourself to read Children of Time.',
-        timestamp: new Date(Date.now() - 86400000 * 10).toISOString(),
-        bookTagId: 'book5',
-        stats: { likes: 250, comments: 35, reposts: 20 }
-    },
-    {
-        id: 'post11',
-        authorId: 'user2',
-        authorName: 'Sarah J.',
-        authorHandle: '@sarahreads',
-        authorAvatar: 'https://i.pravatar.cc/150?u=sarahreads',
-        content: 'Okay, I started Children of Time based on recommendations... and wow. Just wow.',
-        timestamp: new Date(Date.now() - 86400000 * 11).toISOString(),
-        bookTagId: 'book5',
-        stats: { likes: 95, comments: 18, reposts: 3 }
-    },
-    {
-        id: 'post12',
-        authorId: 'user3',
-        authorName: 'Omar K.',
-        authorHandle: '@omark',
-        authorAvatar: 'https://i.pravatar.cc/150?u=omark',
-        content: 'Is it too soon to start another Dune reread?',
-        timestamp: new Date(Date.now() - 86400000 * 12).toISOString(),
-        stats: { likes: 150, comments: 30, reposts: 7 }
-    }
-];
+export const mockTrendingBookIds = ['book1', 'book2'];
 
-export const mockAgents: Agent[] = [
+export const mockBookFlowData: BookFlowItem[] = [
     {
-        id: 'librarian',
-        name: 'Librarian',
-        descriptionEn: 'Find your next great read',
-        descriptionAr: 'ابحث عن قراءتك الرائعة التالية',
-        avatarUrl: '/avatars/librarian.png',
-        isPremium: false,
-        icon: BookIcon,
-        color: 'text-blue-400',
-        examplePromptsEn: [
-            "Can you suggest a fantasy novel with strong worldbuilding?",
-            "What are some underrated books from the last decade?",
-            "What should I read if I loved 'Project Hail Mary'?"
-        ],
-        examplePromptsAr: [
-            "هل يمكنك اقتراح رواية خيالية ذات بناء عالمي قوي؟",
-            "ما هي بعض الكتب غير المشهورة من العقد الماضي؟",
-            "ماذا يجب أن أقرأ إذا أحببت 'مشروع هايل ماري'؟"
-        ],
-        placeholderEn: 'Find your next great read...',
-        placeholderAr: 'ابحث عن قراءتك الرائعة التالية...',
-    },
-    {
-        id: 'mentor',
-        name: 'Mentor',
-        descriptionEn: 'Get writing tips and feedback',
-        descriptionAr: 'احصل على نصائح للكتابة وملاحظات',
-        avatarUrl: '/avatars/mentor.png',
-        isPremium: false,
-        icon: MentorIcon,
-        color: 'text-purple-400',
-        examplePromptsEn: [
-            "How do I make my dialogue feel more natural?",
-            "What are some common writing mistakes to avoid?",
-            "Can you give me feedback on this paragraph?"
-        ],
-        examplePromptsAr: [
-            "كيف أجعل حواري يبدو طبيعيًا أكثر؟",
-            "ما هي بعض الأخطاء الكتابية الشائعة التي يجب تجنبها؟",
-            "هل يمكنك أن تعطيني رأيك في هذه الفقرة؟"
-        ],
-        placeholderEn: 'Get writing tips and feedback...',
-        placeholderAr: 'احصل على نصائح وملاحظات للكتابة...',
-    },
-    {
-        id: 'quotes',
-        name: 'Quotes',
-        descriptionEn: 'Discover inspiring quotes',
-        descriptionAr: 'اكتشف اقتباسات ملهمة',
-        avatarUrl: '/avatars/quotes.png',
-        isPremium: false, // Set to false for testing
-        icon: QuoteIcon,
-        color: 'text-green-400',
-        examplePromptsEn: [
-            "Give me a quote about resilience.",
-            "Find quotes from 'Dune'.",
-            "What are some famous literary quotes about love?"
-        ],
-        examplePromptsAr: [
-            "أعطني اقتباسًا عن المرونة.",
-            "ابحث عن اقتباسات من 'كثيب'.",
-            "ما هي بعض الاقتباسات الأدبية الشهيرة عن الحب؟"
-        ],
-        placeholderEn: 'Ask me about a quote or theme...',
-        placeholderAr: 'اسألني عن اقتباس أو موضوع...',
-    },
-    {
-        id: 'lore',
-        name: 'Lore',
-        descriptionEn: 'Talk with books and authors',
-        descriptionAr: 'تحدث مع الكتب والمؤلفين',
-        avatarUrl: '/avatars/lore.png',
-        isPremium: false, // Set to false for testing
-        icon: LoreIcon,
-        color: 'text-red-400',
-        examplePromptsEn: [
-            "What would Elizabeth Bennet say about modern marriage?",
-            "Ask Sherlock Holmes to solve a modern mystery.",
-            "Have a conversation with Frank Herbert about Dune."
-        ],
-        examplePromptsAr: [
-            "ماذا ستقول إليزابيث بينيت عن الزواج الحديث؟",
-            "اطلب من شرلوك هولمز حل لغز حديث.",
-            "أجرِ محادثة مع فرانك هربرت حول 'كثيب'."
-        ],
-        placeholderEn: 'Talk with characters and concepts...',
-        placeholderAr: 'تحدث مع الشخصيات والمفاهيم...',
-    }
-];
-
-
-export const mockReviews: Record<string, Omit<Review, 'id'>> = {
-    'review1': {
         bookId: 'book1',
-        userId: 'user2',
-        authorName: 'Sarah J.',
-        authorHandle: '@sarahreads',
-        authorAvatar: 'https://i.pravatar.cc/150?u=sarahreads',
-        rating: 5,
-        text: "An absolute masterpiece of science fiction. The friendship between Ryland and Rocky is one of the most heartwarming things I've ever read. A must-read!",
-        timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
+        bookCoverUrl: mockBooks['book1'].coverUrl,
+        quoteTextEn: 'Every book provides a chance to try another life you could have lived.',
+        quoteTextAr: 'كل كتاب يوفر فرصة لتجربة حياة أخرى كان بإمكانك أن تعيشها.',
+        authorEn: mockBooks['book1'].authorEn,
+        authorAr: mockBooks['book1'].authorAr,
     },
-    'review2': {
-        bookId: 'book1',
-        userId: 'user5',
-        authorName: 'Kenji Tanaka',
-        authorHandle: '@kenjit',
-        authorAvatar: 'https://i.pravatar.cc/150?u=kenjit',
-        rating: 4,
-        text: "Really enjoyed the problem-solving aspect of this book. The science is detailed but accessible. The ending felt a little rushed, but overall a great read.",
-        timestamp: new Date(Date.now() - 86400000 * 5).toISOString(),
-    }
-};
+    {
+        bookId: 'book4',
+        bookCoverUrl: mockBooks['book4'].coverUrl,
+        quoteTextEn: 'We are all crazy, I believe, just in different ways.',
+        quoteTextAr: 'كلنا مجانين، على ما أعتقد، ولكن بطرق مختلفة.',
+        authorEn: mockBooks['book4'].authorEn,
+        authorAr: mockBooks['book4'].authorAr,
+    },
+    {
+        bookId: 'book5',
+        bookCoverUrl: mockBooks['book5'].coverUrl,
+        quoteTextEn: 'But in a solitary life, there are rare moments when another soul dips near yours, as stars once a year brush the earth.',
+        quoteTextAr: 'ولكن في حياة منعزلة، هناك لحظات نادرة تقترب فيها روح أخرى من روحك، كما تلامس النجوم الأرض مرة في السنة.',
+        authorEn: mockBooks['book5'].authorEn,
+        authorAr: mockBooks['book5'].authorAr,
+    },
+    {
+        bookId: 'book2',
+        bookCoverUrl: mockBooks['book2'].coverUrl,
+        quoteTextEn: 'Humanity is a science experiment. All living things are. We\'re all just seeing what happens.',
+        quoteTextAr: 'البشرية تجربة علمية. كل الكائنات الحية كذلك. كلنا فقط نرى ما سيحدث.',
+        authorEn: mockBooks['book2'].authorEn,
+        authorAr: mockBooks['book2'].authorAr,
+    },
+    {
+        bookId: 'book6',
+        bookCoverUrl: mockBooks['book6'].coverUrl,
+        quoteTextEn: 'You do not rise to the level of your goals. You fall to the level of your systems.',
+        quoteTextAr: 'أنت لا ترتقي إلى مستوى أهدافك. أنت تسقط إلى مستوى أنظمتك.',
+        authorEn: mockBooks['book6'].authorEn,
+        authorAr: mockBooks['book6'].authorAr,
+    },
+    {
+        bookId: 'book3',
+        bookCoverUrl: mockBooks['book3'].coverUrl,
+        quoteTextEn: 'I must not fear. Fear is the mind-killer.',
+        quoteTextAr: 'يجب ألا أخاف. الخوف هو قاتل العقل.',
+        authorEn: mockBooks['book3'].authorEn,
+        authorAr: mockBooks['book3'].authorAr,
+    },
+    {
+        bookId: 'book7',
+        bookCoverUrl: mockBooks['book7'].coverUrl,
+        quoteTextEn: 'The decisions I made after that moment were not the ones she would have made. They were the choices of a changed person, a new self.',
+        quoteTextAr: 'القرارات التي اتخذتها بعد تلك اللحظة لم تكن تلك التي كانت ستتخذها. كانت خيارات شخص متغير، ذات جديدة.',
+        authorEn: mockBooks['book7'].authorEn,
+        authorAr: mockBooks['book7'].authorAr,
+    },
+    {
+        bookId: 'book8',
+        bookCoverUrl: mockBooks['book8'].coverUrl,
+        quoteTextEn: 'I wasn\'t aware that words could hold so much. I didn\'t know a sentence could be so full.',
+        quoteTextAr: 'لم أكن أدرك أن الكلمات يمكن أن تحمل الكثير. لم أكن أعرف أن جملة يمكن أن تكون ممتلئة إلى هذا الحد.',
+        authorEn: mockBooks['book8'].authorEn,
+        authorAr: mockBooks['book8'].authorAr,
+    },
+    {
+        bookId: 'book9',
+        bookCoverUrl: mockBooks['book9'].coverUrl,
+        quoteTextEn: 'But what is a heart? Is it just something that pumps blood? Or is it the seat of the soul?',
+        quoteTextAr: 'ولكن ما هو القلب؟ هل هو مجرد شيء يضخ الدم؟ أم أنه مقر الروح؟',
+        authorEn: mockBooks['book9'].authorEn,
+        authorAr: mockBooks['book9'].authorAr,
+    },
+    {
+        bookId: 'book10',
+        bookCoverUrl: mockBooks['book10'].coverUrl,
+        quoteTextEn: 'Hope is a Ferris wheel—you have to wait for your turn to catch it.',
+        quoteTextAr: 'الأمل عجلة فيريس - عليك أن تنتظر دورك لتمسك به.',
+        authorEn: mockBooks['book10'].authorEn,
+        authorAr: mockBooks['book10'].authorAr,
+    },
+];
+
+
+// --- SHELVES ---
+export const mockShelves: Shelf[] = [
+    { id: 'currently-reading', titleEn: 'Currently Reading', titleAr: 'أقرأ حاليًا', entries: { 'book1': { bookId: 'book1', addedAt: '2023-10-26T10:00:00Z', progress: 65 } } },
+    { id: 'want-to-read', titleEn: 'Want to Read', titleAr: 'أرغب في قراءته', entries: { 'book2': { bookId: 'book2', addedAt: '2023-10-20T10:00:00Z' } } },
+    { id: 'sci-fi-faves', titleEn: 'Sci-Fi Faves', titleAr: 'مفضلاتي من الخيال العلمي', entries: { 'book2': { bookId: 'book2', addedAt: '2023-09-15T10:00:00Z' }, 'book3': { bookId: 'book3', addedAt: '2023-09-01T10:00:00Z' } } },
+];
 
 export const mockRecommendedShelves: RecommendedShelf[] = [
+    { id: 'rec1', titleEn: "Epic Fantasy Worlds", titleAr: 'عوالم الفانتازيا الملحمية', ownerName: 'Jane Smith', bookCovers: [mockBooks['book3'].coverUrl, mockBooks['book1'].coverUrl], followerCount: 12500 },
+    { id: 'rec2', titleEn: "Mind-Bending Sci-Fi", titleAr: 'خيال علمي محير للعقل', ownerName: 'BookBot5000', bookCovers: [mockBooks['book2'].coverUrl, mockBooks['book1'].coverUrl], followerCount: 8432 },
+];
+
+
+// --- QUOTES ---
+export const mockQuoteOfTheDay: Quote = {
+    id: 'qotd1',
+    textEn: 'A reader lives a thousand lives before he dies . . . The man who never reads lives only one.',
+    textAr: 'القارئ يعيش ألف حياة قبل أن يموت... الرجل الذي لا يقرأ أبدًا يعيش حياة واحدة فقط.',
+    sourceEn: 'George R.R. Martin, A Dance with Dragons',
+    sourceAr: 'جورج ر. ر. مارتن، رقصة مع التنانين',
+};
+
+export const mockUserQuotes: Quote[] = [
+    mockQuoteOfTheDay,
+    { id: 'q2', textEn: "So it goes.", textAr: "هكذا تسير الأمور.", sourceEn: "Kurt Vonnegut, Slaughterhouse-Five", sourceAr: "كورت فونيجت، المسلخ الخامس" },
+];
+
+
+// --- PROJECTS ---
+export const mockProjects: Project[] = [
+    { id: 'proj1', titleEn: 'Starfall', titleAr: 'سقوط النجم', typeEn: 'Novel', typeAr: 'رواية', status: 'Draft', wordCount: 25430, updatedAt: '2023-10-25T14:00:00Z', content: 'The night was cold on Kepler-186f...' },
+    { id: 'proj2', titleEn: 'The Last Coffee Shop', titleAr: 'المقهى الأخير', typeEn: 'Short Story', typeAr: 'قصة قصيرة', status: 'Revision', wordCount: 5200, updatedAt: '2023-10-22T11:00:00Z', content: 'It was the last coffee shop at the end of the world.' },
+];
+
+// --- POSTS ---
+export const mockPosts: Post[] = [
     {
-        id: 'rec_shelf_1',
-        titleEn: "Dystopian Classics",
-        titleAr: "كلاسيكيات ديستوبية",
-        ownerName: "Editor's Picks",
-        bookCovers: ["/covers/dune.jpg", "/covers/children-of-time.jpg", "/covers/hail-mary.jpg"],
-        followerCount: 12845,
+        id: 'post1', authorId: 'jane_smith', authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
+        content: "Just finished The Midnight Library and I'm speechless. What an incredible concept. Has anyone else read it?",
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        stats: { likes: 15, comments: 4, reposts: 2 },
+        bookTagId: 'book1'
     },
     {
-        id: 'rec_shelf_2',
-        titleEn: "Modern Thrillers",
-        titleAr: "إثارة حديثة",
-        ownerName: "CommunityCurated",
-        bookCovers: ["/covers/silent-patient.jpg", "/covers/hail-mary.jpg", "/covers/dune.jpg"],
-        followerCount: 8302,
+        id: 'post2', authorId: 'alex_doe', authorName: 'Alex Doe', authorHandle: '@alexdoe', authorAvatar: mockUsers[0].avatarUrl,
+        content: "I'm about 65% through The Midnight Library. It's making me think about so many of my past choices. Highly recommend so far!",
+        timestamp: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(), // 22 hours ago
+        stats: { likes: 8, comments: 1, reposts: 0 },
+        bookTagId: 'book1'
+    },
+];
+
+// --- AGENTS ---
+export const mockAgents: Agent[] = [
+    {
+        id: 'mentor', name: 'AI Mentor', descriptionEn: 'Get feedback on your writing', descriptionAr: 'احصل على ملاحظات على كتابتك',
+        avatarUrl: '/assets/mentor-avatar.png', icon: MentorIcon, color: 'text-sky-400', isPremium: false,
+        examplePromptsEn: ["Critique this paragraph...", "Does this character feel real?", "Suggest a better opening line."],
+        examplePromptsAr: ["انقد هذه الفقرة...", "هل تبدو هذه الشخصية حقيقية؟", "اقترح سطراً افتتاحياً أفضل."],
+        placeholderEn: "Paste your text or ask a question...",
+        placeholderAr: "ألصق نصك أو اطرح سؤالاً..."
     },
     {
-        id: 'rec_shelf_3',
-        titleEn: "Productivity Boost",
-        titleAr: "دفعة إنتاجية",
-        ownerName: "Mentor's Shelf",
-        bookCovers: ["/covers/atomic-habits.jpg", "/covers/silent-patient.jpg", "/covers/children-of-time.jpg"],
-        followerCount: 21050,
+        id: 'librarian', name: 'AI Librarian', descriptionEn: 'Find your next favorite book', descriptionAr: 'اعثر على كتابك المفضل التالي',
+        avatarUrl: '/assets/librarian-avatar.png', icon: ChatIcon, color: 'text-green-400', isPremium: false,
+        examplePromptsEn: ["Find books like 'Dune'", "I want a fast-paced thriller", "Recommend a classic novel"],
+        examplePromptsAr: ["ابحث عن كتب تشبه 'كثيب'", "أريد رواية إثارة سريعة الوتيرة", "أوصي برواية كلاسيكية"],
+        placeholderEn: "Tell me what you're looking for...",
+        placeholderAr: "أخبرني عما تبحث عنه..."
+    },
+    {
+        id: 'quotes', name: 'Quote Finder', descriptionEn: 'Discover powerful quotes', descriptionAr: 'اكتشف اقتباسات قوية',
+        avatarUrl: '/assets/quotes-avatar.png', icon: QuoteIcon, color: 'text-amber-400', isPremium: false,
+        examplePromptsEn: ["Quotes about courage", "Find a quote from 'Project Hail Mary'"],
+        examplePromptsAr: ["اقتباسات عن الشجاعة", "ابحث عن اقتباس من 'مشروع هيل ماري'"],
+        placeholderEn: "What kind of quote are you seeking?",
+        placeholderAr: "أي نوع من الاقتباسات تبحث عنه؟"
+    },
+    {
+        id: 'lore', name: 'Lore Keeper', descriptionEn: 'Explore fictional worlds', descriptionAr: 'استكشف عوالم خيالية',
+        avatarUrl: '/assets/lore-avatar.png', icon: LoreIcon, color: 'text-purple-400', isPremium: true,
+        examplePromptsEn: [], examplePromptsAr: [], placeholderEn: "", placeholderAr: ""
     }
 ];
 
-// This structure allows the mock DB to function.
+// --- TEMPLATES ---
+export const mockTemplates: Template[] = [
+    {
+        id: 'novel-outline',
+        titleEn: 'Novel Outline',
+        titleAr: 'مخطط رواية',
+        descriptionEn: 'Structure your epic.',
+        descriptionAr: 'نظم ملحمتك.',
+        icon: NovelIcon,
+        boilerplateContent: `# Part 1: The Ordinary World\n\n## Chapter 1\n\n- Introduction to the protagonist...\n\n# Part 2: The Adventure Begins\n\n## Chapter 5\n\n- The inciting incident...\n`
+    },
+    {
+        id: 'short-story-arc',
+        titleEn: 'Short Story Arc',
+        titleAr: 'قوس القصة القصيرة',
+        descriptionEn: 'A simple three-act structure.',
+        descriptionAr: 'هيكل بسيط من ثلاثة فصول.',
+        icon: ShortStoryIcon,
+        boilerplateContent: `# Act 1: Setup\n\n- \n\n# Act 2: Confrontation\n\n- \n\n# Act 3: Resolution\n\n- \n`
+    },
+    {
+        id: 'academic-essay',
+        titleEn: 'Academic Essay',
+        titleAr: 'مقالة أكاديمية',
+        descriptionEn: 'For research papers.',
+        descriptionAr: 'لأوراق البحث.',
+        icon: EssayIcon,
+        boilerplateContent: `# Introduction\n\n- Hook:\n- Thesis Statement:\n\n# Body Paragraph 1\n\n- Topic Sentence:\n\n# Conclusion\n\n- Restate Thesis:\n`
+    },
+    {
+        id: 'journal-entry',
+        titleEn: 'Journal Entry',
+        titleAr: 'إدخال يوميات',
+        descriptionEn: 'Reflect on your day.',
+        descriptionAr: 'تأمل في يومك.',
+        icon: JournalIcon,
+        boilerplateContent: `## Date: ${new Date().toLocaleDateString()}\n\n### How I'm feeling:\n\n\n### What happened today:\n\n\n### A thought to remember:\n\n`
+    },
+    {
+        id: 'memoir',
+        titleEn: 'Memoir',
+        titleAr: 'مذكرات',
+        descriptionEn: 'Share your life story.',
+        descriptionAr: 'شارك قصة حياتك.',
+        icon: MemoirIcon,
+        boilerplateContent: `# Chapter 1: Early Years\n\n- \n\n# Chapter 2: The Turning Point\n\n- \n`
+    },
+    {
+        id: 'poetry',
+        titleEn: 'Poetry',
+        titleAr: 'شعر',
+        descriptionEn: 'Express with verse.',
+        descriptionAr: 'عبر بالقافية.',
+        icon: PoetryIcon,
+        boilerplateContent: `## Title of Poem\n\nStanza 1...\n`
+    },
+    {
+        id: 'book-review',
+        titleEn: 'Book Review',
+        titleAr: 'مراجعة كتاب',
+        descriptionEn: 'Critique a recent read.',
+        descriptionAr: 'انقد قراءة حديثة.',
+        icon: BookReviewIcon,
+        boilerplateContent: `# Review of [Book Title]\n\n## Summary\n\n## Analysis\n\n## Conclusion\n`
+    },
+    {
+        id: 'screenplay',
+        titleEn: 'Screenplay',
+        titleAr: 'سيناريو',
+        descriptionEn: 'Write for the screen.',
+        descriptionAr: 'اكتب للشاشة.',
+        icon: ScreenplayIcon,
+        boilerplateContent: `FADE IN:\n\nEXT. LOCATION - DAY\n\nCHARACTER\n(V.O.)\nIt all started...\n`
+    },
+    {
+        id: 'research-paper',
+        titleEn: 'Research Paper',
+        titleAr: 'ورقة بحثية',
+        descriptionEn: 'For scholarly articles.',
+        descriptionAr: 'للمقالات العلمية.',
+        icon: ResearchPaperIcon,
+        boilerplateContent: `# Abstract\n\n# Introduction\n\n# Methodology\n\n# Results\n\n# Discussion\n`
+    },
+    {
+        id: 'blog-post',
+        titleEn: 'Blog Post',
+        titleAr: 'تدوينة',
+        descriptionEn: 'Share your thoughts online.',
+        descriptionAr: 'شارك أفكارك على الإنترنت.',
+        icon: BlogPostIcon,
+        boilerplateContent: `## Blog Post Title\n\n### Introduction\n\nBody content...\n`
+    },
+    {
+        id: 'play-script',
+        titleEn: 'Play Script',
+        titleAr: 'نص مسرحي',
+        descriptionEn: 'For the stage.',
+        descriptionAr: 'للمسرح.',
+        icon: PlayIcon,
+        boilerplateContent: `## Act I\n\n### Scene 1\n\n[SETTING]\n\nCHARACTER 1\n(dialogue...)\n`
+    },
+    {
+        id: 'character-profile',
+        titleEn: 'Character Profile',
+        titleAr: 'ملف شخصية',
+        descriptionEn: 'Flesh out your characters.',
+        descriptionAr: 'طور شخصياتك.',
+        icon: CharacterProfileIcon,
+        boilerplateContent: `# [Character Name]\n\n## Physical Description\n\n## Backstory\n\n## Goals\n\n## Flaws\n`
+    }
+];
+
+// --- REVIEWS ---
+export const mockReviews: Review[] = [
+    {
+        id: 'review1', bookId: 'book1', userId: 'jane_smith', rating: 5, text: 'A beautiful, thought-provoking novel that will stay with me for a long time. A must-read!',
+        authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days ago
+    }
+];
+
+
+// --- MOCK DB STRUCTURE ---
 export const MOCK_DATA = {
-    users: mockUsers.reduce((acc, user) => {
-        const userData: any = { ...user };
-        if (user.id === 'alex_doe') {
-            userData.shelves = mockShelves;
-            userData.quotes = mockUserQuotes;
-            userData.projects = mockProjects;
-            userData.agent_sessions = {};
-        }
-        acc[user.id] = userData;
-        return acc;
-    }, {} as Record<string, any>),
+    users: {
+        'alex_doe': mockUsers[0],
+        'jane_smith': mockUsers[1],
+    },
     catalog: {
-        books: mockBooks
+        books: mockBooks,
     },
     recommendations_quick: {
-        'alex_doe': mockQuickRecs
+        'alex_doe': {
+            userId: 'alex_doe',
+            bookIds: ['book2', 'book3', 'book1'],
+            timestamp: new Date().toISOString(),
+        }
     },
-    posts: mockPosts.reduce((acc, post) => {
-        acc[post.id] = post;
-        return acc;
-    }, {} as Record<string, Post>),
-    reviews: mockReviews,
+    reviews: {
+        'review1': mockReviews[0],
+    },
+    posts: {
+        'post1': mockPosts[0],
+        'post2': mockPosts[1],
+    }
 };
 
-// Add shelf entries into the main mock data object for the db to find
-MOCK_DATA.users.alex_doe.shelves['currently-reading'].entries = mockShelfEntries['currently-reading'];
-MOCK_DATA.users.alex_doe.shelves['want-to-read'].entries = mockShelfEntries['want-to-read'];
-MOCK_DATA.users.alex_doe.shelves['finished'].entries = mockShelfEntries['finished'];
+// Add shelves and projects for alex_doe to the mock DB
+(MOCK_DATA.users['alex_doe'] as any).shelves = mockShelves.reduce((acc, shelf) => {
+    acc[shelf.id] = shelf;
+    return acc;
+}, {} as Record<string, Shelf>);
+
+(MOCK_DATA.users['alex_doe'] as any).projects = mockProjects.reduce((acc, project) => {
+    acc[project.id] = project;
+    return acc;
+}, {} as Record<string, Project>);
+
+(MOCK_DATA.users['alex_doe'] as any).quotes = mockUserQuotes.reduce((acc, quote) => {
+    acc[quote.id] = quote;
+    return acc;
+}, {} as Record<string, Quote>);

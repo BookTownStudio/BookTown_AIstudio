@@ -3,6 +3,7 @@ import AppNav from '../../components/navigation/AppNav.tsx';
 import BilingualText from '../../components/ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
 import QuoteSnippetCard from '../../components/content/QuoteSnippetCard.tsx';
+// FIX: Add file extension to mocks.ts import
 import { mockQuoteOfTheDay } from '../../data/mocks.ts';
 import { useUserShelves } from '../../lib/hooks/useUserShelves.ts';
 import ShelfCarousel from '../../components/content/ShelfCarousel.tsx';

@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import BilingualText from '../ui/BilingualText.tsx';
 import BookCard from './BookCard.tsx';
 import { useI18n } from '../../store/i18n.tsx';
+// FIX: Add file extension to entities.ts import
 import { Shelf, ShelfEntry } from '../../types/entities.ts';
 import { useShelfEntries } from '../../lib/hooks/useUserShelves.ts';
 import { useNavigation } from '../../store/navigation.tsx';

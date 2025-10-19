@@ -1,3 +1,4 @@
+
 import React from 'react';
 // FIX: Added file extensions to imports
 import { I18nProvider } from './store/i18n.tsx';
@@ -9,6 +10,7 @@ import { ThemeProvider } from './store/theme.tsx';
 import HomeScreen from './app/tabs/home.tsx';
 import ReadScreen from './app/tabs/read.tsx';
 import DiscoverScreen from './app/tabs/discover.tsx';
+// FIX: Add file extension to write.tsx import
 import WriteScreen from './app/tabs/write.tsx';
 import SocialScreen from './app/tabs/social.tsx';
 
@@ -22,6 +24,7 @@ import QuotesScreen from './app/drawer/quotes.tsx';
 import SettingsScreen from './app/drawer/settings.tsx';
 import AgentChatScreen from './app/agent.tsx';
 import BookDetailsScreen from './app/book-details.tsx';
+// FIX: Add file extension to editor/[id].tsx import
 import EditorScreen from './app/editor/[id].tsx';
 import ReaderScreen from './app/reader.tsx';
 import AuthorsScreen from './app/drawer/authors.tsx';

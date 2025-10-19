@@ -3,6 +3,7 @@ import GlassCard from '../ui/GlassCard.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import Button from '../ui/Button.tsx';
 import { useI18n } from '../../store/i18n.tsx';
+// FIX: Add file extension to entities.ts import
 import { RecommendedShelf } from '../../types/entities.ts';
 import { useFollowShelf } from '../../lib/hooks/useFollowShelf.ts';
 import { PlusIcon } from '../icons/PlusIcon.tsx';

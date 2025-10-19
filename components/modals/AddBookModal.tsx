@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import Modal from '../ui/Modal.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
@@ -8,6 +9,7 @@ import { useI18n } from '../../store/i18n.tsx';
 import { useLiveBookSearch } from '../../lib/hooks/useLiveBookSearch.ts';
 import { useToggleBookOnShelf } from '../../lib/hooks/useToggleBookOnShelf.ts';
 import LoadingSpinner from '../ui/LoadingSpinner.tsx';
+// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
 import { PlusIcon } from '../icons/PlusIcon.tsx';
 

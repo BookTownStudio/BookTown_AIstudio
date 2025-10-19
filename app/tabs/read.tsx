@@ -13,6 +13,72 @@ import AddBookModal from '../../components/modals/AddBookModal.tsx';
 import { useRecommendedShelves } from '../../lib/hooks/useRecommendedShelves.ts';
 import RecommendedShelfCard from '../../components/content/RecommendedShelfCard.tsx';
 import CreateShelfModal from '../../components/modals/CreateShelfModal.tsx';
+import FloatingActionPanel from '../../components/ui/FloatingActionPanel.tsx';
+import { ShelvesIcon } from '../../components/icons/ShelvesIcon.tsx';
+
+interface RecommendationsPanelProps {
+    isOpen: boolean;
+    onOpen: () => void;
+    onClose: () => void;
+}
+
+const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({ isOpen, onOpen, onClose }) => {
+    const { lang } = useI18n();
+    const { data: recommendedShelves, isLoading: isLoadingRecs, isError: isErrorRecs } = useRecommendedShelves();
+
+    return (
+        <>
+            <div
+                className="fixed bottom-[98px] left-0 right-0 z-20 flex justify-center pointer-events-none"
+                style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+            >
+                <button
+                    onClick={onOpen}
+                    className="
+                        flex items-center gap-2 px-6 py-3
+                        bg-gray-100/80 dark:bg-slate-800/80 backdrop-blur-md 
+                        shadow-xl shadow-primary/10 dark:shadow-black/40 
+                        border border-black/5 dark:border-white/10 
+                        text-slate-800 dark:text-white 
+                        pointer-events-auto 
+                        transition-all duration-300 ease-in-out
+                        hover:-translate-y-1 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20
+                        active:scale-100
+                        rounded-full"
+                    aria-label={lang === 'en' ? 'Open More Shelves' : 'فتح المزيد من الرفوف'}
+                >
+                    <ShelvesIcon className="h-5 w-5 text-accent" />
+                    <BilingualText className="font-bold text-lg">
+                        {lang === 'en' ? 'More Shelves' : 'المزيد من الرفوف'}
+                    </BilingualText>
+                </button>
+            </div>
+            <FloatingActionPanel isOpen={isOpen} onClose={onClose}>
+                <div>
+                    <BilingualText role="H1" className="!text-xl mb-2 px-4 pt-2">
+                        {lang === 'en' ? 'More Shelves to Follow' : 'رفوف إضافية للمتابعة'}
+                    </BilingualText>
+                    {isLoadingRecs && <div className="flex justify-center py-4"><LoadingSpinner /></div>}
+                    {!isLoadingRecs && !isErrorRecs && recommendedShelves && (
+                        <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
+                            {recommendedShelves.map(shelf => (
+                                <RecommendedShelfCard key={shelf.id} shelf={shelf} />
+                            ))}
+                        </div>
+                    )}
+                     {isErrorRecs && (
+                        <div className="px-4 py-4">
+                            <BilingualText role="Caption" className="text-center">
+                                {lang === 'en' ? 'Could not load recommendations.' : 'تعذر تحميل التوصيات.'}
+                            </BilingualText>
+                        </div>
+                    )}
+                </div>
+            </FloatingActionPanel>
+        </>
+    );
+};
+
 
 const ReadScreen: React.FC = () => {
     const { lang } = useI18n();
@@ -25,8 +91,7 @@ const ReadScreen: React.FC = () => {
     const [isCreateShelfModalOpen, setCreateShelfModalOpen] = useState(false);
     const [targetShelfId, setTargetShelfId] = useState<string | null>(null);
     const [openShelves, setOpenShelves] = useState<Record<string, boolean>>({});
-
-    const { data: recommendedShelves, isLoading: isLoadingRecs, isError: isErrorRecs } = useRecommendedShelves();
+    const [isRecPanelOpen, setRecPanelOpen] = useState(false);
 
     // Tab Reset Effect
     useEffect(() => {
@@ -35,6 +100,7 @@ const ReadScreen: React.FC = () => {
         } else {
             if (resetTokens.read > 0) {
                 mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                setRecPanelOpen(false);
             }
         }
     }, [resetTokens.read]);
@@ -86,7 +152,7 @@ const ReadScreen: React.FC = () => {
         }
 
         return (
-            <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-28">
+            <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-40">
                 <div className="container mx-auto px-4 md:px-8 py-4">
                     <header className="mb-6">
                         <BilingualText role="H1" className="!text-3xl">
@@ -110,20 +176,6 @@ const ReadScreen: React.FC = () => {
                             />
                         ))}
                     </div>
-
-                    <section className="mt-12 border-t border-black/10 dark:border-white/10 pt-8">
-                        <BilingualText role="H1" className="!text-xl mb-4">
-                            {lang === 'en' ? 'Shelf Recommendations to Follow' : 'توصيات رفوف للمتابعة'}
-                        </BilingualText>
-                        {isLoadingRecs && <div className="flex justify-center py-4"><LoadingSpinner /></div>}
-                        {!isLoadingRecs && !isErrorRecs && recommendedShelves && (
-                            <div className="flex overflow-x-auto gap-4 pb-4 -mx-4 px-4 scrollbar-hide">
-                                {recommendedShelves.map(shelf => (
-                                    <RecommendedShelfCard key={shelf.id} shelf={shelf} />
-                                ))}
-                            </div>
-                        )}
-                    </section>
                 </div>
             </main>
         );
@@ -134,6 +186,11 @@ const ReadScreen: React.FC = () => {
             <div className="h-screen flex flex-col">
                 <AppNav titleEn="BookTown" titleAr="بوكتاون" />
                 {renderContent()}
+                <RecommendationsPanel 
+                    isOpen={isRecPanelOpen}
+                    onOpen={() => setRecPanelOpen(true)}
+                    onClose={() => setRecPanelOpen(false)}
+                />
                 <Fab onClick={() => setCreateShelfModalOpen(true)} aria-label={lang === 'en' ? 'Create Shelf' : 'إنشاء رف'}>
                     <PlusIcon className="h-8 w-8" />
                 </Fab>

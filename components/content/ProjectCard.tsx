@@ -4,6 +4,7 @@ import GlassCard from '../ui/GlassCard.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
 import { useNavigation } from '../../store/navigation.tsx';
+// FIX: Add file extension to entities.ts import
 import { Project } from '../../types/entities.ts';
 
 interface ProjectCardProps {

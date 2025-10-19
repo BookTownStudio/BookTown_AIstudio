@@ -1,6 +1,9 @@
 
+
 import { useQuery } from '../react-query.ts';
+// FIX: Add file extension to mocks.ts import
 import { mockPosts } from '../../data/mocks.ts';
+// FIX: Add file extension to entities.ts import
 import { Post } from '../../types/entities.ts';
 
 const getPost = async (postId: string | undefined): Promise<Post> => {

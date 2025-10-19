@@ -5,6 +5,7 @@ import GlassCard from '../ui/GlassCard.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import Button from '../ui/Button.tsx';
 import { useI18n } from '../../store/i18n.tsx';
+// FIX: Add file extension to entities.ts import
 import { Quote } from '../../types/entities.ts';
 import { LikeIcon } from '../icons/LikeIcon.tsx';
 import { ChatIcon } from '../icons/ChatIcon.tsx';

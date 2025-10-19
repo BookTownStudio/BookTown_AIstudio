@@ -1,8 +1,10 @@
 
+
 import React from 'react';
 import GlassCard from '../ui/GlassCard.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
+// FIX: Add file extension to entities.ts import
 import { Agent } from '../../types/entities.ts';
 import { LockIcon } from '../icons/LockIcon.tsx';
 

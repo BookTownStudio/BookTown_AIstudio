@@ -19,6 +19,7 @@ import { useBookReviews } from '../../lib/hooks/useBookReviews.ts';
 import { useSubmitReview } from '../../lib/hooks/useSubmitReview.ts';
 import StarRatingInput from '../../components/ui/StarRatingInput.tsx';
 import ReviewCard from '../../components/content/ReviewCard.tsx';
+// FIX: Add file extension to mocks.ts import
 import { mockBooks } from '../../data/mocks.ts';
 import { ShareIcon } from '../../components/icons/ShareIcon.tsx';
 

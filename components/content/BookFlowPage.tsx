@@ -1,61 +1,50 @@
 import React from 'react';
 import { useNavigation } from '../../store/navigation.tsx';
-import { useBookCatalog } from '../../lib/hooks/useBookCatalog.ts';
 import BilingualText from '../ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
 import BookFlowActions from './BookFlowActions.tsx';
-import LoadingSpinner from '../ui/LoadingSpinner.tsx';
-import { mockQuoteOfTheDay } from '../../data/mocks.ts'; // For a fallback quote
+import { mockQuoteOfTheDay } from '../../data/mocks.ts';
+import { BookFlowItem } from '../../types/entities.ts';
 
 interface BookFlowPageProps {
-    bookId: string;
+    item: BookFlowItem;
 }
 
-const BookFlowPage: React.FC<BookFlowPageProps> = ({ bookId }) => {
-    const { data: book, isLoading } = useBookCatalog(bookId);
+const BookFlowPage: React.FC<BookFlowPageProps> = ({ item }) => {
     const { navigate, currentView } = useNavigation();
     const { lang } = useI18n();
+
+    const { bookId, bookCoverUrl, quoteTextEn, quoteTextAr, authorEn, authorAr } = item;
 
     const handleNavigateToDetails = () => {
         navigate({ type: 'immersive', id: 'bookDetails', params: { bookId, from: currentView } });
     };
 
-    if (isLoading || !book) {
-        return (
-            <div className="h-screen w-screen flex-shrink-0 flex items-center justify-center bg-slate-800 scroll-snap-align-start">
-                <LoadingSpinner />
-            </div>
-        );
-    }
-
-    // For simplicity, using a mock quote. A real app would fetch a quote for the book.
-    const quote = mockQuoteOfTheDay;
-
     return (
         <div className="relative h-screen w-screen flex-shrink-0 scroll-snap-align-start">
             {/* Background Image */}
-            <img src={book.coverUrl} alt="Book Cover" className="absolute inset-0 w-full h-full object-cover" />
+            <img src={bookCoverUrl} alt="Book Cover" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/50" />
             
             {/* Clickable Area for Navigation */}
             <div
                 className="absolute inset-0 z-0"
                 onClick={handleNavigateToDetails}
-                aria-label={`View details for ${lang === 'en' ? book.titleEn : book.titleAr}`}
+                aria-label={`View details for ${lang === 'en' ? 'the book' : 'الكتاب'}`}
             />
 
             {/* Content Overlay */}
             <div className="relative z-10 flex flex-col h-full justify-center items-center p-8 text-center text-white">
                 <BilingualText role="Quote" className="!text-3xl !text-white !border-white/50 drop-shadow-lg">
-                    {lang === 'en' ? quote.textEn : quote.textAr}
+                    {lang === 'en' ? quoteTextEn : quoteTextAr}
                 </BilingualText>
                 <BilingualText role="Caption" className="mt-4 text-white/80 drop-shadow-md">
-                    — {lang === 'en' ? book.authorEn : book.authorAr}
+                    — {lang === 'en' ? authorEn : authorAr}
                 </BilingualText>
             </div>
             
             {/* Actions */}
-            <BookFlowActions bookId={bookId} quoteId={quote.id} />
+            <BookFlowActions bookId={bookId} quoteId={mockQuoteOfTheDay.id} />
         </div>
     );
 };

@@ -1,6 +1,8 @@
 
+
 import { useQuery, useMutation, useQueryClient } from '../react-query.ts';
 import { db, auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { ChatMessage } from '../../types/entities.ts';
 import { callAgent } from '../agents-service.ts';
 

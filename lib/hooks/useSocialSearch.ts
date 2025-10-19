@@ -1,5 +1,7 @@
 import { useQuery } from '../react-query.ts';
+// FIX: Add file extension to entities.ts import
 import { Post, User } from '../../types/entities.ts';
+// FIX: Add file extension to mocks.ts import
 import { mockPosts, mockUsers } from '../../data/mocks.ts';
 
 type SearchResult = {

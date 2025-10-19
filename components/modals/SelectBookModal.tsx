@@ -5,6 +5,7 @@ import InputField from '../ui/InputField.tsx';
 import { useI18n } from '../../store/i18n.tsx';
 import { useLiveBookSearch } from '../../lib/hooks/useLiveBookSearch.ts';
 import LoadingSpinner from '../ui/LoadingSpinner.tsx';
+// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
 
 interface SelectBookModalProps {

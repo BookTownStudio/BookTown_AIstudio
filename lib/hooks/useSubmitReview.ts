@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '../react-query.ts';
 import { db, auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Review } from '../../types/entities.ts';
 
 type ReviewVariables = {

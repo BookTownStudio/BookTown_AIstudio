@@ -1,7 +1,9 @@
 
+
 import { useQuery } from '../react-query.ts';
 // FIX: Added file extension to firebase import.
 import { db } from '../firebase.ts'; // Using mock firestore
+// FIX: Add file extension to entities.ts import
 import { User } from '../../types/entities.ts';
 
 const getUserProfile = async (uid: string | undefined): Promise<User> => {

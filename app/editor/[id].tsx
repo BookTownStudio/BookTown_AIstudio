@@ -1,210 +1,122 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigation } from '../../store/navigation.tsx';
-import { useI18n } from '../../store/i18n.tsx';
-import Button from '../../components/ui/Button.tsx';
-import BilingualText from '../../components/ui/BilingualText.tsx';
-import { ChevronLeftIcon } from '../../components/icons/ChevronLeftIcon.tsx';
-import { useProjectDetails } from '../../lib/hooks/useProjectDetails.ts';
-import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
-import { useAutosaveProject } from '../../lib/hooks/useAutosaveProject.ts';
-import FormattingPane, { Alignment, Format, Style } from '../../components/editor/FormattingPane.tsx';
-import { MentorIcon } from '../../components/icons/MentorIcon.tsx';
-import Fab from '../../components/ui/Fab.tsx';
+import React, { useEffect, useReducer } from 'react';
+import { useNavigation } from '../../store/navigation';
+import { useI18n } from '../../store/i18n';
+import Button from '../../components/ui/Button';
+import BilingualText from '../../components/ui/BilingualText';
+import { ChevronLeftIcon } from '../../components/icons/ChevronLeftIcon';
+import { useProjectDetails } from '../../lib/hooks/useProjectDetails';
+import LoadingSpinner from '../../components/ui/LoadingSpinner';
+import { BrainIcon } from '../../components/icons/BrainIcon';
+import FormattingPane, { Format, Alignment, Style } from '../../components/editor/FormattingPane';
+import { useAutosaveProject } from '../../lib/hooks/useAutosaveProject';
+import { useDebounce } from 'use-debounce';
 
-// Debounce helper
-const useDebounce = (callback: (...args: any[]) => void, delay: number) => {
-    const timeoutRef = useRef<number | null>(null);
-    return (...args: any[]) => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-        timeoutRef.current = window.setTimeout(() => {
-            callback(...args);
-        }, delay);
-    };
+// Simple undo/redo reducer
+type EditorState = { content: string; wordCount: number };
+type HistoryState = { past: EditorState[], present: EditorState, future: EditorState[] };
+type HistoryAction = { type: 'UNDO' } | { type: 'REDO' } | { type: 'SET', payload: EditorState };
+
+const historyReducer = (state: HistoryState, action: HistoryAction): HistoryState => {
+    const { past, present, future } = state;
+    switch (action.type) {
+        case 'UNDO':
+            if (past.length === 0) return state;
+            const previous = past[past.length - 1];
+            const newPast = past.slice(0, past.length - 1);
+            return { past: newPast, present: previous, future: [present, ...future] };
+        case 'REDO':
+            if (future.length === 0) return state;
+            const next = future[0];
+            const newFuture = future.slice(1);
+            return { past: [...past, present], present: next, future: newFuture };
+        case 'SET':
+            if (action.payload.content === present.content) return state;
+            return { past: [...past, present], present: action.payload, future: [] };
+        default:
+            return state;
+    }
 };
 
-const isRtl = (text: string) => {
-    const rtlChars = '\u0591-\u07FF\uFB1D-\uFDFD\uFE70-\uFEFC';
-    const rtlRegex = new RegExp(`^[^a-zA-Z]*[${rtlChars}]`);
-    return rtlRegex.test(text);
-};
+const countWords = (text: string) => text.trim().split(/\s+/).filter(Boolean).length;
 
 const EditorScreen: React.FC = () => {
     const { currentView, navigate } = useNavigation();
     const { lang } = useI18n();
     const projectId = currentView.type === 'immersive' ? currentView.params?.projectId : undefined;
-    
-    const { data: project, isLoading: isLoadingProject } = useProjectDetails(projectId);
+    const templateId = currentView.type === 'immersive' ? currentView.params?.templateId : undefined;
+    const { data: project, isLoading, isError } = useProjectDetails(projectId, templateId);
     const { mutate: autosave } = useAutosaveProject();
 
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [wordCount, setWordCount] = useState(0);
-    const [isTitlePristine, setIsTitlePristine] = useState(true);
-    const [textDirection, setTextDirection] = useState<'ltr' | 'rtl'>('ltr');
-    
-    const editorRef = useRef<HTMLDivElement>(null);
-    const lastSavedContent = useRef('');
-    
-    // --- History State ---
-    const [history, setHistory] = useState<string[]>(['']);
-    const [historyIndex, setHistoryIndex] = useState(0);
+    const initialState: HistoryState = {
+        past: [],
+        present: { content: '', wordCount: 0 },
+        future: []
+    };
+    const [state, dispatch] = useReducer(historyReducer, initialState);
+    const { present } = state;
 
-    // --- Effects ---
+    const [debouncedContent] = useDebounce(present.content, 1500);
+
     useEffect(() => {
-        if (project) {
-            const initialContent = project.content || '';
-            setTitle(project.titleEn);
-            setContent(initialContent);
-            lastSavedContent.current = initialContent;
-            setHistory([initialContent]);
-            setHistoryIndex(0);
-            if (project.titleEn !== 'Untitled Draft') {
-                setIsTitlePristine(false);
-            }
+        if (project && project.content !== present.content) {
+            dispatch({ type: 'SET', payload: { content: project.content, wordCount: project.wordCount } });
         }
     }, [project]);
 
     useEffect(() => {
-        const text = editorRef.current?.innerText || '';
-        setWordCount(text.trim().split(/\s+/).filter(Boolean).length);
-        setTextDirection(isRtl(text) ? 'rtl' : 'ltr');
-    }, [content]);
-
-    const debouncedSave = useDebounce(() => {
-        if (project && content !== lastSavedContent.current) {
-            // FIX: Changed 'title' to 'titleEn' to match the expected type for the autosave mutation.
-            autosave({ projectId: project.id, updates: { content, titleEn: title, wordCount } });
-            lastSavedContent.current = content;
+        // Only autosave for existing projects, not for new ones.
+        if (projectId && projectId !== 'new' && project && debouncedContent !== project.content) {
+            autosave({ projectId, updates: { content: debouncedContent, wordCount: present.wordCount } });
         }
-    }, 5000);
+    }, [debouncedContent, projectId, project, autosave, present.wordCount]);
 
-    useEffect(debouncedSave, [content, title, wordCount, project, autosave]);
-
-    // --- Handlers ---
     const handleBack = () => {
-        if (project && content !== lastSavedContent.current) {
-            // FIX: Changed 'title' to 'titleEn' to match the expected type for the autosave mutation.
-            autosave({ projectId: project.id, updates: { content, titleEn: title, wordCount } });
-        }
         navigate(currentView.params?.from || { type: 'tab', id: 'write' });
     };
 
-    const handleTitleFocus = () => {
-        if (isTitlePristine) {
-            setTitle('');
-            setIsTitlePristine(false);
-        }
-    };
-    
-    const handleContentInput = () => {
-        const newContent = editorRef.current?.innerHTML || '';
-        setContent(newContent);
-
-        const newHistory = history.slice(0, historyIndex + 1);
-        newHistory.push(newContent);
-        setHistory(newHistory);
-        setHistoryIndex(newHistory.length - 1);
+    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newContent = e.target.value;
+        const newWordCount = countWords(newContent);
+        dispatch({ type: 'SET', payload: { content: newContent, wordCount: newWordCount } });
     };
 
-    const applyFormat = (format: Format | Alignment | Style) => {
-        const commands = {
-            bold: 'bold',
-            italic: 'italic',
-            left: 'justifyLeft',
-            center: 'justifyCenter',
-            right: 'justifyRight',
-            body: 'p',
-            title: 'h2',
-            chapter: 'h1',
-        };
-        const command = commands[format];
-
-        if (['body', 'title', 'chapter'].includes(format)) {
-            document.execCommand('formatBlock', false, command);
-        } else {
-            document.execCommand(command, false);
-        }
-        // Refocus the editor after applying format
-        editorRef.current?.focus();
-        handleContentInput(); // Update state after formatting
-    };
-    
-    const handleUndo = () => {
-        if (historyIndex > 0) {
-            const newIndex = historyIndex - 1;
-            setHistoryIndex(newIndex);
-            setContent(history[newIndex]);
-            if (editorRef.current) editorRef.current.innerHTML = history[newIndex];
-        }
+    const handleFormat = (format: Format | Alignment | Style) => {
+        console.log(`[Mock Format]: Applied ${format}`);
     };
 
-    const handleRedo = () => {
-        if (historyIndex < history.length - 1) {
-            const newIndex = historyIndex + 1;
-            setHistoryIndex(newIndex);
-            setContent(history[newIndex]);
-            if (editorRef.current) editorRef.current.innerHTML = history[newIndex];
-        }
-    };
-    
-    if (isLoadingProject) {
-        return <div className="h-screen w-full flex items-center justify-center bg-slate-900"><LoadingSpinner /></div>;
-    }
+    if (isLoading) return <div className="h-screen w-full flex items-center justify-center bg-white dark:bg-slate-900"><LoadingSpinner /></div>;
+    if (isError || !project) return <div className="h-screen w-full flex items-center justify-center">Error loading project.</div>;
 
     return (
-        <div className="h-screen w-full flex flex-col bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-white/90">
-            <header className="fixed top-0 left-0 right-0 z-20 bg-slate-100 dark:bg-slate-800 border-b border-black/10 dark:border-white/10">
-                <div className="container mx-auto flex h-16 items-center justify-between px-4">
-                    <Button variant="ghost" onClick={handleBack} aria-label={lang === 'en' ? 'Back' : 'رجوع'}>
-                        <ChevronLeftIcon className="h-6 w-6" />
-                    </Button>
+        <div className="h-screen w-full flex flex-col bg-white dark:bg-slate-900">
+            <header className="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-black/10 dark:border-white/10">
+                <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+                    <Button variant="ghost" onClick={handleBack}><ChevronLeftIcon className="h-6 w-6" /></Button>
+                    <div className="text-center">
+                        <BilingualText className="font-semibold">{lang === 'en' ? project.titleEn : project.titleAr}</BilingualText>
+                        <BilingualText role="Caption">{present.wordCount} {lang === 'en' ? 'words' : 'كلمة'}</BilingualText>
+                    </div>
+                    <Button variant="ghost"><BrainIcon className="h-6 w-6" /></Button>
                 </div>
             </header>
-
-            <main className="flex-grow pt-16 overflow-y-auto">
-                <div className="container mx-auto px-4 md:px-8 max-w-3xl">
-                    <div className="pt-8">
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            onFocus={handleTitleFocus}
-                            placeholder={lang === 'en' ? "Your Title Here" : "عنوانك هنا"}
-                            className="w-full bg-transparent text-3xl md:text-4xl font-bold focus:outline-none text-slate-900 dark:text-white"
-                        />
-                        <BilingualText role="Caption" className="mt-1">{wordCount} {lang === 'en' ? 'words' : 'كلمة'}</BilingualText>
-                    </div>
-
-                    <div className="mt-4 -mx-4 md:-mx-8 border-t border-black/10 dark:border-white/10" />
-
-                    <FormattingPane 
-                        onFormat={applyFormat}
-                        onUndo={handleUndo}
-                        onRedo={handleRedo}
-                        canUndo={historyIndex > 0}
-                        canRedo={historyIndex < history.length - 1}
-                    />
-                    
-                    <div
-                        ref={editorRef}
-                        contentEditable
-                        onInput={handleContentInput}
-                        dir={textDirection}
-                        className="w-full min-h-[60vh] bg-transparent text-lg leading-relaxed focus:outline-none py-6 prose dark:prose-invert prose-lg max-w-none"
-                        dangerouslySetInnerHTML={{ __html: content }}
+            
+            <div className="flex-grow flex flex-col">
+                <FormattingPane 
+                    onFormat={handleFormat}
+                    onUndo={() => dispatch({ type: 'UNDO' })}
+                    onRedo={() => dispatch({ type: 'REDO' })}
+                    canUndo={state.past.length > 0}
+                    canRedo={state.future.length > 0}
+                />
+                <div className="flex-grow container mx-auto px-4 md:px-8 py-4">
+                    <textarea
+                        value={present.content}
+                        onChange={handleContentChange}
+                        className="w-full h-full resize-none bg-transparent text-lg text-slate-800 dark:text-white/90 focus:outline-none"
+                        placeholder="Start writing..."
                     />
                 </div>
-            </main>
-            
-             <Fab 
-                onClick={() => console.log('Open Mentor AI')} 
-                aria-label={lang === 'en' ? 'Open Mentor AI' : 'فتح مساعد الكتابة'} 
-                className="!bg-purple-600/80 hover:!bg-purple-600 !ring-purple-500"
-            >
-                <MentorIcon className="h-7 w-7" />
-            </Fab>
+            </div>
         </div>
     );
 };

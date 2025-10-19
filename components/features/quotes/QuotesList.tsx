@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 // FIX: Added file extensions to imports.
 import { Quote } from '../../../types/entities.ts';

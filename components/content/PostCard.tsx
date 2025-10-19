@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // FIX: Add file extensions to imports
-import { Post } from '../../types/entities.ts';
+import { Post, PostAttachment } from '../../types/entities.ts';
 import { useI18n } from '../../store/i18n.tsx';
 import GlassCard from '../ui/GlassCard.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
@@ -19,6 +19,11 @@ import { ThumbsDownIcon } from '../icons/ThumbsDownIcon.tsx';
 import { useNavigation } from '../../store/navigation.tsx';
 // FIX: Import QuoteIcon to resolve 'Cannot find name' error.
 import { QuoteIcon } from '../icons/QuoteIcon.tsx';
+import { useQuoteDetails } from '../../lib/hooks/useQuoteDetails.ts';
+import { useUserProfile } from '../../lib/hooks/useUserProfile.ts';
+import { useShelfEntries, useUserShelves } from '../../lib/hooks/useUserShelves.ts';
+import { VenuesIcon } from '../icons/VenuesIcon.tsx';
+
 
 interface PostCardProps {
     post: Post;
@@ -42,10 +47,121 @@ const ReactionMenu: React.FC<{ onSelect: (reaction: string) => void }> = ({ onSe
     );
 };
 
+// --- Attachment Components ---
+
+const QuoteAttachment: React.FC<{ quoteId: string, ownerId: string }> = ({ quoteId, ownerId }) => {
+    const { lang } = useI18n();
+    const { data: quote, isLoading } = useQuoteDetails(quoteId, ownerId);
+    
+    if (isLoading || !quote) return <div className="h-24 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded-lg mt-3" />;
+
+    return (
+        <div className="mt-3 border border-black/10 dark:border-white/10 rounded-lg p-3">
+            <BilingualText role="Quote" className="!text-sm italic">
+                "{lang === 'en' ? quote.textEn : quote.textAr}"
+            </BilingualText>
+            <BilingualText role="Caption" className="mt-2 text-right">
+                — {lang === 'en' ? quote.sourceEn : quote.sourceAr}
+            </BilingualText>
+        </div>
+    );
+};
+
+const MediaAttachment: React.FC<{ url: string }> = ({ url }) => {
+    return (
+        <div className="mt-3 border border-black/10 dark:border-white/10 rounded-lg overflow-hidden">
+            <img src={url} alt="Post attachment" className="w-full h-auto max-h-96 object-cover" />
+        </div>
+    );
+};
+
+const AuthorAttachment: React.FC<{ authorId: string }> = ({ authorId }) => {
+    const { data: author, isLoading } = useUserProfile(authorId);
+    
+    if (isLoading || !author) return <div className="h-10 w-48 bg-black/5 dark:bg-white/5 animate-pulse rounded-full mt-3" />;
+
+    return (
+        <div className="mt-3">
+             <div className="inline-flex items-center gap-2 p-2 pr-4 border border-black/10 dark:border-white/10 rounded-full">
+                <img src={author.avatarUrl} alt={author.name} className="h-8 w-8 rounded-full" />
+                <div>
+                    <BilingualText className="font-semibold text-sm leading-tight">{author.name}</BilingualText>
+                    <BilingualText role="Caption" className="!text-xs leading-tight">{author.handle}</BilingualText>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ShelfAttachment: React.FC<{ shelfId: string, ownerId: string }> = ({ shelfId, ownerId }) => {
+    const { lang } = useI18n();
+    const { data: shelves } = useUserShelves(ownerId);
+    const shelf = shelves?.find(s => s.id === shelfId);
+    const { data: entries } = useShelfEntries(shelf?.id, ownerId);
+    const bookIds = entries?.slice(0, 3).map(e => e.bookId) || [];
+    const { data: book1 } = useBookCatalog(bookIds[0]);
+    const { data: book2 } = useBookCatalog(bookIds[1]);
+    const { data: book3 } = useBookCatalog(bookIds[2]);
+    const bookCovers = [book1, book2, book3].filter(b => b && b.coverUrl).map(b => b!.coverUrl);
+
+    if (!shelf) return <div className="h-24 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded-lg mt-3" />;
+
+    return (
+        <div className="mt-3 border border-black/10 dark:border-white/10 rounded-lg p-3">
+            <BilingualText role="Caption" className="!text-xs mb-2">{lang === 'en' ? 'From the shelf:' : 'من رف:'}</BilingualText>
+            <div className="flex items-center gap-3">
+                {bookCovers.length > 0 && (
+                    <div className="flex -space-x-4">
+                        {bookCovers.map((url, i) => (
+                             <img key={i} src={url} alt="cover" className="h-12 w-8 rounded object-cover border-2 border-slate-200 dark:border-slate-900"/>
+                        ))}
+                    </div>
+                )}
+                <BilingualText className="font-semibold">{lang === 'en' ? shelf.titleEn : shelf.titleAr}</BilingualText>
+            </div>
+        </div>
+    );
+};
+
+const VenueAttachment: React.FC<{ name: string, location: string }> = ({ name, location }) => {
+    return (
+        <div className="mt-3">
+            <div className="inline-flex items-center gap-2 p-2 pr-3 border border-black/10 dark:border-white/10 rounded-full">
+                <VenuesIcon className="h-6 w-6 text-slate-500 dark:text-white/60" />
+                 <div>
+                    <BilingualText className="font-semibold text-sm leading-tight">{name}</BilingualText>
+                    <BilingualText role="Caption" className="!text-xs leading-tight">{location}</BilingualText>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const AttachmentRenderer: React.FC<{ attachment: PostAttachment }> = ({ attachment }) => {
+    switch (attachment.type) {
+        case 'quote':
+            return <QuoteAttachment quoteId={attachment.quoteId} ownerId={attachment.quoteOwnerId} />;
+        case 'media':
+            return <MediaAttachment url={attachment.url} />;
+        case 'author':
+            return <AuthorAttachment authorId={attachment.authorId} />;
+        case 'shelf':
+            return <ShelfAttachment shelfId={attachment.shelfId} ownerId={attachment.ownerId} />;
+        case 'venue':
+            return <VenueAttachment name={attachment.name} location={attachment.location} />;
+        default:
+            return null;
+    }
+};
+
+
 const PostCard: React.FC<PostCardProps> = ({ post }) => {
     const { lang, isRTL } = useI18n();
     const { navigate, currentView } = useNavigation();
-    const { data: book } = useBookCatalog(post.bookTagId);
+    
+    const bookId = post.attachment?.type === 'book' ? post.attachment.bookId : post.bookTagId;
+    const { data: book } = useBookCatalog(bookId);
+
     const [showReactionMenu, setShowReactionMenu] = useState(false);
     const [showRepostMenu, setShowRepostMenu] = useState(false);
 
@@ -100,6 +216,8 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                              </div>
                          </div>
                     )}
+
+                    {post.attachment && post.attachment.type !== 'book' && <AttachmentRenderer attachment={post.attachment} />}
 
                     <div className={`mt-3 flex items-center justify-between text-slate-500 dark:text-white/60 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
                         <Button variant="ghost" className="!text-inherit hover:!text-sky-400 !px-2">

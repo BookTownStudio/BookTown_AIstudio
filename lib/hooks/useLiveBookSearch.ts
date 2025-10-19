@@ -1,6 +1,9 @@
 
+
 import { useQuery } from '../react-query.ts';
+// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
+// FIX: Add file extension to mocks.ts import
 import { mockBooks } from '../../data/mocks.ts';
 
 const searchBooks = async (query: string, showOnlyEbooks: boolean): Promise<Book[]> => {
@@ -12,7 +15,8 @@ const searchBooks = async (query: string, showOnlyEbooks: boolean): Promise<Book
     }
 
     const lowerCaseQuery = query.toLowerCase();
-    const allBooks = Object.values(mockBooks);
+    // FIX: Cast the result of Object.values to Book[] to resolve type errors
+    const allBooks = Object.values(mockBooks) as Book[];
 
     let results = allBooks.filter(book => 
         book.titleEn.toLowerCase().includes(lowerCaseQuery) ||

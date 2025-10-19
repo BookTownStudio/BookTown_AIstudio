@@ -1,7 +1,10 @@
 
+
 import { useQuery } from '../react-query.ts';
 import { db, auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { QuickRecommendations } from '../../types/entities.ts';
+// FIX: Add file extension to mocks.ts import
 import { mockTrendingBookIds } from '../../data/mocks.ts';
 
 const getQuickRecs = async (uid: string): Promise<string[]> => {

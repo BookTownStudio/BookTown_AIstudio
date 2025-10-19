@@ -1,6 +1,8 @@
 
+
 import { useQuery } from '../react-query.ts';
 import { db, auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Project } from '../../types/entities.ts';
 
 const getProjects = async (uid: string): Promise<Project[]> => {

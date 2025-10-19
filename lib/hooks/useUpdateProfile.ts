@@ -1,6 +1,8 @@
 
+
 import { useMutation, useQueryClient } from '../react-query.ts';
 import { auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { User } from '../../types/entities.ts';
 
 // The variables for the mutation will be a partial User object

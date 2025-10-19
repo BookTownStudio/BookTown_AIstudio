@@ -1,7 +1,7 @@
-
 import { useQuery } from '../react-query.ts';
 // FIX: Added file extensions to imports.
 import { db, auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Shelf, ShelfEntry } from '../../types/entities.ts';
 
 const getShelves = async (uid: string): Promise<Shelf[]> => {
@@ -10,12 +10,13 @@ const getShelves = async (uid: string): Promise<Shelf[]> => {
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Shelf[];
 };
 
-export const useUserShelves = () => {
-    const { uid } = auth.currentUser || {};
+export const useUserShelves = (ownerId?: string) => {
+    const { uid: loggedInUid } = auth.currentUser || {};
+    const finalUid = ownerId || loggedInUid;
     return useQuery<Shelf[]>({
-        queryKey: ['userShelves', uid],
-        queryFn: () => getShelves(uid!),
-        enabled: !!uid,
+        queryKey: ['userShelves', finalUid],
+        queryFn: () => getShelves(finalUid!),
+        enabled: !!finalUid,
     });
 };
 
@@ -25,11 +26,12 @@ const getEntries = async (uid: string, shelfId: string): Promise<ShelfEntry[]> =
     return snapshot.docs.map(doc => doc.data()) as ShelfEntry[];
 };
 
-export const useShelfEntries = (shelfId: string | undefined) => {
-    const { uid } = auth.currentUser || {};
+export const useShelfEntries = (shelfId: string | undefined, ownerId?: string) => {
+    const { uid: loggedInUid } = auth.currentUser || {};
+    const finalUid = ownerId || loggedInUid;
     return useQuery<ShelfEntry[]>({
-        queryKey: ['shelfEntries', uid, shelfId],
-        queryFn: () => getEntries(uid!, shelfId!),
-        enabled: !!uid && !!shelfId,
+        queryKey: ['shelfEntries', finalUid, shelfId],
+        queryFn: () => getEntries(finalUid!, shelfId!),
+        enabled: !!finalUid && !!shelfId,
     });
 };

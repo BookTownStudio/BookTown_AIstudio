@@ -1,7 +1,9 @@
 
+
 import { useQuery } from '../react-query.ts';
 // FIX: Added file extensions to imports.
 import { db } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
 
 const getBook = async (bookId: string | undefined): Promise<Book> => {

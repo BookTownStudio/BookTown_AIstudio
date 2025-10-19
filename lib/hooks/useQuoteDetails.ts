@@ -1,6 +1,6 @@
-
 import { useQuery } from '../react-query.ts';
 import { db, auth } from '../firebase.ts';
+// FIX: Add file extension to entities.ts import
 import { Quote } from '../../types/entities.ts';
 
 const getQuote = async (uid: string, quoteId: string): Promise<Quote> => {
@@ -13,11 +13,12 @@ const getQuote = async (uid: string, quoteId: string): Promise<Quote> => {
     throw new Error('Quote not found');
 };
 
-export const useQuoteDetails = (quoteId: string) => {
-    const { uid } = auth.currentUser || {};
+export const useQuoteDetails = (quoteId: string, ownerId?: string) => {
+    const { uid: loggedInUid } = auth.currentUser || {};
+    const finalUid = ownerId || loggedInUid;
     return useQuery<Quote>({
-        queryKey: ['quoteDetails', uid, quoteId],
-        queryFn: () => getQuote(uid!, quoteId),
-        enabled: !!uid && !!quoteId,
+        queryKey: ['quoteDetails', finalUid, quoteId],
+        queryFn: () => getQuote(finalUid!, quoteId),
+        enabled: !!finalUid && !!quoteId,
     });
 };

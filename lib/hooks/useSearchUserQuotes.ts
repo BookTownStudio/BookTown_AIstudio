@@ -1,4 +1,5 @@
 import { useQuery } from '../react-query.ts';
+// FIX: Add file extension to entities.ts import
 import { Quote } from '../../types/entities.ts';
 import { useQuotes } from './useQuotes.ts';
 

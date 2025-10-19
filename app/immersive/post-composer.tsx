@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '../../store/navigation.tsx';
 import { useI18n } from '../../store/i18n.tsx';
@@ -14,6 +15,7 @@ import { AuthorsIcon } from '../../components/icons/AuthorsIcon.tsx';
 import { VenuesIcon } from '../../components/icons/VenuesIcon.tsx';
 import SelectBookModal from '../../components/modals/SelectBookModal.tsx';
 import { useBookCatalog } from '../../lib/hooks/useBookCatalog.ts';
+// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
 import { DraftIcon } from '../../components/icons/DraftIcon.tsx';
 
