@@ -15,6 +15,8 @@ import { WriteIcon } from '../../components/icons/WriteIcon.tsx';
 import { ShelvesIcon } from '../../components/icons/ShelvesIcon.tsx';
 import { useUpdateProfile } from '../../lib/hooks/useUpdateProfile.ts';
 import EditProfileModal, { ProfileEditData } from '../../components/modals/EditProfileModal.tsx';
+import { useFollowUser } from '../../lib/hooks/useFollowUser.ts';
+import { PlusIcon } from '../../components/icons/PlusIcon.tsx';
 
 type ProfileTab = 'posts' | 'reviews' | 'shelves' | 'books';
 
@@ -36,20 +38,33 @@ const ScreenHeader: React.FC<{ title: string; onBack: () => void; }> = ({ title,
 
 const ProfileScreen: React.FC = () => {
     const { lang } = useI18n();
-    const { user } = useAuth();
-    const { navigate } = useNavigation();
-    const { data: profile, isLoading } = useUserProfile(user?.uid);
-    const { mutate: updateProfile, isLoading: isUpdating } = useUpdateProfile();
-    const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
+    const { user: authUser } = useAuth();
+    const { currentView, navigate } = useNavigation();
 
+    const profileUserId = currentView.type === 'immersive' ? currentView.params?.userId : authUser?.uid;
+    const isOwnProfile = profileUserId === authUser?.uid;
+
+    const { data: profile, isLoading } = useUserProfile(profileUserId);
+    const { mutate: updateProfile, isLoading: isUpdating } = useUpdateProfile();
+    const { mutate: followUser, isLoading: isFollowing } = useFollowUser();
+    
+    const [activeTab, setActiveTab] = useState<ProfileTab>('posts');
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [editData, setEditData] = useState<ProfileEditData>({
         name: '',
         bioEn: '',
         avatarUrl: '',
     });
+    const [isFollowed, setIsFollowed] = useState(false);
 
-    const handleBack = () => navigate({ type: 'tab', id: 'home' });
+
+    const handleBack = () => {
+        if (currentView.params?.from) {
+            navigate(currentView.params.from);
+        } else {
+            navigate({ type: 'tab', id: 'home' });
+        }
+    };
 
     const handleEditProfile = () => {
         if (profile) {
@@ -61,6 +76,14 @@ const ProfileScreen: React.FC = () => {
             setEditModalOpen(true);
         }
     };
+    
+    const handleFollow = () => {
+        if (profileUserId && !isFollowed) {
+            followUser(profileUserId, {
+                onSuccess: () => setIsFollowed(true)
+            })
+        }
+    }
 
     const handleSaveProfile = () => {
         updateProfile(editData, {
@@ -102,14 +125,25 @@ const ProfileScreen: React.FC = () => {
                     <img src={profile.bannerUrl} alt="Profile banner" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-slate-900 to-transparent"></div>
                     <div className="absolute top-4 right-4">
-                         <Button 
-                            onClick={handleEditProfile} 
-                            className="!px-3 !py-2 bg-black/40 backdrop-blur-sm border border-white/20 hover:bg-white/20 !text-white"
-                            disabled={isUpdating}
-                        >
-                            <EditIcon className="h-4 w-4 mr-2"/> 
-                            {isUpdating ? (lang === 'en' ? 'Saving...' : 'جار الحفظ...') : (lang === 'en' ? 'Edit Profile' : 'تعديل الملف')}
-                        </Button>
+                        {isOwnProfile ? (
+                            <Button 
+                                onClick={handleEditProfile} 
+                                className="!px-3 !py-2 bg-black/40 backdrop-blur-sm border border-white/20 hover:bg-white/20 !text-white"
+                                disabled={isUpdating}
+                            >
+                                <EditIcon className="h-4 w-4 mr-2"/> 
+                                {isUpdating ? (lang === 'en' ? 'Saving...' : 'جار الحفظ...') : (lang === 'en' ? 'Edit Profile' : 'تعديل الملف')}
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={handleFollow}
+                                disabled={isFollowing || isFollowed}
+                                className={`!px-3 !py-2 !text-white ${isFollowed ? 'bg-accent/80' : 'bg-primary/80'} backdrop-blur-sm border border-white/20 hover:bg-opacity-100`}
+                            >
+                                <PlusIcon className="h-4 w-4 mr-2" />
+                                {isFollowing ? '...' : (isFollowed ? (lang === 'en' ? 'Following' : 'تتابعه') : (lang === 'en' ? 'Follow' : 'متابعة'))}
+                            </Button>
+                        )}
                     </div>
                     <div className="absolute -bottom-12 left-4">
                         <div className="h-28 w-28 rounded-full bg-slate-200 dark:bg-slate-800 border-4 border-gray-50 dark:border-slate-900 overflow-hidden">
@@ -132,9 +166,9 @@ const ProfileScreen: React.FC = () => {
                 <div className="container mx-auto px-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600 dark:text-white/80">
                     <BilingualText><span className="font-bold text-slate-800 dark:text-white">{profile.followers}</span> {lang === 'en' ? 'Followers' : 'متابعون'}</BilingualText>
                     <BilingualText><span className="font-bold text-slate-800 dark:text-white">{profile.following}</span> {lang === 'en' ? 'Following' : 'يتابع'}</BilingualText>
-                    <div className="flex items-center gap-1.5"><ReadIcon className="h-4 w-4"/><BilingualText><span className="font-bold text-slate-800 dark:text-white">0</span> {lang === 'en' ? 'Books' : 'كتب'}</BilingualText></div>
-                    <div className="flex items-center gap-1.5"><WriteIcon className="h-4 w-4"/><BilingualText><span className="font-bold text-slate-800 dark:text-white">0</span> {lang === 'en' ? 'Words' : 'كلمات'}</BilingualText></div>
-                    <div className="flex items-center gap-1.5"><ShelvesIcon className="h-4 w-4"/><BilingualText><span className="font-bold text-slate-800 dark:text-white">20</span> {lang === 'en' ? 'Shelves' : 'رفوف'}</BilingualText></div>
+                    <div className="flex items-center gap-1.5"><ReadIcon className="h-4 w-4"/><BilingualText><span className="font-bold text-slate-800 dark:text-white">{profile.booksRead}</span> {lang === 'en' ? 'Books' : 'كتب'}</BilingualText></div>
+                    <div className="flex items-center gap-1.5"><WriteIcon className="h-4 w-4"/><BilingualText><span className="font-bold text-slate-800 dark:text-white">{profile.wordsWritten}</span> {lang === 'en' ? 'Words' : 'كلمات'}</BilingualText></div>
+                    <div className="flex items-center gap-1.5"><ShelvesIcon className="h-4 w-4"/><BilingualText><span className="font-bold text-slate-800 dark:text-white">{profile.shelvesCount}</span> {lang === 'en' ? 'Shelves' : 'رفوف'}</BilingualText></div>
                 </div>
 
                 {/* Tabs */}
@@ -162,14 +196,16 @@ const ProfileScreen: React.FC = () => {
                     )}
                 </div>
             </div>
-            <EditProfileModal
-                isOpen={isEditModalOpen}
-                onClose={() => setEditModalOpen(false)}
-                profileData={editData}
-                setProfileData={setEditData}
-                onSave={handleSaveProfile}
-                isSaving={isUpdating}
-            />
+            {isOwnProfile && (
+                <EditProfileModal
+                    isOpen={isEditModalOpen}
+                    onClose={() => setEditModalOpen(false)}
+                    profileData={editData}
+                    setProfileData={setEditData}
+                    onSave={handleSaveProfile}
+                    isSaving={isUpdating}
+                />
+            )}
         </>
     );
 };

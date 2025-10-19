@@ -12,6 +12,11 @@ export interface User {
     following: number;
     role: 'user' | 'admin' | 'superuser';
     lastActive: string; // ISO string
+    booksRead: number;
+    quotesSaved: number;
+    shelvesCount: number;
+    wordsWritten: number;
+    sharedInterest?: string; // e.g., "Shares your love for Sci-Fi"
 }
 
 export interface Book {
@@ -94,6 +99,7 @@ export interface Post {
     stats: {
         likes: number;
         comments: number;
+
         reposts: number;
     };
     bookTagId?: string; // Optional book tag
