@@ -1,16 +1,19 @@
-
-
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import AppNav from '../../components/navigation/AppNav';
-import Fab from '../../components/ui/Fab';
-import { PlusIcon } from '../../components/icons/PlusIcon';
-import { useI18n } from '../../store/i18n';
-import { useSocialFeeds } from '../../lib/hooks/useSocialFeeds';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import BilingualText from '../../components/ui/BilingualText';
-import PostCard from '../../components/content/PostCard';
-import PostComposer from '../../components/modals/PostComposer';
-import { useNavigation } from '../../store/navigation';
+import AppNav from '../../components/navigation/AppNav.tsx';
+import Fab from '../../components/ui/Fab.tsx';
+import { PlusIcon } from '../../components/icons/PlusIcon.tsx';
+import { useI18n } from '../../store/i18n.tsx';
+import { useSocialFeeds } from '../../lib/hooks/useSocialFeeds.ts';
+import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
+import BilingualText from '../../components/ui/BilingualText.tsx';
+import PostCard from '../../components/content/PostCard.tsx';
+import { useNavigation } from '../../store/navigation.tsx';
+import Button from '../../components/ui/Button.tsx';
+import { useSocialSearch } from '../../lib/hooks/useSocialSearch.ts';
+import UserSearchResultCard from '../../components/content/UserSearchResultCard.tsx';
+import TopicSearchResultCard from '../../components/content/TopicSearchResultCard.tsx';
+
+type SearchTab = 'posts' | 'users' | 'topics';
 
 const SocialScreen: React.FC = () => {
     const { lang } = useI18n();
@@ -23,10 +26,15 @@ const SocialScreen: React.FC = () => {
         isFetchingNextPage
     } = useSocialFeeds();
     
-    const [isComposerOpen, setComposerOpen] = useState(false);
-    const { resetTokens } = useNavigation();
+    const { navigate, currentView, resetTokens } = useNavigation();
     const mainContentRef = useRef<HTMLDivElement>(null);
     const isInitialMount = useRef(true);
+
+    const [isSocialSearching, setIsSocialSearching] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeSearchTab, setActiveSearchTab] = useState<SearchTab>('posts');
+
+    const { data: searchResults, isLoading: isSearching } = useSocialSearch(searchQuery);
 
     // Tab Reset Effect
     useEffect(() => {
@@ -34,6 +42,7 @@ const SocialScreen: React.FC = () => {
             isInitialMount.current = false;
         } else {
             if (resetTokens.social > 0) {
+                handleExitSearch();
                 mainContentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
@@ -47,7 +56,7 @@ const SocialScreen: React.FC = () => {
         
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasNextPage) {
-                // FIX: The mock `fetchNextPage` function from `useInfiniteQuery` was called without arguments, but it expects one. Passing an empty object to trigger fetching the next page.
+                // FIX: The `fetchNextPage` function from `useInfiniteQuery` expects an options object. Passing an empty object satisfies the hook's signature.
                 fetchNextPage({});
             }
         });
@@ -55,26 +64,74 @@ const SocialScreen: React.FC = () => {
         if (node) observer.current.observe(node);
     }, [isLoading, isFetchingNextPage, hasNextPage, fetchNextPage]);
 
-
     const posts = data?.pages.flatMap(page => page.posts) ?? [];
+    
+    const handleNewPost = () => {
+        navigate({ type: 'immersive', id: 'postComposer', params: { from: currentView } });
+    };
+    
+    const handleExitSearch = () => {
+        setSearchQuery('');
+        setIsSocialSearching(false);
+    };
 
-    const renderContent = () => {
+    const SEARCH_TABS: { id: SearchTab; en: string; ar: string; }[] = [
+        { id: 'posts', en: 'Posts', ar: 'المنشورات' },
+        { id: 'users', en: 'Users', ar: 'المستخدمون' },
+        { id: 'topics', en: 'Topics', ar: 'المواضيع' },
+    ];
+
+    const renderSearchResults = () => (
+        <div>
+            <div className="flex items-center border-b border-black/10 dark:border-white/10 -mx-4 px-4">
+                {SEARCH_TABS.map(tab => (
+                    <button key={tab.id} onClick={() => setActiveSearchTab(tab.id)} className={`flex-1 py-3 text-center font-semibold border-b-2 transition-colors ${activeSearchTab === tab.id ? 'text-accent border-accent' : 'text-slate-500 dark:text-white/60 border-transparent hover:text-slate-900 dark:hover:text-white'}`}>
+                        {lang === 'en' ? tab.en : tab.ar}
+                    </button>
+                ))}
+            </div>
+            <div className="mt-4 -mx-4">
+                {isSearching && <div className="flex justify-center py-8"><LoadingSpinner /></div>}
+                
+                {!isSearching && activeSearchTab === 'posts' && (
+                    <div className="space-y-4">
+                        {searchResults?.posts.map(post => <PostCard key={post.id} post={post} />)}
+                    </div>
+                )}
+                {!isSearching && activeSearchTab === 'users' && (
+                    <div>
+                        {searchResults?.users.map(user => <UserSearchResultCard key={user.id} user={user} />)}
+                    </div>
+                )}
+                 {!isSearching && activeSearchTab === 'topics' && (
+                    <div>
+                        {searchResults?.topics.map(topic => <TopicSearchResultCard key={topic} topic={topic} />)}
+                    </div>
+                )}
+
+                {!isSearching && searchQuery && (!searchResults || (activeSearchTab === 'posts' && searchResults.posts.length === 0) || (activeSearchTab === 'users' && searchResults.users.length === 0) || (activeSearchTab === 'topics' && searchResults.topics.length === 0)) && (
+                    <BilingualText className="text-center py-16 text-slate-500">No results found.</BilingualText>
+                )}
+            </div>
+        </div>
+    );
+
+    const renderFeedContent = () => {
         if (isLoading) {
-            return <div className="flex-grow flex items-center justify-center"><LoadingSpinner /></div>;
+            return <div className="flex-grow flex items-center justify-center pt-16"><LoadingSpinner /></div>;
         }
 
         if (isError) {
-            return <div className="flex-grow flex items-center justify-center"><BilingualText>Error loading feed.</BilingualText></div>;
+            return <div className="flex-grow flex items-center justify-center pt-16"><BilingualText>Error loading feed.</BilingualText></div>;
         }
         
         if (posts.length === 0) {
-             return <div className="flex-grow flex items-center justify-center"><BilingualText>The feed is empty.</BilingualText></div>;
+             return <div className="flex-grow flex items-center justify-center pt-16"><BilingualText>The feed is empty.</BilingualText></div>;
         }
 
         return (
             <div className="space-y-4">
                 {posts.map((post, index) => {
-                    // Attach the ref to the last element
                     if (posts.length === index + 1) {
                         return <div ref={lastPostElementRef} key={post.id}><PostCard post={post} /></div>;
                     }
@@ -85,30 +142,49 @@ const SocialScreen: React.FC = () => {
     }
 
     return (
-        <>
-            <div className="h-screen flex flex-col">
-                <AppNav titleEn="Social" titleAr="التواصل" />
-                <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-24 pb-28">
-                    <div className="container mx-auto px-4 md:px-8">
-                        {renderContent()}
-                        {isFetchingNextPage && (
-                            <div className="flex justify-center py-4">
-                                <LoadingSpinner />
-                            </div>
-                        )}
-                        {!hasNextPage && !isLoading && (
-                             <div className="text-center py-6">
-                                <BilingualText role="Caption">You've reached the end.</BilingualText>
-                            </div>
-                        )}
+        <div className="h-screen flex flex-col">
+            <AppNav titleEn="Social" titleAr="التواصل" />
+            <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-28">
+                <div className="container mx-auto px-4 md:px-8">
+                    <div className="py-4">
+                         <div className="relative flex items-center gap-2">
+                            <input
+                                type="text"
+                                placeholder={lang === 'en' ? 'Search Posts, Users, or Themes...' : 'ابحث في المنشورات، المستخدمين، أو المواضيع...'}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => setIsSocialSearching(true)}
+                                className="w-full bg-slate-200 dark:bg-slate-800 rounded-lg py-2 pl-4 pr-10 text-slate-900 dark:text-white/90 placeholder:text-slate-500 dark:placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-accent"
+                            />
+                            {isSocialSearching && (
+                                <Button variant="ghost" onClick={handleExitSearch} className="!text-accent">
+                                    {lang === 'en' ? 'Cancel' : 'إلغاء'}
+                                </Button>
+                            )}
+                        </div>
                     </div>
-                </main>
-                <Fab onClick={() => setComposerOpen(true)} aria-label={lang === 'en' ? 'New Post' : 'منشور جديد'}>
-                    <PlusIcon className="h-8 w-8" />
-                </Fab>
-            </div>
-            <PostComposer isOpen={isComposerOpen} onClose={() => setComposerOpen(false)} />
-        </>
+
+                    {isSocialSearching ? renderSearchResults() : (
+                        <>
+                            {renderFeedContent()}
+                            {isFetchingNextPage && (
+                                <div className="flex justify-center py-4">
+                                    <LoadingSpinner />
+                                </div>
+                            )}
+                            {!hasNextPage && !isLoading && (
+                                <div className="text-center py-6">
+                                    <BilingualText role="Caption">You've reached the end.</BilingualText>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </main>
+            <Fab onClick={handleNewPost} aria-label={lang === 'en' ? 'New Post' : 'منشور جديد'}>
+                <PlusIcon className="h-8 w-8" />
+            </Fab>
+        </div>
     );
 };
 

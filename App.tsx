@@ -32,6 +32,7 @@ import AdminDashboardScreen from './app/drawer/admin.tsx';
 import BookFlowFeedScreen from './app/bookflow/feed.tsx';
 import BookFlowButton from './components/navigation/BookFlowButton.tsx';
 import { TabName } from './types/navigation.ts';
+import PostComposerScreen from './app/immersive/post-composer.tsx';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -105,6 +106,7 @@ const AppContent: React.FC = () => {
                     case 'editor': return <EditorScreen />;
                     case 'reader': return <ReaderScreen />;
                     case 'bookflow': return <BookFlowFeedScreen />;
+                    case 'postComposer': return <PostComposerScreen />;
                     default: return <TabScreens />; // Fallback
                 }
             default:

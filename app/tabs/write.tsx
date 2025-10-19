@@ -12,7 +12,7 @@ import { useNavigation } from '../../store/navigation';
 const WriteScreen: React.FC = () => {
     const { lang } = useI18n();
     const { data: projects, isLoading, isError } = useUserProjects();
-    const { resetTokens } = useNavigation();
+    const { navigate, currentView, resetTokens } = useNavigation();
     const mainContentRef = useRef<HTMLDivElement>(null);
     const isInitialMount = useRef(true);
 
@@ -28,8 +28,7 @@ const WriteScreen: React.FC = () => {
     }, [resetTokens.write]);
 
     const handleNewProject = () => {
-        // In a real app, this would open a modal to create a new project.
-        console.log("Create new project clicked");
+        navigate({ type: 'immersive', id: 'editor', params: { projectId: 'new', from: currentView } });
     };
 
     const renderContent = () => {

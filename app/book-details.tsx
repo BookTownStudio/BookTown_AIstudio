@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 // FIX: Added file extensions to imports
 import { useNavigation } from '../../store/navigation.tsx';
@@ -21,6 +20,7 @@ import { useSubmitReview } from '../../lib/hooks/useSubmitReview.ts';
 import StarRatingInput from '../../components/ui/StarRatingInput.tsx';
 import ReviewCard from '../../components/content/ReviewCard.tsx';
 import { mockBooks } from '../../data/mocks.ts';
+import { ShareIcon } from '../../components/icons/ShareIcon.tsx';
 
 const BookDetailsScreen: React.FC = () => {
     const { currentView, navigate } = useNavigation();
@@ -87,6 +87,15 @@ const BookDetailsScreen: React.FC = () => {
         });
     };
 
+    const handleShare = () => {
+        if (!bookId) return;
+        navigate({ 
+            type: 'immersive', 
+            id: 'postComposer', 
+            params: { from: currentView, attachment: { type: 'book', id: bookId } } 
+        });
+    };
+
     const getReviewFormTitle = () => {
         if (isLoadingReviews) {
             return lang === 'en' ? 'Write a Review' : 'اكتب مراجعة';
@@ -126,6 +135,9 @@ const BookDetailsScreen: React.FC = () => {
                     <BilingualText role="H1" className="!text-xl truncate absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[60vw]">
                          {lang === 'en' ? book.titleEn : book.titleAr}
                     </BilingualText>
+                    <Button variant="ghost" onClick={handleShare} aria-label={lang === 'en' ? 'Share' : 'مشاركة'}>
+                        <ShareIcon className="h-6 w-6" />
+                    </Button>
                 </div>
             </header>
 

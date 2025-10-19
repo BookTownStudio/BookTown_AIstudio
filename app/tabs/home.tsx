@@ -20,6 +20,8 @@ import { CameraIcon } from '../../components/icons/CameraIcon.tsx';
 import { MicIcon } from '../../components/icons/MicIcon.tsx';
 import { BookIcon } from '../../components/icons/BookIcon.tsx';
 import { SurpriseIcon } from '../../components/icons/SurpriseIcon.tsx';
+// FIX: Add AddBookModal import to support onAddBookRequest prop for ShelfCarousel.
+import AddBookModal from '../../components/modals/AddBookModal.tsx';
 
 
 const useCollapsibleState = (keys: string[], storageKey: string) => {
@@ -176,6 +178,20 @@ const HomeScreen: React.FC = () => {
     
     // For tab reset logic
     const isInitialMount = useRef(true);
+    
+    // FIX: Add state and handlers for AddBookModal to satisfy ShelfCarousel props.
+    const [isAddModalOpen, setAddModalOpen] = useState(false);
+    const [targetShelfId, setTargetShelfId] = useState<string | null>(null);
+
+    const handleOpenAddBookModal = (shelfId: string) => {
+        setTargetShelfId(shelfId);
+        setAddModalOpen(true);
+    };
+    
+    const handleCloseAddBookModal = () => {
+        setTargetShelfId(null);
+        setAddModalOpen(false);
+    };
 
     useEffect(() => {
         if (profile?.lastActive) {
@@ -315,7 +331,13 @@ const HomeScreen: React.FC = () => {
             ) : (
                 currentlyReadingShelf && currentlyReadingShelf.entries && Object.keys(currentlyReadingShelf.entries).length > 0 && (
                     <CollapsibleSection titleEn="Continue Reading" titleAr="متابعة القراءة" isOpen={openSections.reading} onToggle={() => toggleSection('reading')}>
-                        <ShelfCarousel shelf={currentlyReadingShelf} />
+                        {/* FIX: Pass missing required props to ShelfCarousel. */}
+                        <ShelfCarousel
+                            shelf={currentlyReadingShelf}
+                            onAddBookRequest={handleOpenAddBookModal}
+                            isOpen={true}
+                            onToggle={() => {}}
+                        />
                     </CollapsibleSection>
                 )
             )}
@@ -379,6 +401,11 @@ const HomeScreen: React.FC = () => {
                     {isSearching ? renderSearchResults() : renderHomeFeeds()}
                 </div>
             </main>
+            <AddBookModal
+                isOpen={isAddModalOpen}
+                onClose={handleCloseAddBookModal}
+                targetShelfId={targetShelfId}
+            />
         </div>
     );
 };

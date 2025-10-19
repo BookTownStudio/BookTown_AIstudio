@@ -1,4 +1,3 @@
-
 import React from 'react';
 // FIX: Add file extensions to imports
 import GlassCard from '../ui/GlassCard.tsx';
@@ -21,10 +20,10 @@ const statusStyles: Record<Project['status'], { text: string; bg: string; }> = {
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     const { lang, isRTL } = useI18n();
-    const { navigate } = useNavigation();
+    const { navigate, currentView } = useNavigation();
 
     const handlePress = () => {
-        navigate({ type: 'immersive', id: 'editor', params: { projectId: project.id } });
+        navigate({ type: 'immersive', id: 'editor', params: { projectId: project.id, from: currentView } });
     };
 
     const statusStyle = statusStyles[project.status];

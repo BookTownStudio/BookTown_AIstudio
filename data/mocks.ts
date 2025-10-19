@@ -1,4 +1,4 @@
-import { User, Book, Shelf, ShelfEntry, Quote, Project, Post, Agent, QuickRecommendations, Review } from '../types/entities.ts';
+import { User, Book, Shelf, ShelfEntry, Quote, Project, Post, Agent, QuickRecommendations, Review, RecommendedShelf } from '../types/entities.ts';
 import { MentorIcon } from '../components/icons/MentorIcon.tsx';
 import { BookIcon } from '../components/icons/BookIcon.tsx';
 import { QuoteIcon } from '../components/icons/QuoteIcon.tsx';
@@ -19,6 +19,53 @@ export const mockUser: User = {
     joinDate: '2025-09-01T00:00:00.000Z',
     lastActive: new Date(Date.now() - 36 * 60 * 60 * 1000).toISOString(), // 36 hours ago
 };
+
+export const mockUsers: User[] = [
+    mockUser,
+    {
+        id: 'user2',
+        name: 'Sarah J.',
+        handle: '@sarahreads',
+        email: 'sarah@example.com',
+        avatarUrl: 'https://i.pravatar.cc/150?u=sarahreads',
+        bannerUrl: '/covers/profile-banner.jpg',
+        bioEn: 'Lover of sci-fi and fantasy. Always looking for the next great adventure.',
+        bioAr: 'محبة للخيال العلمي والفانتازيا. أبحث دائمًا عن المغامرة الرائعة التالية.',
+        role: 'user',
+        followers: 582,
+        following: 120,
+        joinDate: '2025-08-15T00:00:00.000Z',
+    },
+    {
+        id: 'user3',
+        name: 'Omar K.',
+        handle: '@omark',
+        email: 'omar@example.com',
+        avatarUrl: 'https://i.pravatar.cc/150?u=omark',
+        bannerUrl: '/covers/profile-banner.jpg',
+        bioEn: 'Classic literature enthusiast and coffee aficionado.',
+        bioAr: 'متحمس للأدب الكلاسيكي وعاشق للقهوة.',
+        role: 'user',
+        followers: 310,
+        following: 250,
+        joinDate: '2025-07-20T00:00:00.000Z',
+    },
+     {
+        id: 'user4',
+        name: 'Lena Petrova',
+        handle: '@lenap',
+        email: 'lena@example.com',
+        avatarUrl: 'https://i.pravatar.cc/150?u=lenap',
+        bannerUrl: '/covers/profile-banner.jpg',
+        bioEn: 'Mystery and thriller are my jam. I read way past my bedtime.',
+        bioAr: 'الغموض والإثارة هما تخصصي. أقرأ إلى ما بعد وقت نومي.',
+        role: 'user',
+        followers: 890,
+        following: 95,
+        joinDate: '2025-06-10T00:00:00.000Z',
+    },
+];
+
 
 const booksData: Omit<Book, 'id'>[] = [
   {
@@ -157,6 +204,7 @@ export const mockProjects: Record<string, Omit<Project, 'id'>> = {
     'proj1': {
         titleEn: "The Crimson Nebula",
         titleAr: "السديم القرمزي",
+        content: "<h1>Chapter 1</h1><p>The void whispered secrets only the dead could hear. On the bridge of the Star-drifter, Captain Eva Rostova watched the swirling colors of the nebula paint streaks of light across the viewport. <b>Silence</b>. It was a heavy, oppressive thing in the deep of space, broken only by the low hum of the life support systems and the frantic beating of her own heart. <i>This was a mistake</i>, she thought, her fingers tightening around the worn leather of the command chair.</p>",
         typeEn: 'Novel',
         typeAr: 'رواية',
         status: 'Draft',
@@ -166,6 +214,7 @@ export const mockProjects: Record<string, Omit<Project, 'id'>> = {
     'proj2': {
         titleEn: "Echoes in the Void",
         titleAr: "أصداء في الفراغ",
+        content: "<p>It started with a flicker on the deep space sensors, a ghost in the machine that no one could explain. A single, repeating signal from a sector of space that was supposed to be empty. Lifeless. We were wrong.</p>",
         typeEn: 'Short Story',
         typeAr: 'قصة قصيرة',
         status: 'Revision',
@@ -422,17 +471,46 @@ export const mockReviews: Record<string, Omit<Review, 'id'>> = {
     }
 };
 
+export const mockRecommendedShelves: RecommendedShelf[] = [
+    {
+        id: 'rec_shelf_1',
+        titleEn: "Dystopian Classics",
+        titleAr: "كلاسيكيات ديستوبية",
+        ownerName: "Editor's Picks",
+        bookCovers: ["/covers/dune.jpg", "/covers/children-of-time.jpg", "/covers/hail-mary.jpg"],
+        followerCount: 12845,
+    },
+    {
+        id: 'rec_shelf_2',
+        titleEn: "Modern Thrillers",
+        titleAr: "إثارة حديثة",
+        ownerName: "CommunityCurated",
+        bookCovers: ["/covers/silent-patient.jpg", "/covers/hail-mary.jpg", "/covers/dune.jpg"],
+        followerCount: 8302,
+    },
+    {
+        id: 'rec_shelf_3',
+        titleEn: "Productivity Boost",
+        titleAr: "دفعة إنتاجية",
+        ownerName: "Mentor's Shelf",
+        bookCovers: ["/covers/atomic-habits.jpg", "/covers/silent-patient.jpg", "/covers/children-of-time.jpg"],
+        followerCount: 21050,
+    }
+];
+
 // This structure allows the mock DB to function.
 export const MOCK_DATA = {
-    users: {
-        'alex_doe': {
-            ...mockUser,
-            shelves: mockShelves,
-            quotes: mockUserQuotes,
-            projects: mockProjects,
-            agent_sessions: {} // Placeholder for chat history
+    users: mockUsers.reduce((acc, user) => {
+        const userData: any = { ...user };
+        if (user.id === 'alex_doe') {
+            userData.shelves = mockShelves;
+            userData.quotes = mockUserQuotes;
+            userData.projects = mockProjects;
+            userData.agent_sessions = {};
         }
-    },
+        acc[user.id] = userData;
+        return acc;
+    }, {} as Record<string, any>),
     catalog: {
         books: mockBooks
     },

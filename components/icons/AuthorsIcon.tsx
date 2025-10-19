@@ -1,8 +1,7 @@
-
 import React from 'react';
 
 export const AuthorsIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962c.57-1.023-.194-1.374-2.49-1.374-1.657 0-2.857.25-3.597.583a9.096 9.096 0 00-2.524 2.383 14.896 14.896 0 0114.456-5.165c.325.02.645.037.968.055a11.94 11.94 0 012.387 1.134M12 21a9.094 9.094 0 01-3.741-.479 3 3 0 014.682-2.72M12 3a3 3 0 013 3v.386a9.095 9.095 0 01-6 0V6a3 3 0 013-3z" />
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
   </svg>
 );

@@ -59,6 +59,7 @@ export interface Project {
     id: string;
     titleEn: string;
     titleAr: string;
+    content?: string;
     typeEn: 'Novel' | 'Short Story' | 'Poetry';
     typeAr: 'رواية' | 'قصة قصيرة' | 'شعر';
     status: 'Idea' | 'Draft' | 'Revision' | 'Final';
@@ -119,4 +120,13 @@ export interface Agent {
 export interface QuickRecommendations {
     bookIds: string[];
     timestamp: string; // ISO Date string
+}
+
+export interface RecommendedShelf {
+    id: string;
+    titleEn: string;
+    titleAr: string;
+    ownerName: string;
+    bookCovers: string[];
+    followerCount: number;
 }

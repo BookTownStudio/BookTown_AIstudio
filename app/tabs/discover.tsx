@@ -75,23 +75,33 @@ const AgentInteractionShell = ({ agent, onBack, onSelectAgent }: { agent: Agent,
                 </div>
             </header>
 
-            <div className="sticky top-20 z-10 bg-gray-50 dark:bg-slate-900">
-                <div className="container mx-auto flex justify-center items-center gap-2 p-2 overflow-x-auto scrollbar-hide">
-                    {mockAgents.map(a => {
-                        const isActive = agent.id === a.id;
-                        return (
-                            <Button
-                                key={a.id}
-                                variant={isActive ? 'primary' : 'ghost'}
-                                onClick={() => onSelectAgent(a.id)}
-                                className="!px-3 !py-1.5"
-                                disabled={a.isPremium}
-                            >
-                                <a.icon className={`h-5 w-5 ${lang === 'en' ? 'mr-2' : 'ml-2'}`} />
-                                <span className="text-sm">{a.name}</span>
-                            </Button>
-                        )
-                    })}
+            <div className="sticky top-20 z-10 bg-gray-50 dark:bg-slate-900 border-b border-black/10 dark:border-white/10">
+                <div className="container mx-auto p-2">
+                    <div className="grid grid-cols-4 gap-2">
+                        {mockAgents.map(a => {
+                            const isActive = agent.id === a.id;
+                            return (
+                                <button
+                                    key={a.id}
+                                    onClick={() => onSelectAgent(a.id)}
+                                    className={`
+                                        flex flex-col items-center justify-center gap-1 p-2 rounded-lg transition-colors duration-200
+                                        ${a.isPremium ? 'opacity-50 cursor-not-allowed' : ''}
+                                        ${isActive 
+                                            ? 'bg-primary/10 dark:bg-blue-900/40 text-accent' 
+                                            : 'text-slate-500 dark:text-white/60 hover:bg-black/5 dark:hover:bg-white/5'}
+                                    `}
+                                    disabled={a.isPremium}
+                                    aria-current={isActive ? 'page' : undefined}
+                                >
+                                    <a.icon className="h-7 w-7 mb-1" />
+                                    <BilingualText role="Caption" className="!text-xs !text-inherit text-center">
+                                        {a.name}
+                                    </BilingualText>
+                                </button>
+                            )
+                        })}
+                    </div>
                 </div>
             </div>
 
