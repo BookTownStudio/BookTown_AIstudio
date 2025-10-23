@@ -1,4 +1,4 @@
-import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author } from '../types/entities.ts';
+import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author, ForYouFlowItem, Venue, Event, BookFair } from '../types/entities.ts';
 import { MentorIcon } from '../components/icons/MentorIcon.tsx';
 import { ChatIcon } from '../components/icons/ChatIcon.tsx';
 import { QuoteIcon } from '../components/icons/QuoteIcon.tsx';
@@ -710,6 +710,50 @@ export const mockBookDetailsReviews: Review[] = [
         downvotes: 1,
         commentsCount: 5,
     },
+];
+
+export const mockVenue: Venue = {
+    id: 'venue_the_gilded_page',
+    name: 'The Gilded Page',
+    type: 'Bookstore & Cafe',
+    address: '123 Literary Lane, BookTown',
+    imageUrl: 'https://images.unsplash.com/photo-1550399105-c4db5fb85c18?q=80&w=2071&auto=format&fit=crop',
+    descriptionEn: 'A cozy corner for readers and dreamers. Enjoy our curated collection and freshly brewed coffee.',
+    descriptionAr: 'ركن دافئ للقراء والحالمين. استمتع بمجموعتنا المختارة والقهوة الطازجة.'
+};
+
+export const mockEvent: Event = {
+    id: 'event_elara_vance_signing',
+    titleEn: 'Meet Elara Vance',
+    titleAr: 'لقاء مع إيلارا فانس',
+    type: 'Author Signing',
+    dateTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // A week from now
+    venueName: 'The Gilded Page',
+    imageUrl: 'https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=2070&auto=format&fit=crop',
+};
+
+export const mockBookFair: BookFair = {
+    id: 'fair_booktown_2024',
+    nameEn: 'BookTown Annual Fair 2024',
+    nameAr: 'معرض بوكتاون السنوي ٢٠٢٤',
+    dates: 'November 15-18, 2024',
+    location: 'Exhibition Center, Downtown',
+    taglineEn: 'Where stories come to life.',
+    taglineAr: 'حيث تنبض القصص بالحياة.',
+    imageUrl: 'https://images.unsplash.com/photo-1531988042231-f39a9cc12a9a?q=80&w=2070&auto=format&fit=crop'
+};
+
+
+export const mockForYouFlowData: ForYouFlowItem[] = [
+    { type: 'book', data: mockBookFlowData[1] }, // The Silent Patient
+    { type: 'user', data: mockUsers[2] }, // Sam Jones
+    { type: 'event', data: mockEvent },
+    { type: 'quote', data: mockUserQuotes[1] }, // So it goes.
+    { type: 'venue', data: mockVenue },
+    { type: 'book', data: mockBookFlowData[4] }, // Atomic Habits
+    { type: 'bookfair', data: mockBookFair },
+    { type: 'user', data: mockUsers[3] }, // Maria Garcia
+    { type: 'quote', data: mockUserQuotes[2] }, // The only way to learn is to live.
 ];
 
 

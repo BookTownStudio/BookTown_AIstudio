@@ -32,14 +32,13 @@ import VenuesScreen from './app/drawer/venues.tsx';
 import FeedbackScreen from './app/drawer/feedback.tsx';
 import EmailScreen from './app/drawer/email.tsx';
 import AdminDashboardScreen from './app/drawer/admin.tsx';
-import BookFlowFeedScreen from './app/bookflow/feed.tsx';
 import BookFlowButton from './components/navigation/BookFlowButton.tsx';
 import { TabName } from './types/navigation.ts';
 import PostComposerScreen from './app/immersive/post-composer.tsx';
-import PeopleFlowScreen from './app/immersive/people-flow.tsx';
 import AuthorDetailsScreen from './app/author-details.tsx';
 import QuoteDetailsScreen from './app/quote-details.tsx';
 import BooksScreen from './app/drawer/books.tsx';
+import DiscoveryFlowScreen from './app/discovery/flow.tsx';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -113,9 +112,8 @@ const AppContent: React.FC = () => {
                     case 'bookDetails': return <BookDetailsScreen />;
                     case 'editor': return <EditorScreen />;
                     case 'reader': return <ReaderScreen />;
-                    case 'bookflow': return <BookFlowFeedScreen />;
+                    case 'discoveryFlow': return <DiscoveryFlowScreen />;
                     case 'postComposer': return <PostComposerScreen />;
-                    case 'peopleFlow': return <PeopleFlowScreen />;
                     case 'profile': return <ProfileScreen />;
                     case 'authorDetails': return <AuthorDetailsScreen />;
                     case 'quoteDetails': return <QuoteDetailsScreen />;

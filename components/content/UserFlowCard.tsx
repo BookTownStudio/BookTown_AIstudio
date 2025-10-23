@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigation } from '../../store/navigation.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
 import { User } from '../../types/entities.ts';
-import { useFollowUser } from '../../lib/hooks/useFollowUser.ts';
-import Button from '../ui/Button.tsx';
-import { PlusIcon } from '../icons/PlusIcon.tsx';
 import { ReadIcon } from '../icons/ReadIcon.tsx';
 import { QuoteIcon } from '../icons/QuoteIcon.tsx';
 import { ShelvesIcon } from '../icons/ShelvesIcon.tsx';
 import { WriteIcon } from '../icons/WriteIcon.tsx';
 import Chip from '../ui/Chip.tsx';
+import BookFlowActions from './BookFlowActions.tsx';
 
 interface UserFlowCardProps {
     user: User;
@@ -28,18 +26,6 @@ const StatItem: React.FC<{ value: number; label: string; icon: React.FC<any>; }>
 const UserFlowCard: React.FC<UserFlowCardProps> = ({ user }) => {
     const { navigate, currentView } = useNavigation();
     const { lang } = useI18n();
-
-    const [isFollowed, setIsFollowed] = useState(false);
-    const { mutate: followUser, isLoading: isFollowing } = useFollowUser();
-
-    const handleFollow = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (!isFollowed) {
-            followUser(user.uid, {
-                onSuccess: () => setIsFollowed(true),
-            });
-        }
-    };
     
     const handleViewProfile = () => {
         navigate({ type: 'immersive', id: 'profile', params: { userId: user.uid, from: currentView } });
@@ -55,7 +41,7 @@ const UserFlowCard: React.FC<UserFlowCardProps> = ({ user }) => {
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
             
             {/* Content Overlay */}
-            <div className="relative z-10 flex flex-col h-full items-center p-4 pt-16 pb-8 text-white">
+            <div className="relative z-10 flex flex-col h-full items-center p-4 pt-16 pb-24 text-white">
                 <div className="flex-grow flex flex-col items-center justify-center text-center">
                     <img src={user.avatarUrl} alt={user.name} className="h-28 w-28 rounded-full border-4 border-white/20 shadow-lg" />
                     <BilingualText role="H1" className="!text-3xl mt-4 !text-white">{user.name}</BilingualText>
@@ -78,19 +64,8 @@ const UserFlowCard: React.FC<UserFlowCardProps> = ({ user }) => {
                         <StatItem value={user.wordsWritten} label={lang === 'en' ? 'Words Written' : 'كلمات مكتوبة'} icon={WriteIcon} />
                     </div>
                 </div>
-
-                <div className="w-full flex-shrink-0 flex items-center justify-center">
-                    <Button 
-                        variant="primary" 
-                        onClick={handleFollow}
-                        disabled={isFollowing || isFollowed}
-                        className="w-full max-w-xs"
-                    >
-                        <PlusIcon className="h-5 w-5 mr-2" />
-                        {isFollowing ? '...' : (isFollowed ? (lang === 'en' ? 'Following' : 'تتابعه') : (lang === 'en' ? 'Follow' : 'متابعة'))}
-                    </Button>
-                </div>
             </div>
+            <BookFlowActions entityType="user" entityId={user.uid} />
         </div>
     );
 };

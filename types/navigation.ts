@@ -13,7 +13,7 @@ export type DrawerScreenName =
     'adminDashboard' |
     'books';
     
-export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'bookflow' | 'postComposer' | 'peopleFlow' | 'profile' | 'authorDetails' | 'quoteDetails';
+export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'postComposer' | 'profile' | 'authorDetails' | 'quoteDetails' | 'discoveryFlow';
 
 // A flexible params type for navigation
 export interface NavigationParams {

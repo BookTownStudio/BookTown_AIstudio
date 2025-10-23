@@ -14,47 +14,8 @@ import Button from '../../components/ui/Button.tsx';
 import { useSocialSearch } from '../../lib/hooks/useSocialSearch.ts';
 import UserSearchResultCard from '../../components/content/UserSearchResultCard.tsx';
 import TopicSearchResultCard from '../../components/content/TopicSearchResultCard.tsx';
-import { UsersIcon } from '../../components/icons/UsersIcon.tsx';
 
 type SearchTab = 'posts' | 'users' | 'topics';
-
-const PeopleFlowButton: React.FC = () => {
-    const { navigate, currentView } = useNavigation();
-    const { lang } = useI18n();
-
-    const handlePress = () => {
-        navigate({ type: 'immersive', id: 'peopleFlow', params: { from: currentView } });
-    };
-
-    return (
-        <div
-            className="fixed bottom-[98px] left-0 right-0 z-20 flex justify-center pointer-events-none"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-        >
-            <button
-                onClick={handlePress}
-                className="
-                    flex items-center gap-2 px-6 py-3
-                    bg-gray-100/80 dark:bg-slate-800/80 backdrop-blur-md 
-                    shadow-xl shadow-primary/10 dark:shadow-black/40 
-                    border border-black/5 dark:border-white/10 
-                    text-slate-800 dark:text-white 
-                    pointer-events-auto 
-                    transition-all duration-300 ease-in-out
-                    hover:-translate-y-1 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20
-                    active:scale-100
-                    rounded-full"
-                aria-label={lang === 'en' ? 'Discover People' : 'اكتشف أشخاص'}
-            >
-                <UsersIcon className="h-5 w-5 text-accent" />
-                <BilingualText className="font-bold text-lg">
-                    {lang === 'en' ? 'People Flow' : 'اكتشف أشخاص'}
-                </BilingualText>
-            </button>
-        </div>
-    );
-};
-
 
 const SocialScreen: React.FC = () => {
     const { lang } = useI18n();
@@ -221,7 +182,6 @@ const SocialScreen: React.FC = () => {
                     )}
                 </div>
             </main>
-            <PeopleFlowButton />
             <Fab onClick={handleNewPost} aria-label={lang === 'en' ? 'New Post' : 'منشور جديد'}>
                 <PlusIcon className="h-8 w-8" />
             </Fab>

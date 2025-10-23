@@ -1,13 +1,13 @@
 import React from 'react';
 import { useNavigation } from '../../store/navigation.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
-import { ChevronUpIcon } from '../icons/ChevronUpIcon.tsx'; // Repurposed as SparklesIcon
+import { ChevronUpIcon } from '../icons/ChevronUpIcon.tsx';
 
 const BookFlowButton: React.FC = () => {
-    const { navigate } = useNavigation();
+    const { navigate, currentView } = useNavigation();
 
     const handlePress = () => {
-        navigate({ type: 'immersive', id: 'bookflow' });
+        navigate({ type: 'immersive', id: 'discoveryFlow', params: { from: currentView } });
     };
 
     return (
@@ -28,7 +28,7 @@ const BookFlowButton: React.FC = () => {
                     hover:-translate-y-1 hover:scale-105 hover:shadow-2xl hover:shadow-primary/20
                     active:scale-100
                     rounded-full"
-                aria-label="Open BookFlow to discover books"
+                aria-label="Open BookFlow"
             >
                 <ChevronUpIcon className="h-5 w-5 text-accent" />
                 <BilingualText className="font-bold text-lg">BookFlow</BilingualText>

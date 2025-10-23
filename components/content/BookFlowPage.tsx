@@ -3,7 +3,6 @@ import { useNavigation } from '../../store/navigation.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import { useI18n } from '../../store/i18n.tsx';
 import BookFlowActions from './BookFlowActions.tsx';
-import { mockQuoteOfTheDay } from '../../data/mocks.ts';
 import { BookFlowItem } from '../../types/entities.ts';
 
 interface BookFlowPageProps {
@@ -41,7 +40,7 @@ const BookFlowPage: React.FC<BookFlowPageProps> = ({ item }) => {
             </div>
             
             {/* Actions */}
-            <BookFlowActions bookId={bookId} quoteId={mockQuoteOfTheDay.id} />
+            <BookFlowActions entityType="book" entityId={bookId} />
         </div>
     );
 };

@@ -188,3 +188,42 @@ export interface BookFlowItem {
   authorEn: string;
   authorAr: string;
 }
+
+export interface Venue {
+    id: string;
+    name: string;
+    type: string; // e.g., "Bookstore & Cafe"
+    address: string;
+    imageUrl: string;
+    descriptionEn: string;
+    descriptionAr: string;
+}
+
+export interface Event {
+    id: string;
+    titleEn: string;
+    titleAr: string;
+    type: string; // "Author Signing", "Book Reading"
+    dateTime: string; // ISO string
+    venueName: string;
+    imageUrl: string;
+}
+
+export interface BookFair {
+    id: string;
+    nameEn: string;
+    nameAr: string;
+    dates: string; // e.g., "October 28-30, 2024"
+    location: string;
+    taglineEn: string;
+    taglineAr: string;
+    imageUrl: string;
+}
+
+export type ForYouFlowItem =
+  | { type: 'book'; data: BookFlowItem }
+  | { type: 'user'; data: User }
+  | { type: 'quote'; data: Quote }
+  | { type: 'venue'; data: Venue }
+  | { type: 'event'; data: Event }
+  | { type: 'bookfair'; data: BookFair };
