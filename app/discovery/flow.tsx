@@ -243,7 +243,7 @@ const DiscoveryFlowScreen: React.FC = () => {
                 </div>
             </header>
 
-            <main className="flex-grow pt-20">
+            <main className="h-screen">
                 {activeSegment === 'books' && <BooksSegment />}
                 {activeSegment === 'people' && <PeopleSegment />}
                 {activeSegment === 'for-you' && <ForYouSegment />}
