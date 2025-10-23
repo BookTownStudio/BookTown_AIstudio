@@ -23,6 +23,7 @@ import { useQuoteDetails } from '../../lib/hooks/useQuoteDetails.ts';
 import { useUserProfile } from '../../lib/hooks/useUserProfile.ts';
 import { useShelfEntries, useUserShelves } from '../../lib/hooks/useUserShelves.ts';
 import { VenuesIcon } from '../icons/VenuesIcon.tsx';
+import { useVenueDetails } from '../../lib/hooks/useVenueDetails.ts';
 
 
 interface PostCardProps {
@@ -131,7 +132,16 @@ const ShelfAttachment: React.FC<{ shelfId: string, ownerId: string }> = ({ shelf
     );
 };
 
-const VenueAttachment: React.FC<{ name: string, location: string }> = ({ name, location }) => {
+const VenueAttachment: React.FC<{ venueId: string }> = ({ venueId }) => {
+    const { lang } = useI18n();
+    const { data: venue, isLoading } = useVenueDetails(venueId);
+
+    if (isLoading || !venue) return <div className="h-10 w-48 bg-black/5 dark:bg-white/5 animate-pulse rounded-full mt-3" />;
+
+    const isEvent = 'dateTime' in venue;
+    const name = isEvent ? (lang === 'en' ? venue.titleEn : venue.titleAr) : venue.name;
+    const location = isEvent ? (venue.isOnline ? "Online Event" : (venue.venueName || '')) : venue.address;
+    
     return (
         <div className="mt-3">
             <div className="inline-flex items-center gap-2 p-2 pr-3 border border-black/10 dark:border-white/10 rounded-full">
@@ -156,7 +166,7 @@ const AttachmentRenderer: React.FC<{ attachment: PostAttachment }> = ({ attachme
         case 'shelf':
             return <ShelfAttachment shelfId={attachment.shelfId} ownerId={attachment.ownerId} />;
         case 'venue':
-            return <VenueAttachment name={attachment.name} location={attachment.location} />;
+            return <VenueAttachment venueId={attachment.venueId} />;
         default:
             return null;
     }

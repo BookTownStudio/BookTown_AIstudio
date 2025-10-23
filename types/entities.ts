@@ -105,7 +105,7 @@ export type PostAttachment =
   | { type: 'media'; url: string }
   | { type: 'author'; authorId: string }
   | { type: 'shelf'; shelfId: string, ownerId: string }
-  | { type: 'venue'; name: string, location: string }
+  | { type: 'venue'; venueId: string }
   | { type: 'post'; postId: string };
 
 
@@ -164,6 +164,21 @@ export interface Review {
     commentsCount: number;
 }
 
+export interface VenueReview {
+    id: string;
+    venueId: string;
+    userId: string;
+    rating: number; // 1-5
+    text: string;
+    authorName: string;
+    authorHandle: string;
+    authorAvatar: string;
+    timestamp: string; // ISO string
+    upvotes: number;
+    downvotes: number;
+    commentsCount: number;
+}
+
 export interface QuickRecommendations {
     userId: string;
     bookIds: string[];
@@ -191,22 +206,29 @@ export interface BookFlowItem {
 
 export interface Venue {
     id: string;
+    ownerId: string;
     name: string;
     type: string; // e.g., "Bookstore & Cafe"
     address: string;
     imageUrl: string;
     descriptionEn: string;
     descriptionAr: string;
+    openingHours?: string;
 }
 
 export interface Event {
     id: string;
+    ownerId: string;
     titleEn: string;
     titleAr: string;
     type: string; // "Author Signing", "Book Reading"
     dateTime: string; // ISO string
-    venueName: string;
     imageUrl: string;
+    privacy: 'public' | 'private';
+    duration?: string;
+    isOnline?: boolean;
+    venueName?: string;
+    link?: string;
 }
 
 export interface BookFair {
@@ -227,3 +249,25 @@ export type ForYouFlowItem =
   | { type: 'venue'; data: Venue }
   | { type: 'event'; data: Event }
   | { type: 'bookfair'; data: BookFair };
+
+export type BookmarkType = 'book' | 'quote' | 'post' | 'author' | 'venue' | 'event';
+
+export interface Bookmark {
+    id: string;
+    type: BookmarkType;
+    entityId: string;
+    timestamp: string; // ISO string
+    quoteOwnerId?: string;
+}
+
+export type FeedbackType = 'action-required' | 'praise-general';
+
+export interface Feedback {
+    id: string;
+    userId: string;
+    type: FeedbackType;
+    text: string;
+    email?: string;
+    attachments?: string[]; // Array of image URLs/references
+    timestamp: string; // ISO string
+}

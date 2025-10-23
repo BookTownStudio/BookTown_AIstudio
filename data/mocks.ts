@@ -1,4 +1,4 @@
-import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author, ForYouFlowItem, Venue, Event, BookFair } from '../types/entities.ts';
+import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author, ForYouFlowItem, Venue, Event, BookFair, VenueReview, Bookmark } from '../types/entities.ts';
 import { MentorIcon } from '../components/icons/MentorIcon.tsx';
 import { ChatIcon } from '../components/icons/ChatIcon.tsx';
 import { QuoteIcon } from '../components/icons/QuoteIcon.tsx';
@@ -714,6 +714,7 @@ export const mockBookDetailsReviews: Review[] = [
 
 export const mockVenue: Venue = {
     id: 'venue_the_gilded_page',
+    ownerId: 'alex_doe',
     name: 'The Gilded Page',
     type: 'Bookstore & Cafe',
     address: '123 Literary Lane, BookTown',
@@ -724,12 +725,14 @@ export const mockVenue: Venue = {
 
 export const mockEvent: Event = {
     id: 'event_elara_vance_signing',
+    ownerId: 'alex_doe',
     titleEn: 'Meet Elara Vance',
     titleAr: 'لقاء مع إيلارا فانس',
     type: 'Author Signing',
     dateTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // A week from now
     venueName: 'The Gilded Page',
     imageUrl: 'https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=2070&auto=format&fit=crop',
+    privacy: 'public',
 };
 
 export const mockBookFair: BookFair = {
@@ -743,6 +746,86 @@ export const mockBookFair: BookFair = {
     imageUrl: 'https://images.unsplash.com/photo-1531988042231-f39a9cc12a9a?q=80&w=2070&auto=format&fit=crop'
 };
 
+export const mockVenuesAndEvents: (Venue | Event)[] = [
+    {
+        id: 'venue_the_gilded_page',
+        ownerId: 'alex_doe',
+        name: 'The Gilded Page',
+        type: 'Bookstore & Cafe',
+        address: '123 Literary Lane, BookTown',
+        imageUrl: 'https://images.unsplash.com/photo-1550399105-c4db5fb85c18?q=80&w=2071&auto=format&fit=crop',
+        descriptionEn: 'A cozy corner for readers and dreamers. Enjoy our curated collection and freshly brewed coffee.',
+        descriptionAr: 'ركن دافئ للقراء والحالمين. استمتع بمجموعتنا المختارة والقهوة الطازجة.',
+        openingHours: 'Mon-Sat: 9am - 8pm'
+    },
+    {
+        id: 'event_elara_vance_signing',
+        ownerId: 'alex_doe',
+        titleEn: 'Meet Elara Vance',
+        titleAr: 'لقاء مع إيلارا فانس',
+        type: 'Author Signing',
+        dateTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // A week from now
+        venueName: 'The Gilded Page',
+        imageUrl: 'https://images.unsplash.com/photo-1589998059171-988d887df646?q=80&w=2070&auto=format&fit=crop',
+        duration: '2 hours',
+        privacy: 'public'
+    },
+    {
+        id: 'venue_archive_library',
+        ownerId: 'alex_doe',
+        name: 'The Archive Library',
+        type: 'Public Library',
+        address: '451 History Plaza, BookTown',
+        imageUrl: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=2070&auto=format&fit=crop',
+        descriptionEn: 'A historic public library with a vast collection of classic and contemporary literature. Quiet reading rooms available.',
+        descriptionAr: 'مكتبة عامة تاريخية تضم مجموعة واسعة من الأدب الكلاسيكي والمعاصر. تتوفر غرف قراءة هادئة.',
+        openingHours: 'Tue-Sun: 10am - 6pm'
+    },
+    {
+        id: 'event_poetry_slam',
+        ownerId: 'alex_doe',
+        titleEn: 'Open Mic Poetry Slam',
+        titleAr: 'أمسية شعرية مفتوحة',
+        type: 'Community Event',
+        dateTime: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
+        venueName: 'The Gilded Page',
+        imageUrl: 'https://images.unsplash.com/photo-1509015349254-67145435a242?q=80&w=2070&auto=format&fit=crop',
+        duration: '3 hours',
+        privacy: 'public'
+    },
+];
+
+export const mockVenueReviews: VenueReview[] = [
+    {
+        id: 'vr1',
+        venueId: 'venue_the_gilded_page',
+        userId: 'jane_smith',
+        rating: 5,
+        text: 'My absolute favorite spot in town! The coffee is amazing and the book selection is wonderfully curated. A perfect place to spend an afternoon.',
+        authorName: 'Jane Smith',
+        authorHandle: '@janesmith',
+        authorAvatar: mockUsers[1].avatarUrl,
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        upvotes: 42,
+        downvotes: 1,
+        commentsCount: 3,
+    },
+    {
+        id: 'vr2',
+        venueId: 'venue_the_gilded_page',
+        userId: 'sam_jones',
+        rating: 4,
+        text: 'Great atmosphere, but can get a bit crowded on weekends. Found a rare first edition here once!',
+        authorName: 'Sam Jones',
+        authorHandle: '@samjones',
+        authorAvatar: mockUsers[2].avatarUrl,
+        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        upvotes: 15,
+        downvotes: 0,
+        commentsCount: 1,
+    }
+];
+
 
 export const mockForYouFlowData: ForYouFlowItem[] = [
     { type: 'book', data: mockBookFlowData[1] }, // The Silent Patient
@@ -754,6 +837,15 @@ export const mockForYouFlowData: ForYouFlowItem[] = [
     { type: 'bookfair', data: mockBookFair },
     { type: 'user', data: mockUsers[3] }, // Maria Garcia
     { type: 'quote', data: mockUserQuotes[2] }, // The only way to learn is to live.
+];
+
+export const mockBookmarks: Bookmark[] = [
+    { id: 'bookmark1', type: 'book', entityId: 'book1', timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'bookmark2', type: 'quote', entityId: 'q2', quoteOwnerId: 'alex_doe', timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'bookmark3', type: 'post', entityId: 'post1', timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'bookmark4', type: 'author', entityId: 'author_andy_weir', timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'bookmark5', type: 'venue', entityId: 'venue_the_gilded_page', timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
+    { id: 'bookmark6', type: 'event', entityId: 'event_elara_vance_signing', timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString() },
 ];
 
 
@@ -784,7 +876,18 @@ export const MOCK_DATA = {
     posts: {
         'post1': mockPosts[0],
         'post2': mockPosts[1],
-    }
+    },
+    venues: mockVenuesAndEvents.reduce((acc, item) => {
+        acc[item.id] = item;
+        return acc;
+    }, {} as Record<string, Venue | Event>),
+    venueReviews: mockVenueReviews.reduce((acc, review) => {
+        if (!acc[review.venueId]) {
+            acc[review.venueId] = {};
+        }
+        acc[review.venueId][review.id] = review;
+        return acc;
+    }, {} as Record<string, Record<string, VenueReview>>),
 };
 
 // Add shelves and projects for alex_doe to the mock DB
@@ -802,3 +905,8 @@ export const MOCK_DATA = {
     acc[quote.id] = quote;
     return acc;
 }, {} as Record<string, Quote>);
+
+(MOCK_DATA.users['alex_doe'] as any).bookmarks = mockBookmarks.reduce((acc, bookmark) => {
+    acc[bookmark.id] = bookmark;
+    return acc;
+}, {} as Record<string, Bookmark>);

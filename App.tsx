@@ -6,6 +6,7 @@ import { NavigationProvider, useNavigation } from './store/navigation.tsx';
 import { QueryClient, QueryClientProvider } from './lib/react-query.ts';
 import { AuthProvider, useAuth } from './lib/auth.tsx';
 import { ThemeProvider } from './store/theme.tsx';
+import { ReadingPreferencesProvider } from './store/reading-prefs.tsx';
 
 import HomeScreen from './app/tabs/home.tsx';
 import ReadScreen from './app/tabs/read.tsx';
@@ -39,6 +40,7 @@ import AuthorDetailsScreen from './app/author-details.tsx';
 import QuoteDetailsScreen from './app/quote-details.tsx';
 import BooksScreen from './app/drawer/books.tsx';
 import DiscoveryFlowScreen from './app/discovery/flow.tsx';
+import VenueDetailsScreen from './app/venue-details.tsx';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -117,6 +119,7 @@ const AppContent: React.FC = () => {
                     case 'profile': return <ProfileScreen />;
                     case 'authorDetails': return <AuthorDetailsScreen />;
                     case 'quoteDetails': return <QuoteDetailsScreen />;
+                    case 'venueDetails': return <VenueDetailsScreen />;
                     default: return <TabScreens />; // Fallback
                 }
             default:
@@ -140,11 +143,13 @@ const App: React.FC = () => {
         <QueryClientProvider client={queryClient}>
             <I18nProvider>
                 <ThemeProvider>
-                    <NavigationProvider>
-                        <AuthProvider>
-                            <AppContent />
-                        </AuthProvider>
-                    </NavigationProvider>
+                    <ReadingPreferencesProvider>
+                        <NavigationProvider>
+                            <AuthProvider>
+                                <AppContent />
+                            </AuthProvider>
+                        </NavigationProvider>
+                    </ReadingPreferencesProvider>
                 </ThemeProvider>
             </I18nProvider>
         </QueryClientProvider>
