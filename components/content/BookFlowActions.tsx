@@ -20,7 +20,8 @@ const BookFlowActions: React.FC<BookFlowActionsProps> = ({ bookId, quoteId }) =>
     const { mutate: likeBook } = useLikeBook();
     const { mutate: saveQuote } = useSaveQuote();
 
-    const handleToggleWantToRead = () => {
+    const handleToggleWantToRead = (e: React.MouseEvent) => {
+        e.stopPropagation();
         const wantToReadShelf = shelves?.find(s => s.id === 'want-to-read');
         if (wantToReadShelf) {
             toggleBook({ shelfId: wantToReadShelf.id, bookId });
@@ -28,15 +29,18 @@ const BookFlowActions: React.FC<BookFlowActionsProps> = ({ bookId, quoteId }) =>
         }
     };
 
-    const handleLike = () => {
+    const handleLike = (e: React.MouseEvent) => {
+        e.stopPropagation();
         likeBook(bookId);
     };
 
-    const handleShare = () => {
+    const handleShare = (e: React.MouseEvent) => {
+        e.stopPropagation();
         console.log(`[Mock] Sharing book ${bookId}`);
     };
 
-    const handleSaveQuote = () => {
+    const handleSaveQuote = (e: React.MouseEvent) => {
+        e.stopPropagation();
         saveQuote(quoteId);
     };
 
@@ -58,7 +62,7 @@ const BookFlowActions: React.FC<BookFlowActionsProps> = ({ bookId, quoteId }) =>
                     ))}
                 </div>
             )}
-             <button onClick={() => setIsExpanded(!isExpanded)} className="h-14 w-14 rounded-full bg-white flex items-center justify-center text-slate-800 shadow-lg transition-transform hover:scale-110" aria-label="Toggle actions">
+             <button onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} className="h-14 w-14 rounded-full bg-white flex items-center justify-center text-slate-800 shadow-lg transition-transform hover:scale-110" aria-label="Toggle actions">
                 <PlusIcon className={`h-8 w-8 transition-transform duration-300 ${isExpanded ? 'rotate-45' : ''}`} />
             </button>
         </div>

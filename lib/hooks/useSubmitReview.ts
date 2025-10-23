@@ -26,6 +26,10 @@ const submitReview = async ({ bookId, rating, text }: ReviewVariables) => {
         authorHandle: userProfile.handle,
         authorAvatar: userProfile.avatarUrl,
         timestamp: new Date().toISOString(),
+        // FIX: Initialize upvotes, downvotes, and commentsCount for new reviews.
+        upvotes: 0,
+        downvotes: 0,
+        commentsCount: 0,
     };
 
     const reviewsColRef = db.collection('reviews');

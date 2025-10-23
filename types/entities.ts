@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface User {
     uid: string;
     email: string;
@@ -19,8 +21,23 @@ export interface User {
     sharedInterest?: string; // e.g., "Shares your love for Sci-Fi"
 }
 
+export interface Author {
+    id: string;
+    nameEn: string;
+    nameAr: string;
+    avatarUrl: string;
+    bioEn: string;
+    bioAr: string;
+    lifespan: string;
+    countryEn: string;
+    countryAr: string;
+    languageEn: string;
+    languageAr: string;
+}
+
 export interface Book {
     id: string;
+    authorId: string;
     titleEn: string;
     titleAr: string;
     authorEn: string;
@@ -33,6 +50,8 @@ export interface Book {
     rating: number;
     ratingsCount: number;
     isEbookAvailable: boolean;
+    publicationDate?: string;
+    pageCount?: number;
 }
 
 export interface ShelfEntry {
@@ -64,6 +83,8 @@ export interface Quote {
     textAr: string;
     sourceEn: string;
     sourceAr: string;
+    bookId?: string;
+    authorId?: string;
 }
 
 export interface Project {
@@ -138,6 +159,9 @@ export interface Review {
     authorHandle: string;
     authorAvatar: string;
     timestamp: string; // ISO string
+    upvotes: number;
+    downvotes: number;
+    commentsCount: number;
 }
 
 export interface QuickRecommendations {

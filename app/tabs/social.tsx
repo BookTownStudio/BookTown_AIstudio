@@ -90,14 +90,13 @@ const SocialScreen: React.FC = () => {
     }, [resetTokens.social]);
 
     // Intersection Observer for infinite scroll
-    const observer = useRef<IntersectionObserver>();
+    const observer = useRef<IntersectionObserver | null>(null);
     const lastPostElementRef = useCallback(node => {
         if (isLoading || isFetchingNextPage) return;
         if (observer.current) observer.current.disconnect();
         
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasNextPage) {
-                // FIX: The `fetchNextPage` function from the mocked useInfiniteQuery hook was called with 0 arguments but expected 1. Passing an empty options object fixes this.
                 fetchNextPage({});
             }
         });
@@ -141,7 +140,6 @@ const SocialScreen: React.FC = () => {
                 )}
                 {!isSearching && activeSearchTab === 'users' && (
                     <div>
-                        {/* FIX: The User entity uses `uid` for its unique identifier, not `id`. */}
                         {searchResults?.users.map(user => <UserSearchResultCard key={user.uid} user={user} />)}
                     </div>
                 )}

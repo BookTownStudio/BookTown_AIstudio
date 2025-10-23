@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '../../store/navigation.tsx';
 import { useI18n } from '../../store/i18n.tsx';
@@ -15,9 +13,9 @@ import { AuthorsIcon } from '../../components/icons/AuthorsIcon.tsx';
 import { VenuesIcon } from '../../components/icons/VenuesIcon.tsx';
 import SelectBookModal from '../../components/modals/SelectBookModal.tsx';
 import { useBookCatalog } from '../../lib/hooks/useBookCatalog.ts';
-// FIX: Add file extension to entities.ts import
 import { Book } from '../../types/entities.ts';
 import { DraftIcon } from '../../components/icons/DraftIcon.tsx';
+import { useAuthorDetails } from '../../lib/hooks/useAuthorDetails.ts';
 
 type Attachment = {
     type: 'book' | 'quote' | 'post' | 'shelf' | 'author' | 'venue' | 'media';
@@ -26,7 +24,8 @@ type Attachment = {
 
 const AttachmentPreview: React.FC<{ attachment: Attachment, onRemove: () => void }> = ({ attachment, onRemove }) => {
     const { lang } = useI18n();
-    const { data: book, isLoading } = useBookCatalog(attachment?.type === 'book' ? attachment.id : undefined);
+    const { data: book, isLoading: isLoadingBook } = useBookCatalog(attachment?.type === 'book' ? attachment.id : undefined);
+    const { data: author, isLoading: isLoadingAuthor } = useAuthorDetails(attachment?.type === 'author' ? attachment.id : undefined);
 
     if (!attachment) return null;
 
@@ -34,13 +33,22 @@ const AttachmentPreview: React.FC<{ attachment: Attachment, onRemove: () => void
         <div className="mt-4">
             <BilingualText role="Caption" className="mb-2">Attachment:</BilingualText>
             <div className="relative p-2 border border-black/10 dark:border-white/10 rounded-lg">
-                {isLoading && <BilingualText role="Caption">Loading attachment...</BilingualText>}
+                {(isLoadingBook || isLoadingAuthor) && <BilingualText role="Caption">Loading attachment...</BilingualText>}
                 {attachment.type === 'book' && book && (
                     <div className="flex items-center gap-3">
                         <img src={book.coverUrl} alt="book cover" className="h-16 w-11 rounded object-cover"/>
                         <div>
                             <BilingualText className="font-semibold text-sm">{lang === 'en' ? book.titleEn : book.titleAr}</BilingualText>
                             <BilingualText role="Caption" className="!text-xs">{lang === 'en' ? book.authorEn : book.authorAr}</BilingualText>
+                        </div>
+                    </div>
+                )}
+                 {attachment.type === 'author' && author && (
+                    <div className="flex items-center gap-3">
+                        <img src={author.avatarUrl} alt="author avatar" className="h-16 w-16 rounded-full"/>
+                        <div>
+                            <BilingualText className="font-semibold text-sm">{lang === 'en' ? author.nameEn : author.nameAr}</BilingualText>
+                            <BilingualText role="Caption" className="!text-xs line-clamp-2">{lang === 'en' ? author.bioEn : author.bioAr}</BilingualText>
                         </div>
                     </div>
                 )}

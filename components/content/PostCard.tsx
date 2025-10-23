@@ -52,18 +52,26 @@ const ReactionMenu: React.FC<{ onSelect: (reaction: string) => void }> = ({ onSe
 const QuoteAttachment: React.FC<{ quoteId: string, ownerId: string }> = ({ quoteId, ownerId }) => {
     const { lang } = useI18n();
     const { data: quote, isLoading } = useQuoteDetails(quoteId, ownerId);
+    const { navigate, currentView } = useNavigation();
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigate({ type: 'immersive', id: 'quoteDetails', params: { quoteId, ownerId, from: currentView } });
+    }
     
     if (isLoading || !quote) return <div className="h-24 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded-lg mt-3" />;
 
     return (
-        <div className="mt-3 border border-black/10 dark:border-white/10 rounded-lg p-3">
-            <BilingualText role="Quote" className="!text-sm italic">
-                "{lang === 'en' ? quote.textEn : quote.textAr}"
-            </BilingualText>
-            <BilingualText role="Caption" className="mt-2 text-right">
-                — {lang === 'en' ? quote.sourceEn : quote.sourceAr}
-            </BilingualText>
-        </div>
+        <button onClick={handleClick} className="w-full text-left">
+            <div className="mt-3 border border-black/10 dark:border-white/10 rounded-lg p-3 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+                <BilingualText role="Quote" className="!text-sm italic">
+                    "{lang === 'en' ? quote.textEn : quote.textAr}"
+                </BilingualText>
+                <BilingualText role="Caption" className="mt-2 text-right">
+                    — {lang === 'en' ? quote.sourceEn : quote.sourceAr}
+                </BilingualText>
+            </div>
+        </button>
     );
 };
 
@@ -193,28 +201,44 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         setShowRepostMenu(false);
     }
     
+    const handleProfileClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigate({ type: 'immersive', id: 'profile', params: { userId: post.authorId, from: currentView } });
+    }
+
+    const handleBookClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (book) {
+            navigate({ type: 'immersive', id: 'bookDetails', params: { bookId: book.id, from: currentView } });
+        }
+    }
+
     return (
         <GlassCard className="!p-4">
             <div className={`flex items-start gap-4 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                <img src={post.authorAvatar} alt={post.authorName} className="h-12 w-12 rounded-full flex-shrink-0" />
+                <button onClick={handleProfileClick}><img src={post.authorAvatar} alt={post.authorName} className="h-12 w-12 rounded-full flex-shrink-0" /></button>
                 <div className="flex-grow">
-                    <div className={`flex items-baseline gap-2 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <BilingualText className="font-bold">{post.authorName}</BilingualText>
-                        <BilingualText role="Caption">{post.authorHandle}</BilingualText>
-                        <BilingualText role="Caption">· {timeAgo(post.timestamp)}</BilingualText>
-                    </div>
+                    <button onClick={handleProfileClick} className="w-full text-left">
+                        <div className={`flex items-baseline gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                            <BilingualText className="font-bold">{post.authorName}</BilingualText>
+                            <BilingualText role="Caption">{post.authorHandle}</BilingualText>
+                            <BilingualText role="Caption">· {timeAgo(post.timestamp)}</BilingualText>
+                        </div>
+                    </button>
                     <BilingualText role="Body" className="mt-1">
                         {post.content}
                     </BilingualText>
                     
                     {book && (
-                         <div className={`mt-3 border border-black/10 dark:border-white/10 rounded-lg flex items-center gap-3 p-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                             <img src={book.coverUrl} alt="book cover" className="h-16 w-11 rounded object-cover" />
-                             <div>
-                                 <BilingualText className="font-semibold text-sm">{lang === 'en' ? book.titleEn : book.titleAr}</BilingualText>
-                                 <BilingualText role="Caption" className="!text-xs">{lang === 'en' ? book.authorEn : book.authorAr}</BilingualText>
+                         <button onClick={handleBookClick} className="w-full text-left mt-3">
+                            <div className={`border border-black/10 dark:border-white/10 rounded-lg flex items-center gap-3 p-2 hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}>
+                                 <img src={book.coverUrl} alt="book cover" className="h-16 w-11 rounded object-cover" />
+                                 <div>
+                                     <BilingualText className="font-semibold text-sm">{lang === 'en' ? book.titleEn : book.titleAr}</BilingualText>
+                                     <BilingualText role="Caption" className="!text-xs">{lang === 'en' ? book.authorEn : book.authorAr}</BilingualText>
+                                 </div>
                              </div>
-                         </div>
+                         </button>
                     )}
 
                     {post.attachment && post.attachment.type !== 'book' && <AttachmentRenderer attachment={post.attachment} />}

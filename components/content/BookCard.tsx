@@ -3,6 +3,7 @@ import { useI18n } from '../../store/i18n';
 import BilingualText from '../ui/BilingualText';
 import ProgressBar from '../ui/ProgressBar';
 import { useBookCatalog } from '../../lib/hooks/useBookCatalog';
+import { useNavigation } from '../../store/navigation.tsx';
 
 interface BookCardProps {
   bookId: string;
@@ -14,6 +15,14 @@ interface BookCardProps {
 const BookCard: React.FC<BookCardProps> = ({ bookId, layout, progress, className = '' }) => {
     const { lang } = useI18n();
     const { data: book, isLoading, isError } = useBookCatalog(bookId);
+    const { navigate, currentView } = useNavigation();
+
+    const handleAuthorClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (book?.authorId) {
+            navigate({ type: 'immersive', id: 'authorDetails', params: { authorId: book.authorId, from: currentView } });
+        }
+    };
 
     const Skeleton = () => (
         <div className={`flex-shrink-0 ${layout === 'list' ? 'w-32 mr-4' : 'w-full'} ${className}`}>
@@ -40,6 +49,14 @@ const BookCard: React.FC<BookCardProps> = ({ bookId, layout, progress, className
         );
     }
 
+    const authorText = (
+        <button onClick={handleAuthorClick} className="w-full text-left group">
+            <BilingualText role="Caption" className="!text-xs mt-1 line-clamp-1 group-hover:text-accent transition-colors">
+                {lang === 'en' ? book.authorEn : book.authorAr}
+            </BilingualText>
+        </button>
+    );
+
     if (layout === 'grid') {
         return (
             <div className={`flex flex-col ${className}`}>
@@ -50,9 +67,7 @@ const BookCard: React.FC<BookCardProps> = ({ bookId, layout, progress, className
                     <BilingualText className="font-bold text-sm leading-tight line-clamp-2">
                         {lang === 'en' ? book.titleEn : book.titleAr}
                     </BilingualText>
-                    <BilingualText role="Caption" className="!text-xs mt-1 line-clamp-1">
-                        {lang === 'en' ? book.authorEn : book.authorAr}
-                    </BilingualText>
+                    {authorText}
                 </div>
             </div>
         );
@@ -72,9 +87,7 @@ const BookCard: React.FC<BookCardProps> = ({ bookId, layout, progress, className
                 <BilingualText className="font-bold text-xs leading-tight line-clamp-2">
                      {lang === 'en' ? book.titleEn : book.titleAr}
                 </BilingualText>
-                <BilingualText role="Caption" className="!text-xs mt-0.5 line-clamp-1">
-                     {lang === 'en' ? book.authorEn : book.authorAr}
-                </BilingualText>
+                {authorText}
             </div>
         </div>
     );

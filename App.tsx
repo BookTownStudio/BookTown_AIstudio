@@ -37,6 +37,9 @@ import BookFlowButton from './components/navigation/BookFlowButton.tsx';
 import { TabName } from './types/navigation.ts';
 import PostComposerScreen from './app/immersive/post-composer.tsx';
 import PeopleFlowScreen from './app/immersive/people-flow.tsx';
+import AuthorDetailsScreen from './app/author-details.tsx';
+import QuoteDetailsScreen from './app/quote-details.tsx';
+import BooksScreen from './app/drawer/books.tsx';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -101,6 +104,7 @@ const AppContent: React.FC = () => {
                     case 'feedback': return <FeedbackScreen />;
                     case 'email': return <EmailScreen />;
                     case 'adminDashboard': return <AdminDashboardScreen />;
+                    case 'books': return <BooksScreen />;
                     default: return <TabScreens />; // Fallback to tabs
                 }
             case 'immersive':
@@ -113,6 +117,8 @@ const AppContent: React.FC = () => {
                     case 'postComposer': return <PostComposerScreen />;
                     case 'peopleFlow': return <PeopleFlowScreen />;
                     case 'profile': return <ProfileScreen />;
+                    case 'authorDetails': return <AuthorDetailsScreen />;
+                    case 'quoteDetails': return <QuoteDetailsScreen />;
                     default: return <TabScreens />; // Fallback
                 }
             default:

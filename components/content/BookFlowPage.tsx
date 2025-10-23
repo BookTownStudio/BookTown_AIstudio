@@ -21,18 +21,15 @@ const BookFlowPage: React.FC<BookFlowPageProps> = ({ item }) => {
     };
 
     return (
-        <div className="relative h-screen w-screen flex-shrink-0 scroll-snap-align-start">
+        <div 
+            className="relative h-screen w-screen flex-shrink-0 scroll-snap-align-start cursor-pointer"
+            onClick={handleNavigateToDetails}
+            aria-label={`View details for ${lang === 'en' ? 'the book' : 'الكتاب'}`}
+        >
             {/* Background Image */}
             <img src={bookCoverUrl} alt="Book Cover" className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/50" />
             
-            {/* Clickable Area for Navigation */}
-            <div
-                className="absolute inset-0 z-0"
-                onClick={handleNavigateToDetails}
-                aria-label={`View details for ${lang === 'en' ? 'the book' : 'الكتاب'}`}
-            />
-
             {/* Content Overlay */}
             <div className="relative z-10 flex flex-col h-full justify-center items-center p-8 text-center text-white">
                 <BilingualText role="Quote" className="!text-3xl !text-white !border-white/50 drop-shadow-lg">

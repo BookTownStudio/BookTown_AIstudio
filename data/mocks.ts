@@ -1,4 +1,4 @@
-import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem } from '../types/entities.ts';
+import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author } from '../types/entities.ts';
 import { MentorIcon } from '../components/icons/MentorIcon.tsx';
 import { ChatIcon } from '../components/icons/ChatIcon.tsx';
 import { QuoteIcon } from '../components/icons/QuoteIcon.tsx';
@@ -98,10 +98,92 @@ export const mockUsers: User[] = [
     },
 ];
 
+// --- AUTHORS ---
+export const mockAuthors: Record<string, Author> = {
+    'author_matt_haig': {
+        id: 'author_matt_haig', nameEn: 'Matt Haig', nameAr: 'مات هيغ',
+        avatarUrl: 'https://images.gr-assets.com/authors/1589835942p8/30291.jpg',
+        bioEn: 'Matt Haig is an English author and journalist. He has written both fiction and non-fiction books for children and adults, often in the speculative fiction genre.',
+        bioAr: 'مات هيغ هو مؤلف وصحفي إنجليزي. لقد كتب كتبًا خيالية وغير خيالية للأطفال والكبار ، غالبًا في نوع الخيال التأملي.',
+        lifespan: 'b. 1975', countryEn: 'United Kingdom', countryAr: 'المملكة المتحدة', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_andy_weir': {
+        id: 'author_andy_weir', nameEn: 'Andy Weir', nameAr: 'آندي وير',
+        avatarUrl: 'https://images.gr-assets.com/authors/1415048705p8/5889454.jpg',
+        bioEn: 'Andy Weir built a two-decade career as a software engineer until the success of his debut novel, The Martian, allowed him to live out his dream of writing full-time.',
+        bioAr: 'بنى آندي وير مسيرة مهنية استمرت عقدين كمهندس برمجيات حتى نجاح روايته الأولى "المريخي" ، مما سمح له بتحقيق حلمه في الكتابة بدوام كامل.',
+        lifespan: 'b. 1972', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_frank_herbert': {
+        id: 'author_frank_herbert', nameEn: 'Frank Herbert', nameAr: 'فرانك هربرت',
+        avatarUrl: 'https://images.gr-assets.com/authors/1195233353p8/58.jpg',
+        bioEn: 'Frank Herbert was an American science fiction author best known for the 1965 novel Dune and its five sequels.',
+        bioAr: 'كان فرانك هربرت مؤلف خيال علمي أمريكي اشتهر برواية "كثيب" عام 1965 وتكملاتها الخمس.',
+        lifespan: '1920-1986', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_alex_michaelides': {
+        id: 'author_alex_michaelides', nameEn: 'Alex Michaelides', nameAr: 'أليكس ميكايليديس',
+        avatarUrl: 'https://images.gr-assets.com/authors/1529584307p8/17621448.jpg',
+        bioEn: 'Alex Michaelides is a bestselling British-Cypriot author and screenwriter. His debut novel, The Silent Patient, was a No. 1 New York Times bestseller.',
+        bioAr: 'أليكس ميكايليديس هو مؤلف وكاتب سيناريو بريطاني قبرصي من أكثر الكتب مبيعًا. كانت روايته الأولى "المريض الصامت" من أكثر الكتب مبيعًا في نيويورك تايمز.',
+        lifespan: 'b. 1977', countryEn: 'Cyprus', countryAr: 'قبرص', languageEn: 'English, Greek', languageAr: 'الإنجليزية، اليونانية',
+    },
+    'author_madeline_miller': {
+        id: 'author_madeline_miller', nameEn: 'Madeline Miller', nameAr: 'مادلين ميلر',
+        avatarUrl: 'https://images.gr-assets.com/authors/1328124933p8/1022736.jpg',
+        bioEn: 'Madeline Miller is an American novelist, author of The Song of Achilles and Circe. She holds an MA in Classics from Brown University.',
+        bioAr: 'مادلين ميلر روائية أمريكية ومؤلفة "أغنية أخيل" و "سيرسي". حاصلة على ماجستير في الكلاسيكيات من جامعة براون.',
+        lifespan: 'b. 1978', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_james_clear': {
+        id: 'author_james_clear', nameEn: 'James Clear', nameAr: 'جيمس كلير',
+        avatarUrl: 'https://images.gr-assets.com/authors/1532104523p8/15333155.jpg',
+        bioEn: 'James Clear is a writer and speaker focused on habits, decision-making, and continuous improvement. His book Atomic Habits has sold over 5 million copies worldwide.',
+        bioAr: 'جيمس كلير كاتب ومتحدث يركز على العادات واتخاذ القرار والتحسين المستمر. باع كتابه "العادات الذرية" أكثر من 5 ملايين نسخة في جميع أنحاء العالم.',
+        lifespan: 'b. 1986', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_tara_westover': {
+        id: 'author_tara_westover', nameEn: 'Tara Westover', nameAr: 'تارا ويستوفر',
+        avatarUrl: 'https://images.gr-assets.com/authors/1513903825p8/15024522.jpg',
+        bioEn: 'Tara Westover is an American memoirist, essayist and historian. Her memoir Educated debuted at No. 1 on The New York Times bestseller list.',
+        bioAr: 'تارا ويستوفر كاتبة مذكرات وكاتبة مقالات ومؤرخة أمريكية. ظهرت مذكراتها "متعلمة" لأول مرة في المرتبة الأولى على قائمة الكتب الأكثر مبيعًا في نيويورك تايمز.',
+        lifespan: 'b. 1986', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_delia_owens': {
+        id: 'author_delia_owens', nameEn: 'Delia Owens', nameAr: 'ديليا أوينز',
+        avatarUrl: 'https://images.gr-assets.com/authors/1526566236p8/17674313.jpg',
+        bioEn: 'Delia Owens is an American author and zoologist. She is best known for her 2018 novel Where the Crawdads Sing.',
+        bioAr: 'ديليا أوينز مؤلفة وعالمة حيوان أمريكية. اشتهرت بروايتها "حيث يغني جراد البحر" لعام 2018.',
+        lifespan: 'b. 1949', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_kazuo_ishiguro': {
+        id: 'author_kazuo_ishiguro', nameEn: 'Kazuo Ishiguro', nameAr: 'كازو إيشيغورو',
+        avatarUrl: 'https://images.gr-assets.com/authors/1507636136p8/284.jpg',
+        bioEn: 'Kazuo Ishiguro is a British novelist, screenwriter, and short-story writer. He was awarded the Nobel Prize in Literature in 2017.',
+        bioAr: 'كازو إيشيغورو روائي وكاتب سيناريو وكاتب قصة قصيرة بريطاني. حصل على جائزة نوبل في الأدب عام 2017.',
+        lifespan: 'b. 1954', countryEn: 'Japan / UK', countryAr: 'اليابان / المملكة المتحدة', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_kristin_hannah': {
+        id: 'author_kristin_hannah', nameEn: 'Kristin Hannah', nameAr: 'كريستين هانا',
+        avatarUrl: 'https://images.gr-assets.com/authors/1601925695p8/54493.jpg',
+        bioEn: 'Kristin Hannah is an American writer. She is the author of more than 20 novels, including the international bestseller, The Nightingale.',
+        bioAr: 'كريستين هانا كاتبة أمريكية. وهي مؤلفة لأكثر من 20 رواية ، بما في ذلك الرواية الأكثر مبيعًا عالميًا "العندليب".',
+        lifespan: 'b. 1960', countryEn: 'USA', countryAr: 'الولايات المتحدة الأمريكية', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+    'author_elara_vance': {
+        id: 'author_elara_vance', nameEn: 'Elara Vance', nameAr: 'إيلارا فانس',
+        avatarUrl: 'https://randomuser.me/api/portraits/women/68.jpg',
+        bioEn: 'Elara Vance is a debut author known for her intricate world-building in the steampunk fantasy genre. A former clockmaker, her works often feature complex machinery and cosmic mysteries.',
+        bioAr: 'إيلارا فانس مؤلفة لأول مرة تشتهر ببنائها المعقد للعالم في نوع الخيال الستيم بانك. صانعة ساعات سابقة ، غالبًا ما تتميز أعمالها بآلات معقدة وألغاز كونية.',
+        lifespan: 'b. 1988', countryEn: 'Aethelburg', countryAr: 'إيثلبورغ', languageEn: 'English', languageAr: 'الإنجليزية',
+    },
+};
+
 // --- BOOKS ---
 export const mockBooks: Record<string, Book> = {
     'book1': {
         id: 'book1',
+        authorId: 'author_matt_haig',
         titleEn: 'The Midnight Library',
         titleAr: 'مكتبة منتصف الليل',
         authorEn: 'Matt Haig',
@@ -114,9 +196,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.8,
         ratingsCount: 12053,
         isEbookAvailable: true,
+        publicationDate: '2020-09-29',
+        pageCount: 389,
     },
     'book2': {
         id: 'book2',
+        authorId: 'author_andy_weir',
         titleEn: 'Project Hail Mary',
         titleAr: 'مشروع هيل ماري',
         authorEn: 'Andy Weir',
@@ -129,9 +214,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.9,
         ratingsCount: 25890,
         isEbookAvailable: true,
+        publicationDate: '2021-05-04',
+        pageCount: 476,
     },
     'book3': {
         id: 'book3',
+        authorId: 'author_frank_herbert',
         titleEn: 'Dune',
         titleAr: 'كثيب',
         authorEn: 'Frank Herbert',
@@ -144,9 +232,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.6,
         ratingsCount: 98765,
         isEbookAvailable: false,
+        publicationDate: '1965-08-01',
+        pageCount: 412,
     },
     'book4': {
         id: 'book4',
+        authorId: 'author_alex_michaelides',
         titleEn: 'The Silent Patient',
         titleAr: 'المريض الصامت',
         authorEn: 'Alex Michaelides',
@@ -159,9 +250,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.1,
         ratingsCount: 890123,
         isEbookAvailable: true,
+        publicationDate: '2019-02-05',
+        pageCount: 325,
     },
     'book5': {
         id: 'book5',
+        authorId: 'author_madeline_miller',
         titleEn: 'Circe',
         titleAr: 'سيرسي',
         authorEn: 'Madeline Miller',
@@ -174,9 +268,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.3,
         ratingsCount: 750321,
         isEbookAvailable: true,
+        publicationDate: '2018-04-10',
+        pageCount: 393,
     },
     'book6': {
         id: 'book6',
+        authorId: 'author_james_clear',
         titleEn: 'Atomic Habits',
         titleAr: 'العادات الذرية',
         authorEn: 'James Clear',
@@ -189,9 +286,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.4,
         ratingsCount: 500123,
         isEbookAvailable: true,
+        publicationDate: '2018-10-16',
+        pageCount: 320,
     },
     'book7': {
         id: 'book7',
+        authorId: 'author_tara_westover',
         titleEn: 'Educated',
         titleAr: 'متعلمة',
         authorEn: 'Tara Westover',
@@ -204,9 +304,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.5,
         ratingsCount: 680456,
         isEbookAvailable: false,
+        publicationDate: '2018-02-20',
+        pageCount: 352,
     },
     'book8': {
         id: 'book8',
+        authorId: 'author_delia_owens',
         titleEn: 'Where the Crawdads Sing',
         titleAr: 'حيث يغني جراد البحر',
         authorEn: 'Delia Owens',
@@ -219,9 +322,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.4,
         ratingsCount: 1200000,
         isEbookAvailable: true,
+        publicationDate: '2018-08-14',
+        pageCount: 384,
     },
     'book9': {
         id: 'book9',
+        authorId: 'author_kazuo_ishiguro',
         titleEn: 'Klara and the Sun',
         titleAr: 'كلارا والشمس',
         authorEn: 'Kazuo Ishiguro',
@@ -234,9 +340,12 @@ export const mockBooks: Record<string, Book> = {
         rating: 3.9,
         ratingsCount: 345678,
         isEbookAvailable: true,
+        publicationDate: '2021-03-02',
+        pageCount: 303,
     },
     'book10': {
         id: 'book10',
+        authorId: 'author_kristin_hannah',
         titleEn: 'The Four Winds',
         titleAr: 'الرياح الأربع',
         authorEn: 'Kristin Hannah',
@@ -249,6 +358,8 @@ export const mockBooks: Record<string, Book> = {
         rating: 4.3,
         ratingsCount: 450123,
         isEbookAvailable: false,
+        publicationDate: '2021-02-02',
+        pageCount: 464,
     },
 };
 
@@ -354,6 +465,8 @@ export const mockRecommendedShelves: RecommendedShelf[] = [
 // --- QUOTES ---
 export const mockQuoteOfTheDay: Quote = {
     id: 'qotd1',
+    bookId: 'book3',
+    authorId: 'author_frank_herbert',
     textEn: 'A reader lives a thousand lives before he dies . . . The man who never reads lives only one.',
     textAr: 'القارئ يعيش ألف حياة قبل أن يموت... الرجل الذي لا يقرأ أبدًا يعيش حياة واحدة فقط.',
     sourceEn: 'George R.R. Martin, A Dance with Dragons',
@@ -362,7 +475,8 @@ export const mockQuoteOfTheDay: Quote = {
 
 export const mockUserQuotes: Quote[] = [
     mockQuoteOfTheDay,
-    { id: 'q2', textEn: "So it goes.", textAr: "هكذا تسير الأمور.", sourceEn: "Kurt Vonnegut, Slaughterhouse-Five", sourceAr: "كورت فونيجت، المسلخ الخامس" },
+    { id: 'q2', bookId: 'book_slaughterhouse_five', authorId: 'author_matt_haig', textEn: "So it goes.", textAr: "هكذا تسير الأمور.", sourceEn: "Kurt Vonnegut, Slaughterhouse-Five", sourceAr: "كورت فونيجت، المسلخ الخامس" },
+    { id: 'q3', bookId: 'book1', authorId: 'author_matt_haig', textEn: "The only way to learn is to live.", textAr: "الطريقة الوحيدة للتعلم هي أن تعيش.", sourceEn: "Matt Haig, The Midnight Library", sourceAr: "مات هيغ, مكتبة منتصف الليل" },
 ];
 
 
@@ -393,15 +507,7 @@ export const mockPosts: Post[] = [
 // --- AGENTS ---
 export const mockAgents: Agent[] = [
     {
-        id: 'mentor', name: 'AI Mentor', descriptionEn: 'Get feedback on your writing', descriptionAr: 'احصل على ملاحظات على كتابتك',
-        avatarUrl: '/assets/mentor-avatar.png', icon: MentorIcon, color: 'text-sky-400', isPremium: false,
-        examplePromptsEn: ["Critique this paragraph...", "Does this character feel real?", "Suggest a better opening line."],
-        examplePromptsAr: ["انقد هذه الفقرة...", "هل تبدو هذه الشخصية حقيقية؟", "اقترح سطراً افتتاحياً أفضل."],
-        placeholderEn: "Paste your text or ask a question...",
-        placeholderAr: "ألصق نصك أو اطرح سؤالاً..."
-    },
-    {
-        id: 'librarian', name: 'AI Librarian', descriptionEn: 'Find your next favorite book', descriptionAr: 'اعثر على كتابك المفضل التالي',
+        id: 'librarian', name: 'Librarian', descriptionEn: 'Find your next favorite book', descriptionAr: 'اعثر على كتابك المفضل التالي',
         avatarUrl: '/assets/librarian-avatar.png', icon: ChatIcon, color: 'text-green-400', isPremium: false,
         examplePromptsEn: ["Find books like 'Dune'", "I want a fast-paced thriller", "Recommend a classic novel"],
         examplePromptsAr: ["ابحث عن كتب تشبه 'كثيب'", "أريد رواية إثارة سريعة الوتيرة", "أوصي برواية كلاسيكية"],
@@ -409,7 +515,15 @@ export const mockAgents: Agent[] = [
         placeholderAr: "أخبرني عما تبحث عنه..."
     },
     {
-        id: 'quotes', name: 'Quote Finder', descriptionEn: 'Discover powerful quotes', descriptionAr: 'اكتشف اقتباسات قوية',
+        id: 'mentor', name: 'Mentor', descriptionEn: 'Get feedback on your writing', descriptionAr: 'احصل على ملاحظات على كتابتك',
+        avatarUrl: '/assets/mentor-avatar.png', icon: MentorIcon, color: 'text-sky-400', isPremium: false,
+        examplePromptsEn: ["Critique this paragraph...", "Does this character feel real?", "Suggest a better opening line."],
+        examplePromptsAr: ["انقد هذه الفقرة...", "هل تبدو هذه الشخصية حقيقية؟", "اقترح سطراً افتتاحياً أفضل."],
+        placeholderEn: "Paste your text or ask a question...",
+        placeholderAr: "ألصق نصك أو اطرح سؤالاً..."
+    },
+    {
+        id: 'quotes', name: 'Quotes', descriptionEn: 'Discover powerful quotes', descriptionAr: 'اكتشف اقتباسات قوية',
         avatarUrl: '/assets/quotes-avatar.png', icon: QuoteIcon, color: 'text-amber-400', isPremium: false,
         examplePromptsEn: ["Quotes about courage", "Find a quote from 'Project Hail Mary'"],
         examplePromptsAr: ["اقتباسات عن الشجاعة", "ابحث عن اقتباس من 'مشروع هيل ماري'"],
@@ -417,7 +531,7 @@ export const mockAgents: Agent[] = [
         placeholderAr: "أي نوع من الاقتباسات تبحث عنه؟"
     },
     {
-        id: 'lore', name: 'Lore Keeper', descriptionEn: 'Explore fictional worlds', descriptionAr: 'استكشف عوالم خيالية',
+        id: 'lore', name: 'Lore', descriptionEn: 'Explore fictional worlds', descriptionAr: 'استكشف عوالم خيالية',
         avatarUrl: '/assets/lore-avatar.png', icon: LoreIcon, color: 'text-purple-400', isPremium: true,
         examplePromptsEn: [], examplePromptsAr: [], placeholderEn: "", placeholderAr: ""
     }
@@ -540,8 +654,62 @@ export const mockReviews: Review[] = [
     {
         id: 'review1', bookId: 'book1', userId: 'jane_smith', rating: 5, text: 'A beautiful, thought-provoking novel that will stay with me for a long time. A must-read!',
         authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
-        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days ago
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+        upvotes: 210,
+        downvotes: 5,
+        commentsCount: 25,
     }
+];
+
+// --- DETAILED MOCK FOR BOOK DETAILS SCREEN ---
+export const mockBookDetails: Book = {
+    id: 'mock-celestial-labyrinth',
+    authorId: 'author_elara_vance',
+    titleEn: 'The Celestial Labyrinth',
+    titleAr: 'المتاهة السماوية',
+    authorEn: 'Elara Vance',
+    authorAr: 'إيلارا فانس',
+    coverUrl: 'https://images.unsplash.com/photo-1533134486753-c833f0ed4866?q=80&w=870&auto=format&fit=crop',
+    descriptionEn: 'In a city powered by captured starlight, a disgraced cartographer discovers a map that leads to the Celestial Labyrinth, a mythical construct said to hold the secrets of the cosmos. But the map is a key, and some secrets are better left locked away.',
+    descriptionAr: 'في مدينة تعمل بنور النجوم الأسيرة، تكتشف رسامة خرائط منبوذة خريطة تؤدي إلى المتاهة السماوية، وهي بناء أسطوري يُقال إنه يحمل أسرار الكون. لكن الخريطة هي مفتاح، وبعض الأسرار من الأفضل أن تبقى مغلقة.',
+    genresEn: ['Steampunk', 'Fantasy', 'Mystery'],
+    genresAr: ['ستيم بانك', 'خيال', 'غموض'],
+    rating: 4.7,
+    ratingsCount: 18432,
+    isEbookAvailable: true,
+    publicationDate: '2022-09-15',
+    pageCount: 384,
+};
+
+export const mockBookDetailsReviews: Review[] = [
+    {
+        id: 'review-mock-1',
+        bookId: 'mock-celestial-labyrinth',
+        userId: 'jane_smith',
+        rating: 5,
+        text: 'An absolutely stunning world with a plot that keeps you guessing until the very end. Elara Vance is a master of steampunk fantasy. A must-read!',
+        authorName: 'Jane Smith',
+        authorHandle: '@janesmith',
+        authorAvatar: 'https://randomuser.me/api/portraits/women/44.jpg',
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+        upvotes: 128,
+        downvotes: 3,
+        commentsCount: 12,
+    },
+    {
+        id: 'review-mock-2',
+        bookId: 'mock-celestial-labyrinth',
+        userId: 'sam_jones',
+        rating: 4,
+        text: 'The world-building is top-notch. I felt like I was walking the gas-lit streets of Aethelburg. The pacing slowed a little in the middle, but the explosive finale more than made up for it.',
+        authorName: 'Sam Jones',
+        authorHandle: '@samjones',
+        authorAvatar: 'https://randomuser.me/api/portraits/men/46.jpg',
+        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+        upvotes: 45,
+        downvotes: 1,
+        commentsCount: 5,
+    },
 ];
 
 
@@ -553,6 +721,7 @@ export const MOCK_DATA = {
         'sam_jones': mockUsers[2],
         'maria_garcia': mockUsers[3],
     },
+    authors: mockAuthors,
     catalog: {
         books: mockBooks,
     },
@@ -565,6 +734,8 @@ export const MOCK_DATA = {
     },
     reviews: {
         'review1': mockReviews[0],
+        'review-mock-1': mockBookDetailsReviews[0],
+        'review-mock-2': mockBookDetailsReviews[1],
     },
     posts: {
         'post1': mockPosts[0],

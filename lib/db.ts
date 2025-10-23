@@ -20,7 +20,7 @@ const setDeepValue = (obj: any, path: string[], value: any) => {
         }
         current = current[part];
     }
-    current[path[path.length - 1]] = value;
+    current[path.length - 1] = value;
 };
 
 const deleteDeepValue = (obj: any, path: string[]) => {
@@ -29,7 +29,7 @@ const deleteDeepValue = (obj: any, path: string[]) => {
         current = current?.[path[i]];
         if (current === undefined) return; // Path doesn't exist
     }
-    delete current[path[path.length - 1]];
+    delete current[path.length - 1]];
 };
 
 // Represents a chainable query

@@ -1,3 +1,5 @@
+import { ReactElement } from "react";
+
 export type TabName = 'home' | 'read' | 'discover' | 'write' | 'social';
 export type DrawerScreenName = 
     'profile' | 
@@ -8,9 +10,10 @@ export type DrawerScreenName =
     'feedback' |
     'settings' |
     'email' |
-    'adminDashboard';
+    'adminDashboard' |
+    'books';
     
-export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'bookflow' | 'postComposer' | 'peopleFlow' | 'profile';
+export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'bookflow' | 'postComposer' | 'peopleFlow' | 'profile' | 'authorDetails' | 'quoteDetails';
 
 // A flexible params type for navigation
 export interface NavigationParams {
