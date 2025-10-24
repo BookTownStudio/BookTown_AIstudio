@@ -451,10 +451,10 @@ export const mockBookFlowData: BookFlowItem[] = [
 
 // --- SHELVES ---
 export const mockShelves: Shelf[] = [
-    { id: 'currently-reading', titleEn: 'Currently Reading', titleAr: 'أقرأ حاليًا', entries: { 'book1': { bookId: 'book1', addedAt: '2023-10-26T10:00:00Z', progress: 65 } } },
-    { id: 'want-to-read', titleEn: 'Want to Read', titleAr: 'أرغب في قراءته', entries: { 'book2': { bookId: 'book2', addedAt: '2023-10-20T10:00:00Z' } } },
-    { id: 'finished', titleEn: 'Finished', titleAr: 'انتهيت من قراءته', entries: { 'book4': { bookId: 'book4', addedAt: '2023-08-15T10:00:00Z' } } },
-    { id: 'sci-fi-faves', titleEn: 'Sci-Fi Faves', titleAr: 'مفضلاتي من الخيال العلمي', entries: { 'book2': { bookId: 'book2', addedAt: '2023-09-15T10:00:00Z' }, 'book3': { bookId: 'book3', addedAt: '2023-09-01T10:00:00Z' } } },
+    { id: 'currently-reading', ownerId: 'alex_doe', titleEn: 'Currently Reading', titleAr: 'أقرأ حاليًا', entries: { 'book1': { bookId: 'book1', addedAt: '2023-10-26T10:00:00Z', progress: 65 } } },
+    { id: 'want-to-read', ownerId: 'alex_doe', titleEn: 'Want to Read', titleAr: 'أرغب في قراءته', entries: { 'book2': { bookId: 'book2', addedAt: '2023-10-20T10:00:00Z' } } },
+    { id: 'finished', ownerId: 'alex_doe', titleEn: 'Finished', titleAr: 'انتهيت من قراءته', entries: { 'book4': { bookId: 'book4', addedAt: '2023-08-15T10:00:00Z' } } },
+    { id: 'sci-fi-faves', ownerId: 'alex_doe', titleEn: 'Sci-Fi Faves', titleAr: 'مفضلاتي من الخيال العلمي', entries: { 'book2': { bookId: 'book2', addedAt: '2023-09-15T10:00:00Z' }, 'book3': { bookId: 'book3', addedAt: '2023-09-01T10:00:00Z' } } },
 ];
 
 export const mockRecommendedShelves: RecommendedShelf[] = [

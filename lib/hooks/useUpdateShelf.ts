@@ -7,6 +7,7 @@ interface UpdateShelfVariables {
     updates: {
         titleEn: string;
         titleAr: string;
+        userCoverUrl?: string;
     };
 }
 
@@ -16,13 +17,12 @@ const updateShelf = async ({ shelfId, updates }: UpdateShelfVariables) => {
 
     const shelfRef = db.doc('users', uid, 'shelves', shelfId);
     
-    // Mock: get existing shelf data and merge with updates
     const docSnap = await db.getDoc(shelfRef) as { exists: () => boolean; data: () => Shelf; };
 
     if (docSnap.exists()) {
         const existingData = docSnap.data();
         const newData = { ...existingData, ...updates };
-        await db.setDoc(shelfRef, newData); // setDoc overwrites in our mock
+        await db.setDoc(shelfRef, newData);
         console.log(`[Mock] Updated shelf ${shelfId} with`, updates);
         return { success: true };
     } else {

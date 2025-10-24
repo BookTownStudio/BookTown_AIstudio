@@ -7,7 +7,7 @@ import { useNavigation } from '../../store/navigation.tsx';
 
 interface BookCardProps {
   bookId: string;
-  layout: 'grid' | 'list';
+  layout: 'grid' | 'list' | 'row';
   progress?: number; // 0-100
   className?: string;
 }
@@ -68,6 +68,28 @@ const BookCard: React.FC<BookCardProps> = ({ bookId, layout, progress, className
                         {lang === 'en' ? book.titleEn : book.titleAr}
                     </BilingualText>
                     {authorText}
+                </div>
+            </div>
+        );
+    }
+
+    if (layout === 'row') {
+        return (
+            <div className={`flex w-full items-center gap-4 ${className}`}>
+                <div className="aspect-[2/3] w-14 flex-shrink-0 rounded-md overflow-hidden shadow-lg shadow-black/30">
+                    <img src={book.coverUrl} alt={lang === 'en' ? book.titleEn : book.titleAr} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-grow overflow-hidden">
+                    <BilingualText className="font-bold text-base leading-tight truncate">
+                        {lang === 'en' ? book.titleEn : book.titleAr}
+                    </BilingualText>
+                    {authorText}
+                    {progress !== undefined && (
+                        <div className="mt-2 space-y-1">
+                             <BilingualText role="Caption" className="!text-xs">{progress}% complete</BilingualText>
+                            <ProgressBar progress={progress} />
+                        </div>
+                    )}
                 </div>
             </div>
         );

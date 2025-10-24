@@ -1,39 +1,53 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import BilingualText from '../ui/BilingualText.tsx';
 import BookCard from './BookCard.tsx';
 import { useI18n } from '../../store/i18n.tsx';
-// FIX: Add file extension to entities.ts import
 import { Shelf, ShelfEntry } from '../../types/entities.ts';
 import { useShelfEntries } from '../../lib/hooks/useUserShelves.ts';
 import { useNavigation } from '../../store/navigation.tsx';
-import Button from '../ui/Button.tsx';
-import ShelfContextMenu from './ShelfContextMenu.tsx';
-import { ChevronDownIcon } from '../icons/ChevronDownIcon.tsx';
-import { VerticalEllipsisIcon } from '../icons/VerticalEllipsisIcon.tsx';
 import AddBookCard from './AddBookCard.tsx';
+import ShelfHeader from './ShelfHeader.tsx';
+import { useBookCatalog } from '../../lib/hooks/useBookCatalog.ts';
+import AddBookRow from './AddBookRow.tsx';
+import { useRemoveBookFromShelf } from '../../lib/hooks/useToggleBookOnShelf.ts';
+import Button from '../ui/Button.tsx';
+import { TrashIcon } from '../icons/TrashIcon.tsx';
 
 interface ShelfCarouselProps {
     shelf: Shelf;
     onAddBookRequest: (shelfId: string) => void;
     onEditRequest: (shelf: Shelf) => void;
+    onShareRequest: (shelf: Shelf) => void;
+    onDeleteRequest: (shelf: Shelf) => void;
     isOpen: boolean;
     onToggle: () => void;
+    onToggleLayout: () => void;
+    layout: 'carousel' | 'list';
     isDeletable: boolean;
 }
 
-const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ shelf, onAddBookRequest, onEditRequest, isOpen, onToggle, isDeletable }) => {
-    const { lang, isRTL } = useI18n();
-    const { data: entries, isLoading } = useShelfEntries(shelf.id);
+const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ 
+    shelf, 
+    onAddBookRequest, 
+    onEditRequest,
+    onShareRequest,
+    onDeleteRequest,
+    isOpen, 
+    onToggle, 
+    onToggleLayout,
+    layout,
+    isDeletable 
+}) => {
+    const { lang } = useI18n();
+    const { data: entries, isLoading } = useShelfEntries(shelf.id, shelf.ownerId);
     const { navigate, currentView } = useNavigation();
-    const [isMenuOpen, setMenuOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
+    const { mutate: removeBook, isLoading: isRemoving } = useRemoveBookFromShelf();
 
-    // State for drag and drop reordering
     const [orderedEntries, setOrderedEntries] = useState<ShelfEntry[]>([]);
     const draggedItemIndex = useRef<number | null>(null);
 
-    // Sync local state when entries from hook change
+    const firstBookId = entries && entries.length > 0 ? entries[0].bookId : undefined;
+    const { data: firstBook } = useBookCatalog(firstBookId);
+
     useEffect(() => {
         if (entries) {
             setOrderedEntries(entries);
@@ -44,49 +58,33 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ shelf, onAddBookRequest, 
         navigate({ type: 'immersive', id: 'bookDetails', params: { bookId, from: currentView } });
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setMenuOpen(false);
-            }
-        };
+    const handleRemoveBook = (e: React.MouseEvent, bookId: string) => {
+        e.stopPropagation(); // prevent navigation
+        removeBook({ shelfId: shelf.id, bookId });
+    };
 
-        if (isMenuOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [isMenuOpen]);
-
-    // Drag and Drop Handlers
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: number) => {
         draggedItemIndex.current = index;
         e.dataTransfer.effectAllowed = 'move';
-        // Add a small delay to allow the browser to render the drag image correctly
         setTimeout(() => {
             e.currentTarget.classList.add('dragging');
         }, 0);
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault(); // This is necessary to allow dropping
+        e.preventDefault();
     };
 
     const handleDrop = (e: React.DragEvent<HTMLDivElement>, dropIndex: number) => {
         e.preventDefault();
         const draggedIndex = draggedItemIndex.current;
-        if (draggedIndex === null || draggedIndex === dropIndex) {
-            return;
-        }
+        if (draggedIndex === null || draggedIndex === dropIndex) return;
 
         const newOrderedEntries = [...orderedEntries];
         const [draggedItem] = newOrderedEntries.splice(draggedIndex, 1);
         newOrderedEntries.splice(dropIndex, 0, draggedItem);
         
         setOrderedEntries(newOrderedEntries);
-        // In a real app, you would dispatch a mutation here to save the new order.
         console.log(`[Mock Save] New book order for shelf '${shelf.id}':`, newOrderedEntries.map(entry => entry.bookId));
     };
     
@@ -95,66 +93,94 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ shelf, onAddBookRequest, 
         draggedItemIndex.current = null;
     };
 
-    const bookCount = orderedEntries.length;
-
-    return (
-        <section>
-            <header className="flex items-center justify-between">
-                <button onClick={onToggle} className="flex-grow flex items-center justify-between text-left py-2 pr-2 group" aria-expanded={isOpen}>
-                    <div className="flex-grow">
-                        <BilingualText role="H1" className="!text-xl group-hover:text-accent transition-colors">
-                            {lang === 'en' ? shelf.titleEn : shelf.titleAr}
-                        </BilingualText>
-                        {!isLoading && (
-                            <BilingualText role="Caption">
-                                {bookCount} {lang === 'en' ? (bookCount === 1 ? 'book' : 'books') : 'كتاب'}
-                            </BilingualText>
-                        )}
-                    </div>
-                    <ChevronDownIcon className={`h-6 w-6 text-slate-500 dark:text-white/60 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
-                </button>
-                <div ref={menuRef} className="relative flex-shrink-0">
-                    <Button variant="icon" onClick={() => setMenuOpen(!isMenuOpen)}>
-                        <VerticalEllipsisIcon className="h-6 w-6" />
-                    </Button>
-                    {isMenuOpen && (
-                        <ShelfContextMenu 
-                            onAddBook={() => onAddBookRequest(shelf.id)}
-                            onEdit={() => onEditRequest(shelf)}
-                            onClose={() => setMenuOpen(false)}
-                            isRTL={isRTL}
-                            isDeletable={isDeletable}
-                        />
-                    )}
+    const renderBookList = () => {
+        if (layout === 'carousel') {
+             return (
+                 <div className="flex overflow-x-auto pt-2 pb-2 -mx-4 px-4 scrollbar-hide">
+                    <AddBookCard onClick={() => onAddBookRequest(shelf.id)} />
+                    {isLoading && Array.from({ length: 3 }).map((_, i) => (
+                        <BookCard key={i} bookId="" layout="list" />
+                    ))}
+                    {orderedEntries?.map((entry, index) => (
+                        <div 
+                            key={entry.bookId} 
+                            draggable="true"
+                            onDragStart={(e) => handleDragStart(e, index)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, index)}
+                            onDragEnd={handleDragEnd}
+                            onClick={() => handleBookClick(entry.bookId)} 
+                            className="transition-opacity cursor-pointer"
+                        >
+                            <BookCard 
+                                bookId={entry.bookId}
+                                layout="list"
+                                progress={shelf.id === 'currently-reading' ? entry.progress : undefined}
+                            />
+                        </div>
+                    ))}
                 </div>
-            </header>
+             );
+        }
+        
+        return (
+            <div className="space-y-2 pt-2 pb-2">
+                <AddBookRow onClick={() => onAddBookRequest(shelf.id)} />
+                {isLoading && Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-24 w-full bg-slate-700/50 animate-pulse rounded-lg" />
+                ))}
+                {orderedEntries?.map((entry, index) => (
+                    <div key={entry.bookId} className="flex items-center gap-2 group">
+                        <div 
+                            draggable="true"
+                            onDragStart={(e) => handleDragStart(e, index)}
+                            onDragOver={handleDragOver}
+                            onDrop={(e) => handleDrop(e, index)}
+                            onDragEnd={handleDragEnd}
+                            onClick={() => handleBookClick(entry.bookId)} 
+                            className="transition-opacity cursor-pointer flex-grow"
+                        >
+                            <BookCard 
+                                bookId={entry.bookId}
+                                layout="row"
+                                progress={shelf.id === 'currently-reading' ? entry.progress : undefined}
+                            />
+                        </div>
+                         <Button 
+                            variant="icon"
+                            onClick={(e) => handleRemoveBook(e, entry.bookId)}
+                            disabled={isRemoving}
+                            className="!text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+                            aria-label={lang === 'en' ? 'Remove book' : 'إزالة الكتاب'}
+                        >
+                            <TrashIcon className="h-5 w-5" />
+                        </Button>
+                    </div>
+                ))}
+            </div>
+        )
+    };
+    
+    return (
+        <section className="rounded-xl bg-white p-4 dark:bg-slate-800/40">
+            <ShelfHeader
+                shelf={shelf}
+                bookCount={orderedEntries.length}
+                coverUrl={shelf.userCoverUrl || firstBook?.coverUrl}
+                isOpen={isOpen}
+                onToggle={onToggle}
+                onAddBookRequest={() => onAddBookRequest(shelf.id)}
+                onEditRequest={() => onEditRequest(shelf)}
+                onShareRequest={() => onShareRequest(shelf)}
+                onDeleteRequest={() => onDeleteRequest(shelf)}
+                onToggleLayout={onToggleLayout}
+                isDeletable={isDeletable}
+                isLoading={isLoading}
+            />
             
             <div className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                 <div className="overflow-hidden">
-                     <div className="flex overflow-x-auto pt-2 pb-4 -mx-4 px-4 scrollbar-hide">
-                        <AddBookCard onClick={() => onAddBookRequest(shelf.id)} />
-                        {isLoading && Array.from({ length: 3 }).map((_, i) => (
-                            <BookCard key={i} bookId="" layout="list" />
-                        ))}
-                        {orderedEntries?.map((entry, index) => (
-                            <div 
-                                key={entry.bookId} 
-                                draggable="true"
-                                onDragStart={(e) => handleDragStart(e, index)}
-                                onDragOver={handleDragOver}
-                                onDrop={(e) => handleDrop(e, index)}
-                                onDragEnd={handleDragEnd}
-                                onClick={() => handleBookClick(entry.bookId)} 
-                                className="transition-opacity"
-                            >
-                                <BookCard 
-                                    bookId={entry.bookId}
-                                    layout="list"
-                                    progress={shelf.id === 'currently-reading' ? entry.progress : undefined}
-                                />
-                            </div>
-                        ))}
-                    </div>
+                    {renderBookList()}
                 </div>
             </div>
         </section>

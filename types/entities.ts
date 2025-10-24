@@ -62,9 +62,11 @@ export interface ShelfEntry {
 
 export interface Shelf {
     id: string;
+    ownerId: string;
     titleEn: string;
     titleAr: string;
     entries: { [bookId: string]: ShelfEntry };
+    userCoverUrl?: string;
 }
 
 export interface RecommendedShelf {

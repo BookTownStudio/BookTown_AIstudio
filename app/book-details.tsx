@@ -21,6 +21,10 @@ import { UploadIcon } from '../../components/icons/UploadIcon.tsx';
 import { EyeIcon } from '../../components/icons/EyeIcon.tsx';
 import { QuoteIcon } from '../../components/icons/QuoteIcon.tsx';
 import SelectShelfModal from '../../components/modals/SelectShelfModal.tsx';
+import { useUserShelves } from '../../lib/hooks/useUserShelves.ts';
+import { useRemoveBookFromShelf } from '../../lib/hooks/useToggleBookOnShelf.ts';
+import { TrashIcon } from '../../components/icons/TrashIcon.tsx';
+import { ShelvesIcon } from '../../components/icons/ShelvesIcon.tsx';
 
 const BookDetailsScreen: React.FC = () => {
     const { currentView, navigate } = useNavigation();
@@ -42,11 +46,18 @@ const BookDetailsScreen: React.FC = () => {
     const { data: relatedBookIds, isLoading: isLoadingRelated } = useRelatedBooks(book);
     const { data: reviews, isLoading: isLoadingReviews } = useBookReviews(bookId);
     const { mutate: submitReview, isLoading: isSubmittingReview } = useSubmitReview();
+    const { data: shelves } = useUserShelves();
+    const { mutate: removeBook, isLoading: isRemoving } = useRemoveBookFromShelf();
     
     const [rating, setRating] = useState(0);
     const [reviewText, setReviewText] = useState('');
     const [isShelfModalOpen, setShelfModalOpen] = useState(false);
     const [isSummaryExpanded, setSummaryExpanded] = useState(false);
+
+    const shelvesWithBook = useMemo(() => {
+        if (!shelves || !bookId) return [];
+        return shelves.filter(s => s.entries && Object.keys(s.entries).includes(bookId));
+    }, [shelves, bookId]);
     
     // --- Fallback Logic ---
     const displayBook = !isErrorBook && book ? book : mockBookDetails;
@@ -99,6 +110,13 @@ const BookDetailsScreen: React.FC = () => {
         });
     };
 
+    const handleRemove = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (shelvesWithBook.length === 1 && bookId) {
+            removeBook({ shelfId: shelvesWithBook[0].id, bookId });
+        }
+    };
+
     const getReviewFormTitle = () => {
         if (isLoadingReviews) {
             return lang === 'en' ? 'Write a Review' : 'اكتب مراجعة';
@@ -109,15 +127,46 @@ const BookDetailsScreen: React.FC = () => {
         return lang === 'en' ? 'Be the first to review!' : 'كن أول من يراجع!';
     };
 
-    const ActionButton: React.FC<{ icon: React.FC<any>, onClick: (e: React.MouseEvent) => void, label: string }> = ({ icon: Icon, onClick, label }) => (
+    const ActionButton: React.FC<{ icon: React.FC<any>, onClick: (e: React.MouseEvent) => void, label: string, disabled?: boolean }> = ({ icon: Icon, onClick, label, disabled = false }) => (
         <button 
             onClick={onClick} 
-            aria-label={label} 
-            className="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center text-white/80 hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-accent"
+            aria-label={label}
+            disabled={disabled}
+            className="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center text-white/80 hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50"
         >
             <Icon className="h-7 w-7" />
         </button>
     );
+    
+    const renderShelfActionButton = () => {
+        if (shelvesWithBook.length === 1) {
+            return (
+                <ActionButton 
+                    icon={TrashIcon} 
+                    onClick={handleRemove} 
+                    label="Remove from shelf"
+                    disabled={isRemoving}
+                />
+            );
+        }
+        if (shelvesWithBook.length > 1) {
+            return (
+                 <ActionButton 
+                    icon={ShelvesIcon} 
+                    onClick={(e) => { e.stopPropagation(); setShelfModalOpen(true); }} 
+                    label="Manage shelves"
+                />
+            );
+        }
+        // Default case: book is not on any shelf
+        return (
+            <ActionButton 
+                icon={PlusIcon} 
+                onClick={(e) => { e.stopPropagation(); setShelfModalOpen(true); }} 
+                label="Add to shelf"
+            />
+        );
+    };
 
     if (isLoadingBook) {
         return <div className="h-screen w-full flex items-center justify-center bg-slate-900"><LoadingSpinner /></div>;
@@ -157,7 +206,7 @@ const BookDetailsScreen: React.FC = () => {
                         </div>
 
                         <div className="mt-8 grid grid-cols-4 gap-4">
-                           <ActionButton icon={PlusIcon} onClick={(e) => { e.stopPropagation(); setShelfModalOpen(true); }} label="Add to shelf" />
+                           {renderShelfActionButton()}
                            <ActionButton icon={UploadIcon} onClick={handleShare} label="Share" />
                            <ActionButton icon={EyeIcon} onClick={displayBook.isEbookAvailable ? handleRead : handleBuy} label="Read or Buy" />
                            <ActionButton icon={QuoteIcon} onClick={handleViewQuotes} label="View Quotes" />

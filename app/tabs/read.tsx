@@ -1,4 +1,3 @@
-
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import AppNav from '../../components/navigation/AppNav.tsx';
 import ShelfCarousel from '../../components/content/ShelfCarousel.tsx';
@@ -17,6 +16,8 @@ import FloatingActionPanel from '../../components/ui/FloatingActionPanel.tsx';
 import { ShelvesIcon } from '../../components/icons/ShelvesIcon.tsx';
 import EditShelfModal from '../../components/modals/EditShelfModal.tsx';
 import { Shelf } from '../../types/entities.ts';
+import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal.tsx';
+import { useDeleteShelf } from '../../lib/hooks/useDeleteShelf.ts';
 
 const MANDATORY_SHELVES = ['currently-reading', 'want-to-read', 'finished'];
 
@@ -87,7 +88,7 @@ const RecommendationsPanel: React.FC<RecommendationsPanelProps> = ({ isOpen, onO
 const ReadScreen: React.FC = () => {
     const { lang } = useI18n();
     const { data: shelves, isLoading, isError } = useUserShelves();
-    const { resetTokens } = useNavigation();
+    const { navigate, currentView, resetTokens } = useNavigation();
     const mainContentRef = useRef<HTMLDivElement>(null);
     const isInitialMount = useRef(true);
 
@@ -98,6 +99,26 @@ const ReadScreen: React.FC = () => {
     const [isRecPanelOpen, setRecPanelOpen] = useState(false);
     const [isEditModalOpen, setEditModalOpen] = useState(false);
     const [shelfToEdit, setShelfToEdit] = useState<Shelf | null>(null);
+    const [shelfLayouts, setShelfLayouts] = useState<Record<string, 'carousel' | 'list'>>(() => {
+        try {
+            const item = window.localStorage.getItem('booktown-shelf-layouts');
+            return item ? JSON.parse(item) : {};
+        } catch (error) {
+            console.error("Error reading layouts from localStorage", error);
+            return {};
+        }
+    });
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [shelfToDelete, setShelfToDelete] = useState<Shelf | null>(null);
+    const { mutate: deleteShelf, isLoading: isDeleting } = useDeleteShelf();
+
+    useEffect(() => {
+        try {
+            window.localStorage.setItem('booktown-shelf-layouts', JSON.stringify(shelfLayouts));
+        } catch (error) {
+            console.error("Error writing layouts to localStorage", error);
+        }
+    }, [shelfLayouts]);
 
 
     // Tab Reset Effect
@@ -144,8 +165,41 @@ const ReadScreen: React.FC = () => {
         setEditModalOpen(false);
     };
 
+    const handleOpenDeleteModal = (shelf: Shelf) => {
+        setShelfToDelete(shelf);
+        setDeleteModalOpen(true);
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShelfToDelete(null);
+        setDeleteModalOpen(false);
+    };
+
+    const handleConfirmDelete = () => {
+        if (shelfToDelete) {
+            deleteShelf(shelfToDelete.id, {
+                onSuccess: handleCloseDeleteModal
+            });
+        }
+    };
+
     const toggleShelf = (shelfId: string) => {
         setOpenShelves(prev => ({ ...prev, [shelfId]: !prev[shelfId] }));
+    };
+    
+    const toggleLayout = (shelfId: string) => {
+        setShelfLayouts(prev => ({
+            ...prev,
+            [shelfId]: prev[shelfId] === 'list' ? 'carousel' : 'list'
+        }));
+    };
+
+    const handleShareRequest = (shelf: Shelf) => {
+        navigate({
+            type: 'immersive',
+            id: 'postComposer',
+            params: { from: currentView, attachment: { type: 'shelf', id: shelf.id, ownerId: shelf.ownerId } }
+        });
     };
 
     const sortedShelves = useMemo(() => {
@@ -184,7 +238,7 @@ const ReadScreen: React.FC = () => {
             <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-40">
                 <div className="container mx-auto px-4 md:px-8 py-4">
                     <header className="mb-6">
-                        <BilingualText role="H1" className="!text-3xl">
+                        <BilingualText role="H1" className="!text-2xl !font-semibold">
                             {lang === 'en' ? 'Your Library' : 'مكتبتك'}
                         </BilingualText>
                         <BilingualText role="Caption" className="mt-1">
@@ -194,15 +248,19 @@ const ReadScreen: React.FC = () => {
                         </BilingualText>
                     </header>
 
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                         {sortedShelves?.map(shelf => (
                             <ShelfCarousel 
                                 key={shelf.id}
                                 shelf={shelf} 
                                 onAddBookRequest={handleOpenAddBookModal} 
                                 onEditRequest={handleOpenEditModal}
+                                onShareRequest={handleShareRequest}
+                                onDeleteRequest={handleOpenDeleteModal}
                                 isOpen={openShelves[shelf.id] ?? false}
                                 onToggle={() => toggleShelf(shelf.id)}
+                                onToggleLayout={() => toggleLayout(shelf.id)}
+                                layout={shelfLayouts[shelf.id] || 'carousel'}
                                 isDeletable={!MANDATORY_SHELVES.includes(shelf.id)}
                             />
                         ))}
@@ -239,6 +297,14 @@ const ReadScreen: React.FC = () => {
                 isOpen={isEditModalOpen}
                 onClose={handleCloseEditModal}
                 shelf={shelfToEdit}
+            />
+             <ConfirmDeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={handleCloseDeleteModal}
+                onConfirm={handleConfirmDelete}
+                isDeleting={isDeleting}
+                itemName={shelfToDelete ? (lang === 'en' ? shelfToDelete.titleEn : shelfToDelete.titleAr) : ''}
+                itemType={lang === 'en' ? 'shelf' : 'رف'}
             />
         </>
     );

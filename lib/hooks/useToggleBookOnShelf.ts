@@ -33,3 +33,33 @@ export const useToggleBookOnShelf = () => {
         },
     });
 };
+
+
+// NEW HOOK
+interface RemoveBookFromShelfVars {
+    shelfId: string;
+    bookId: string;
+}
+
+const removeBook = async ({ shelfId, bookId }: RemoveBookFromShelfVars) => {
+    const { uid } = auth.currentUser || {};
+    if (!uid) throw new Error("User not authenticated");
+
+    const entryRef = db.doc('users', uid, 'shelves', shelfId, 'entries', bookId);
+    
+    await db.deleteDoc(entryRef);
+};
+
+export const useRemoveBookFromShelf = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: removeBook,
+        onSuccess: (data, variables) => {
+            const { uid } = auth.currentUser || {};
+            queryClient.invalidate(['shelfEntries', uid, variables.shelfId]);
+            queryClient.invalidate(['userShelves', uid]); // Also invalidate shelves to update book counts, etc.
+            console.log("Mutation success, invalidating shelf entries and user shelves.");
+        },
+    });
+};
