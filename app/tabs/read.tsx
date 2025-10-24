@@ -1,5 +1,5 @@
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import AppNav from '../../components/navigation/AppNav.tsx';
 import ShelfCarousel from '../../components/content/ShelfCarousel.tsx';
 import { useI18n } from '../../store/i18n.tsx';
@@ -15,6 +15,10 @@ import RecommendedShelfCard from '../../components/content/RecommendedShelfCard.
 import CreateShelfModal from '../../components/modals/CreateShelfModal.tsx';
 import FloatingActionPanel from '../../components/ui/FloatingActionPanel.tsx';
 import { ShelvesIcon } from '../../components/icons/ShelvesIcon.tsx';
+import EditShelfModal from '../../components/modals/EditShelfModal.tsx';
+import { Shelf } from '../../types/entities.ts';
+
+const MANDATORY_SHELVES = ['currently-reading', 'want-to-read', 'finished'];
 
 interface RecommendationsPanelProps {
     isOpen: boolean;
@@ -92,6 +96,9 @@ const ReadScreen: React.FC = () => {
     const [targetShelfId, setTargetShelfId] = useState<string | null>(null);
     const [openShelves, setOpenShelves] = useState<Record<string, boolean>>({});
     const [isRecPanelOpen, setRecPanelOpen] = useState(false);
+    const [isEditModalOpen, setEditModalOpen] = useState(false);
+    const [shelfToEdit, setShelfToEdit] = useState<Shelf | null>(null);
+
 
     // Tab Reset Effect
     useEffect(() => {
@@ -127,9 +134,31 @@ const ReadScreen: React.FC = () => {
         setAddModalOpen(false);
     };
 
+    const handleOpenEditModal = (shelf: Shelf) => {
+        setShelfToEdit(shelf);
+        setEditModalOpen(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setShelfToEdit(null);
+        setEditModalOpen(false);
+    };
+
     const toggleShelf = (shelfId: string) => {
         setOpenShelves(prev => ({ ...prev, [shelfId]: !prev[shelfId] }));
     };
+
+    const sortedShelves = useMemo(() => {
+        if (!shelves) return [];
+        return [...shelves].sort((a, b) => {
+            const aIndex = MANDATORY_SHELVES.indexOf(a.id);
+            const bIndex = MANDATORY_SHELVES.indexOf(b.id);
+            if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex;
+            if (aIndex !== -1) return -1;
+            if (bIndex !== -1) return 1;
+            return a.titleEn.localeCompare(b.titleEn);
+        });
+    }, [shelves]);
 
     const bookCount = shelves?.reduce((acc, shelf) => acc + Object.keys(shelf.entries || {}).length, 0) || 0;
     const shelfCount = shelves?.length || 0;
@@ -166,13 +195,15 @@ const ReadScreen: React.FC = () => {
                     </header>
 
                     <div className="space-y-2">
-                        {shelves?.map(shelf => (
+                        {sortedShelves?.map(shelf => (
                             <ShelfCarousel 
                                 key={shelf.id}
                                 shelf={shelf} 
                                 onAddBookRequest={handleOpenAddBookModal} 
+                                onEditRequest={handleOpenEditModal}
                                 isOpen={openShelves[shelf.id] ?? false}
                                 onToggle={() => toggleShelf(shelf.id)}
+                                isDeletable={!MANDATORY_SHELVES.includes(shelf.id)}
                             />
                         ))}
                     </div>
@@ -203,6 +234,11 @@ const ReadScreen: React.FC = () => {
             <CreateShelfModal
                 isOpen={isCreateShelfModalOpen}
                 onClose={() => setCreateShelfModalOpen(false)}
+            />
+            <EditShelfModal
+                isOpen={isEditModalOpen}
+                onClose={handleCloseEditModal}
+                shelf={shelfToEdit}
             />
         </>
     );

@@ -16,11 +16,13 @@ import AddBookCard from './AddBookCard.tsx';
 interface ShelfCarouselProps {
     shelf: Shelf;
     onAddBookRequest: (shelfId: string) => void;
+    onEditRequest: (shelf: Shelf) => void;
     isOpen: boolean;
     onToggle: () => void;
+    isDeletable: boolean;
 }
 
-const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ shelf, onAddBookRequest, isOpen, onToggle }) => {
+const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ shelf, onAddBookRequest, onEditRequest, isOpen, onToggle, isDeletable }) => {
     const { lang, isRTL } = useI18n();
     const { data: entries, isLoading } = useShelfEntries(shelf.id);
     const { navigate, currentView } = useNavigation();
@@ -118,8 +120,10 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({ shelf, onAddBookRequest, 
                     {isMenuOpen && (
                         <ShelfContextMenu 
                             onAddBook={() => onAddBookRequest(shelf.id)}
+                            onEdit={() => onEditRequest(shelf)}
                             onClose={() => setMenuOpen(false)}
                             isRTL={isRTL}
+                            isDeletable={isDeletable}
                         />
                     )}
                 </div>

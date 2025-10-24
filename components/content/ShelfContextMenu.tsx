@@ -12,21 +12,26 @@ import { TrashIcon } from '../icons/TrashIcon.tsx';
 
 interface ShelfContextMenuProps {
     onAddBook: () => void;
+    onEdit: () => void;
     onClose: () => void;
     isRTL: boolean;
+    isDeletable: boolean;
 }
 
-const ShelfContextMenu: React.FC<ShelfContextMenuProps> = ({ onAddBook, onClose, isRTL }) => {
+const ShelfContextMenu: React.FC<ShelfContextMenuProps> = ({ onAddBook, onEdit, onClose, isRTL, isDeletable }) => {
     const { lang } = useI18n();
 
     const menuItems = [
-        { labelEn: 'Edit', labelAr: 'تعديل', icon: EditIcon, action: () => console.log('Edit Shelf') },
-        { labelEn: 'Add Book', labelAr: 'إضافة كتاب', icon: BookPlusIcon, action: onAddBook },
-        { labelEn: 'Toggle Layout', labelAr: 'تبديل التخطيط', icon: ViewListIcon, action: () => console.log('Toggle Layout') },
-        { labelEn: 'Share', labelAr: 'مشاركة', icon: ShareIcon, action: () => console.log('Share Shelf') },
-        { labelEn: 'Duplicate', labelAr: 'تكرار', icon: DuplicateIcon, action: () => console.log('Duplicate Shelf') },
-        { labelEn: 'Delete Shelf', labelAr: 'حذف الرف', icon: TrashIcon, action: () => console.log('Delete Shelf'), isDestructive: true },
+        { labelEn: 'Edit', labelAr: 'تعديل', icon: EditIcon, action: onEdit, isDestructive: false },
+        { labelEn: 'Add Book', labelAr: 'إضافة كتاب', icon: BookPlusIcon, action: onAddBook, isDestructive: false },
+        { labelEn: 'Toggle Layout', labelAr: 'تبديل التخطيط', icon: ViewListIcon, action: () => console.log('Toggle Layout'), isDestructive: false },
+        { labelEn: 'Share', labelAr: 'مشاركة', icon: ShareIcon, action: () => console.log('Share Shelf'), isDestructive: false },
+        { labelEn: 'Duplicate', labelAr: 'تكرار', icon: DuplicateIcon, action: () => console.log('Duplicate Shelf'), isDestructive: false },
     ];
+
+    if (isDeletable) {
+        menuItems.push({ labelEn: 'Delete Shelf', labelAr: 'حذف الرف', icon: TrashIcon, action: () => console.log('Delete Shelf'), isDestructive: true });
+    }
 
     return (
         <div 
