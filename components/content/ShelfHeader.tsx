@@ -13,10 +13,10 @@ interface ShelfHeaderProps {
     coverUrl?: string;
     isOpen: boolean;
     onToggle: () => void;
-    onAddBookRequest: () => void;
-    onEditRequest: () => void;
+    onAddBookRequest?: () => void;
+    onEditRequest?: () => void;
     onShareRequest: () => void;
-    onDeleteRequest: () => void;
+    onDeleteRequest?: () => void;
     onToggleLayout: () => void;
     isDeletable: boolean;
     isLoading: boolean;

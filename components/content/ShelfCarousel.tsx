@@ -14,10 +14,10 @@ import { TrashIcon } from '../icons/TrashIcon.tsx';
 
 interface ShelfCarouselProps {
     shelf: Shelf;
-    onAddBookRequest: (shelfId: string) => void;
-    onEditRequest: (shelf: Shelf) => void;
+    onAddBookRequest?: (shelfId: string) => void;
+    onEditRequest?: (shelf: Shelf) => void;
     onShareRequest: (shelf: Shelf) => void;
-    onDeleteRequest: (shelf: Shelf) => void;
+    onDeleteRequest?: (shelf: Shelf) => void;
     isOpen: boolean;
     onToggle: () => void;
     onToggleLayout: () => void;
@@ -97,14 +97,14 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({
         if (layout === 'carousel') {
              return (
                  <div className="flex overflow-x-auto pt-2 pb-2 -mx-4 px-4 scrollbar-hide">
-                    <AddBookCard onClick={() => onAddBookRequest(shelf.id)} />
+                    {onAddBookRequest && <AddBookCard onClick={() => onAddBookRequest(shelf.id)} />}
                     {isLoading && Array.from({ length: 3 }).map((_, i) => (
                         <BookCard key={i} bookId="" layout="list" />
                     ))}
                     {orderedEntries?.map((entry, index) => (
                         <div 
                             key={entry.bookId} 
-                            draggable="true"
+                            draggable={!!onAddBookRequest} // Only allow dragging if user can edit the shelf
                             onDragStart={(e) => handleDragStart(e, index)}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, index)}
@@ -125,14 +125,14 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({
         
         return (
             <div className="space-y-2 pt-2 pb-2">
-                <AddBookRow onClick={() => onAddBookRequest(shelf.id)} />
+                {onAddBookRequest && <AddBookRow onClick={() => onAddBookRequest(shelf.id)} />}
                 {isLoading && Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="h-24 w-full bg-slate-700/50 animate-pulse rounded-lg" />
                 ))}
                 {orderedEntries?.map((entry, index) => (
                     <div key={entry.bookId} className="flex items-center gap-2 group">
                         <div 
-                            draggable="true"
+                            draggable={!!onAddBookRequest}
                             onDragStart={(e) => handleDragStart(e, index)}
                             onDragOver={handleDragOver}
                             onDrop={(e) => handleDrop(e, index)}
@@ -146,15 +146,17 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({
                                 progress={shelf.id === 'currently-reading' ? entry.progress : undefined}
                             />
                         </div>
-                         <Button 
-                            variant="icon"
-                            onClick={(e) => handleRemoveBook(e, entry.bookId)}
-                            disabled={isRemoving}
-                            className="!text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
-                            aria-label={lang === 'en' ? 'Remove book' : 'إزالة الكتاب'}
-                        >
-                            <TrashIcon className="h-5 w-5" />
-                        </Button>
+                        {onDeleteRequest && (
+                             <Button 
+                                variant="icon"
+                                onClick={(e) => handleRemoveBook(e, entry.bookId)}
+                                disabled={isRemoving}
+                                className="!text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+                                aria-label={lang === 'en' ? 'Remove book' : 'إزالة الكتاب'}
+                            >
+                                <TrashIcon className="h-5 w-5" />
+                            </Button>
+                        )}
                     </div>
                 ))}
             </div>
@@ -169,10 +171,10 @@ const ShelfCarousel: React.FC<ShelfCarouselProps> = ({
                 coverUrl={shelf.userCoverUrl || firstBook?.coverUrl}
                 isOpen={isOpen}
                 onToggle={onToggle}
-                onAddBookRequest={() => onAddBookRequest(shelf.id)}
-                onEditRequest={() => onEditRequest(shelf)}
+                onAddBookRequest={onAddBookRequest ? () => onAddBookRequest(shelf.id) : undefined}
+                onEditRequest={onEditRequest ? () => onEditRequest(shelf) : undefined}
                 onShareRequest={() => onShareRequest(shelf)}
-                onDeleteRequest={() => onDeleteRequest(shelf)}
+                onDeleteRequest={onDeleteRequest ? () => onDeleteRequest(shelf) : undefined}
                 onToggleLayout={onToggleLayout}
                 isDeletable={isDeletable}
                 isLoading={isLoading}

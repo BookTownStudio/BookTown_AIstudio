@@ -18,3 +18,21 @@ export const useFollowUser = () => {
         },
     });
 };
+
+
+const unfollowUser = async (userIdToUnfollow: string) => {
+    const { uid } = auth.currentUser || {};
+    if (!uid) throw new Error("Not authenticated");
+    console.log(`[Mock] User ${uid} is unfollowing user ${userIdToUnfollow}`);
+    await new Promise(res => setTimeout(res, 300));
+    return { success: true };
+};
+
+export const useUnfollowUser = () => {
+    return useMutation({
+        mutationFn: unfollowUser,
+        onSuccess: (data, userId) => {
+            console.log(`Successfully unfollowed user ${userId}`);
+        },
+    });
+};

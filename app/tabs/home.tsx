@@ -70,14 +70,28 @@ const QuickRecsCarousel: React.FC = () => {
         <div className="flex-shrink-0 w-32 mr-4">
             <button
                 onClick={handleSurpriseMe}
-                className="w-full aspect-[2/3] rounded-card bg-primary text-white p-3 flex flex-col items-center justify-center text-center shadow-lg shadow-black/30 hover:bg-opacity-80 transition-all duration-300"
+                className="group relative w-full aspect-[2/3] rounded-card bg-primary text-white p-3 flex flex-col items-center justify-center text-center shadow-lg shadow-black/30 hover:bg-opacity-80 transition-all duration-300 overflow-hidden"
                 aria-label={lang === 'en' ? 'Surprise me with a book' : 'فاجئني بكتاب'}
             >
-                <SurpriseIcon className="w-8 h-8 mb-2" />
-                <BilingualText className="font-bold text-sm leading-tight !text-white">
+                {/* Twinkles */}
+                <div className="absolute top-[20%] left-[15%] text-accent text-xl animate-twinkle-fade group-hover:opacity-0 transition-opacity duration-300" style={{ animationDelay: '0s' }}>
+                    ✨
+                </div>
+                <div className="absolute top-[30%] right-[20%] text-accent text-base animate-twinkle-fade group-hover:opacity-0 transition-opacity duration-300" style={{ animationDelay: '0.5s' }}>
+                    ✦
+                </div>
+                <div className="absolute bottom-[25%] left-[25%] text-accent text-lg animate-twinkle-fade group-hover:opacity-0 transition-opacity duration-300" style={{ animationDelay: '1s' }}>
+                    ✧
+                </div>
+
+                {/* Main Icon */}
+                <div className="relative z-10">
+                    <SurpriseIcon className="w-8 h-8 mb-2 animate-pulse-subtle group-hover:animate-none transition-transform duration-300 group-hover:scale-125" />
+                </div>
+                <BilingualText className="font-bold text-sm leading-tight !text-white relative z-10">
                     {lang === 'en' ? 'Surprise me with a book' : 'فاجئني بكتاب'}
                 </BilingualText>
-                <BilingualText role="Caption" className="!text-xs !text-white/80 mt-1">
+                <BilingualText role="Caption" className="!text-xs !text-white/80 mt-1 relative z-10">
                     {lang === 'en' ? 'Get a random AI-powered recommendation' : 'احصل على توصية عشوائية'}
                 </BilingualText>
             </button>

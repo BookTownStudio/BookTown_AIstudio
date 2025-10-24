@@ -36,6 +36,7 @@ export const mockUsers: User[] = [
         quotesSaved: 88,
         shelvesCount: 12,
         wordsWritten: 30630,
+        aiConsent: true,
     },
     {
         uid: 'jane_smith',
@@ -56,6 +57,7 @@ export const mockUsers: User[] = [
         shelvesCount: 25,
         wordsWritten: 0,
         sharedInterest: 'Shares your love for Thrillers',
+        aiConsent: false,
     },
     {
         uid: 'sam_jones',
@@ -76,6 +78,7 @@ export const mockUsers: User[] = [
         shelvesCount: 8,
         wordsWritten: 1200,
         sharedInterest: 'Also reads Non-fiction',
+        aiConsent: true,
     },
     {
         uid: 'maria_garcia',
@@ -95,6 +98,7 @@ export const mockUsers: User[] = [
         quotesSaved: 300,
         shelvesCount: 15,
         wordsWritten: 5800,
+        aiConsent: true,
     },
 ];
 
@@ -677,7 +681,7 @@ export const mockBookDetails: Book = {
     genresAr: ['ستيم بانك', 'خيال', 'غموض'],
     rating: 4.7,
     ratingsCount: 18432,
-    isEbookAvailable: true,
+    isEbookAvailable: false,
     publicationDate: '2022-09-15',
     pageCount: 384,
 };

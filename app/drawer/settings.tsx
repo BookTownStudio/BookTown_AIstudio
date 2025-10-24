@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import ScreenHeader from '../../components/navigation/ScreenHeader.tsx';
 import BilingualText from '../../components/ui/BilingualText.tsx';
@@ -7,6 +6,9 @@ import { useNavigation } from '../../store/navigation.tsx';
 import { useTheme } from '../../store/theme.tsx';
 import { useReadingPreferences, FontSize, FontStyle } from '../../store/reading-prefs.tsx';
 import Button from '../../components/ui/Button.tsx';
+import { useAuth } from '../../lib/auth.tsx';
+import { useUserProfile } from '../../lib/hooks/useUserProfile.ts';
+import { useUpdateAiConsent } from '../../lib/hooks/useUpdateAiConsent.ts';
 
 // Icons
 import { UploadIcon } from '../../components/icons/UploadIcon.tsx';
@@ -19,6 +21,7 @@ import { LanguageIcon } from '../../components/icons/LanguageIcon.tsx';
 import { UserIcon } from '../../components/icons/UserIcon.tsx';
 import { SecurityIcon } from '../../components/icons/SecurityIcon.tsx';
 import { ChevronRightIcon } from '../../components/icons/ChevronRightIcon.tsx';
+import { BrainIcon } from '../../components/icons/BrainIcon.tsx';
 
 const SettingsSection: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="mb-8">
@@ -86,6 +89,9 @@ const SettingsScreen: React.FC = () => {
     const { theme, toggleTheme } = useTheme();
     const { fontSize, setFontSize, fontStyle, setFontStyle } = useReadingPreferences();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const { user } = useAuth();
+    const { data: profile } = useUserProfile(user?.uid);
+    const { mutate: updateAiConsent } = useUpdateAiConsent();
 
     // Handlers
     const handleBack = () => navigate({ type: 'tab', id: 'home' });
@@ -103,6 +109,10 @@ const SettingsScreen: React.FC = () => {
             alert('Account deletion initiated. (Mock)');
         }
     };
+    const handleAiConsentToggle = () => {
+        updateAiConsent(!profile?.aiConsent);
+    }
+
 
     return (
         <div className="h-screen flex flex-col">
@@ -114,6 +124,18 @@ const SettingsScreen: React.FC = () => {
                         <input type="file" ref={fileInputRef} onChange={handleFileImport} accept=".csv" className="hidden" />
                         <SettingsItem icon={UploadIcon} label={lang === 'en' ? 'Import Reading History' : 'استيراد سجل القراءة'} onClick={handleImportClick} />
                         <SettingsItem icon={DownloadIcon} label={lang === 'en' ? 'Download All Data' : 'تنزيل كل البيانات'} onClick={handleExport} />
+                        <SettingsItem icon={BrainIcon} label={lang === 'en' ? 'AI/MatchMaker Data Usage' : 'استخدام بيانات الذكاء الاصطناعي'}>
+                            <label htmlFor="ai-consent-toggle" className="relative inline-flex items-center cursor-pointer">
+                                <input 
+                                    type="checkbox" 
+                                    id="ai-consent-toggle" 
+                                    className="sr-only peer"
+                                    checked={!!profile?.aiConsent}
+                                    onChange={handleAiConsentToggle}
+                                />
+                                <div className="w-11 h-6 bg-slate-600 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent/50 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </SettingsItem>
                     </SettingsSection>
 
                     <SettingsSection title={lang === 'en' ? 'General Preferences' : 'التفضيلات العامة'}>

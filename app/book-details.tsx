@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 // FIX: Added file extensions to imports
 import { useNavigation } from '../../store/navigation.tsx';
 import { useI18n } from '../../store/i18n.tsx';
@@ -19,12 +20,16 @@ import { XIcon } from '../../components/icons/XIcon.tsx';
 import { PlusIcon } from '../../components/icons/PlusIcon.tsx';
 import { UploadIcon } from '../../components/icons/UploadIcon.tsx';
 import { EyeIcon } from '../../components/icons/EyeIcon.tsx';
-import { QuoteIcon } from '../../components/icons/QuoteIcon.tsx';
 import SelectShelfModal from '../../components/modals/SelectShelfModal.tsx';
 import { useUserShelves } from '../../lib/hooks/useUserShelves.ts';
 import { useRemoveBookFromShelf } from '../../lib/hooks/useToggleBookOnShelf.ts';
 import { TrashIcon } from '../../components/icons/TrashIcon.tsx';
 import { ShelvesIcon } from '../../components/icons/ShelvesIcon.tsx';
+import { BasketIcon } from '../../components/icons/BasketIcon.tsx';
+import PurchaseHubModal from '../../components/modals/PurchaseHubModal.tsx';
+import { VerticalEllipsisIcon } from '../../components/icons/VerticalEllipsisIcon.tsx';
+import GlassCard from '../../components/ui/GlassCard.tsx';
+import { QuoteIcon } from '../../components/icons/QuoteIcon.tsx';
 
 const BookDetailsScreen: React.FC = () => {
     const { currentView, navigate } = useNavigation();
@@ -53,6 +58,19 @@ const BookDetailsScreen: React.FC = () => {
     const [reviewText, setReviewText] = useState('');
     const [isShelfModalOpen, setShelfModalOpen] = useState(false);
     const [isSummaryExpanded, setSummaryExpanded] = useState(false);
+    const [isPurchaseModalOpen, setIsPurchaseModalOpen] = useState(false);
+    const [isMenuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+        if (isMenuOpen) document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isMenuOpen]);
 
     const shelvesWithBook = useMemo(() => {
         if (!shelves || !bookId) return [];
@@ -83,10 +101,11 @@ const BookDetailsScreen: React.FC = () => {
     };
 
     const handleBuy = () => {
-        alert('This eBook is not available in our library. You can find it at your favorite online or local bookstore!');
+        setIsPurchaseModalOpen(true);
     };
     
     const handleViewQuotes = () => {
+        setMenuOpen(false);
         if (!bookId || bookId === 'surprise' || bookId === 'mock-celestial-labyrinth') return;
         navigate({ type: 'drawer', id: 'quotes', params: { bookId, from: currentView } });
     };
@@ -112,6 +131,7 @@ const BookDetailsScreen: React.FC = () => {
 
     const handleRemove = (e: React.MouseEvent) => {
         e.stopPropagation();
+        setMenuOpen(false);
         if (shelvesWithBook.length === 1 && bookId) {
             removeBook({ shelfId: shelvesWithBook[0].id, bookId });
         }
@@ -132,33 +152,22 @@ const BookDetailsScreen: React.FC = () => {
             onClick={onClick} 
             aria-label={label}
             disabled={disabled}
-            className="w-14 h-14 bg-slate-800 rounded-full flex items-center justify-center text-white/80 hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50"
+            className="w-full h-14 bg-slate-800 rounded-full flex items-center justify-center text-white/80 hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50"
         >
             <Icon className="h-7 w-7" />
         </button>
     );
     
     const renderShelfActionButton = () => {
-        if (shelvesWithBook.length === 1) {
+        if (shelvesWithBook.length > 0) {
             return (
                 <ActionButton 
-                    icon={TrashIcon} 
-                    onClick={handleRemove} 
-                    label="Remove from shelf"
-                    disabled={isRemoving}
-                />
-            );
-        }
-        if (shelvesWithBook.length > 1) {
-            return (
-                 <ActionButton 
                     icon={ShelvesIcon} 
                     onClick={(e) => { e.stopPropagation(); setShelfModalOpen(true); }} 
                     label="Manage shelves"
                 />
             );
         }
-        // Default case: book is not on any shelf
         return (
             <ActionButton 
                 icon={PlusIcon} 
@@ -176,10 +185,31 @@ const BookDetailsScreen: React.FC = () => {
         <>
             <div className="h-screen w-full flex flex-col bg-slate-900">
                 <header className="fixed top-0 left-0 right-0 z-20 bg-transparent">
-                    <div className="container mx-auto flex h-20 items-center justify-start px-4">
+                    <div className="container mx-auto flex h-20 items-center justify-between px-4">
                         <Button variant="icon" onClick={handleBack} className="bg-black/40 backdrop-blur-sm !text-white" aria-label={lang === 'en' ? 'Close' : 'إغلاق'}>
                             <XIcon className="h-6 w-6" />
                         </Button>
+                        <div ref={menuRef} className="relative">
+                            <Button variant="icon" onClick={() => setMenuOpen(!isMenuOpen)} className="bg-black/40 backdrop-blur-sm !text-white" aria-label={lang === 'en' ? 'More options' : 'المزيد من الخيارات'}>
+                                <VerticalEllipsisIcon className="h-6 w-6" />
+                            </Button>
+                            {isMenuOpen && (
+                                <div className="absolute top-full right-0 mt-2 z-30 w-56">
+                                    <GlassCard className="!p-2">
+                                        <ul className="space-y-1">
+                                            {shelvesWithBook.length === 1 && (
+                                                <li>
+                                                    <Button variant="ghost" className="w-full !justify-start !text-inherit !font-normal !px-3 !text-red-400 hover:!bg-red-500/10" onClick={handleRemove} disabled={isRemoving}>
+                                                        <TrashIcon className="h-5 w-5 mr-3" />
+                                                        {lang === 'en' ? 'Remove from Shelf' : 'إزالة من الرف'}
+                                                    </Button>
+                                                </li>
+                                            )}
+                                        </ul>
+                                    </GlassCard>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </header>
 
@@ -207,9 +237,13 @@ const BookDetailsScreen: React.FC = () => {
 
                         <div className="mt-8 grid grid-cols-4 gap-4">
                            {renderShelfActionButton()}
-                           <ActionButton icon={UploadIcon} onClick={handleShare} label="Share" />
-                           <ActionButton icon={EyeIcon} onClick={displayBook.isEbookAvailable ? handleRead : handleBuy} label="Read or Buy" />
                            <ActionButton icon={QuoteIcon} onClick={handleViewQuotes} label="View Quotes" />
+                           <ActionButton icon={UploadIcon} onClick={handleShare} label="Share" />
+                           {displayBook.isEbookAvailable ? (
+                               <ActionButton icon={EyeIcon} onClick={handleRead} label="Read" />
+                           ) : (
+                               <ActionButton icon={BasketIcon} onClick={handleBuy} label="Buy" />
+                           )}
                         </div>
 
                         <div className="mt-8">
@@ -271,6 +305,7 @@ const BookDetailsScreen: React.FC = () => {
                 </main>
             </div>
             {bookId && <SelectShelfModal isOpen={isShelfModalOpen} onClose={() => setShelfModalOpen(false)} bookId={bookId} />}
+            <PurchaseHubModal isOpen={isPurchaseModalOpen} onClose={() => setIsPurchaseModalOpen(false)} book={displayBook} />
         </>
     );
 };

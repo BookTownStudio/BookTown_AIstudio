@@ -10,11 +10,11 @@ import { DuplicateIcon } from '../icons/DuplicateIcon.tsx';
 import { TrashIcon } from '../icons/TrashIcon.tsx';
 
 interface ShelfContextMenuProps {
-    onAddBook: () => void;
-    onEdit: () => void;
+    onAddBook?: () => void;
+    onEdit?: () => void;
     onToggleLayout: () => void;
     onShare: () => void;
-    onDelete: () => void;
+    onDelete?: () => void;
     onClose: () => void;
     isRTL: boolean;
     isDeletable: boolean;
@@ -50,12 +50,12 @@ const ShelfContextMenu: React.FC<ShelfContextMenuProps> = ({
         >
             <GlassCard className="!p-2">
                 <ul className="space-y-1">
-                    {menuItems.map((item, index) => (
+                    {menuItems.filter(item => !!item.action).map((item, index) => (
                         <li key={index}>
                             <Button 
                                 variant="ghost" 
                                 className={`w-full !justify-start !text-inherit !font-normal !px-3 ${item.isDestructive ? '!text-red-400 hover:!bg-red-500/10' : ''}`}
-                                onClick={() => { item.action(); onClose(); }}
+                                onClick={() => { item.action!(); onClose(); }}
                             >
                                 <item.icon className={`h-5 w-5 ${isRTL ? 'ml-3' : 'mr-3'}`} />
                                 {lang === 'en' ? item.labelEn : item.labelAr}

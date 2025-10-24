@@ -19,6 +19,7 @@ export interface User {
     shelvesCount: number;
     wordsWritten: number;
     sharedInterest?: string; // e.g., "Shares your love for Sci-Fi"
+    aiConsent?: boolean;
 }
 
 export interface Author {
