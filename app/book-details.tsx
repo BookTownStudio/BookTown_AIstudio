@@ -1,4 +1,5 @@
 
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 // FIX: Added file extensions to imports
 import { useNavigation } from '../../store/navigation.tsx';
@@ -213,7 +214,7 @@ const BookDetailsScreen: React.FC = () => {
                     </div>
                 </header>
 
-                <main className="flex-grow overflow-y-auto pb-10">
+                <main className="flex-grow overflow-y-auto pb-8">
                     <div className="container mx-auto p-4 md:p-8 pt-20">
                         <div className={`flex flex-row gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
                             <div className="flex-shrink-0 w-32 sm:w-40">

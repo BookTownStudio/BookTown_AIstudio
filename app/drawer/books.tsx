@@ -68,7 +68,7 @@ const BooksScreen: React.FC = () => {
     return (
         <div className="h-screen flex flex-col">
             <ScreenHeader titleEn="Books" titleAr="الكتب" onBack={handleBack} />
-            <main className="flex-grow overflow-y-auto pt-20 pb-28">
+            <main className="flex-grow overflow-y-auto pt-20 pb-8">
                 <div className="container mx-auto px-4 md:px-8 h-full">
                     {author && (
                         <BilingualText role="Body" className="mb-4 text-slate-400 dark:text-white/60">

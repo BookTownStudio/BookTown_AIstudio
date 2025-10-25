@@ -101,7 +101,7 @@ const AuthorDetailsScreen: React.FC = () => {
                     </Button>
                 </div>
             </header>
-            <main className="flex-grow overflow-y-auto pt-20 pb-10">
+            <main className="flex-grow overflow-y-auto pt-20 pb-8">
                 <div className="container mx-auto px-4 md:px-8">
                     {/* Author Header */}
                     <div className={`flex flex-row gap-4 items-center ${isRTL ? 'flex-row-reverse' : ''}`}>

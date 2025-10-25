@@ -75,7 +75,7 @@ const AgentChatScreen: React.FC = () => {
             </header>
 
             {/* Chat Area */}
-            <main className="flex-grow pt-20 pb-20 overflow-y-auto">
+            <main className="flex-grow pt-20 pb-16 overflow-y-auto">
                 <div className="container mx-auto p-4 md:p-8 h-full">
                     {isLoading && <div className="flex justify-center items-center h-full"><LoadingSpinner /></div>}
                     {isError && <BilingualText className="text-center text-red-400">Error loading chat.</BilingualText>}

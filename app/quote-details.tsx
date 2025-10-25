@@ -27,7 +27,7 @@ const QuoteDetailsScreen: React.FC = () => {
                 </div>
             </header>
 
-            <main className="flex-grow flex items-center justify-center pt-20">
+            <main className="flex-grow flex items-center justify-center pt-20 pb-8">
                 <div className="container mx-auto p-4 md:p-8 text-center">
                     <BilingualText role="H1">
                         {lang === 'en' ? 'Quote Details' : 'تفاصيل الاقتباس'}

@@ -1,4 +1,4 @@
-import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author, ForYouFlowItem, Venue, Event, BookFair, VenueReview, Bookmark } from '../types/entities.ts';
+import { User, Book, Shelf, Quote, Project, Post, Agent, Review, RecommendedShelf, Template, BookFlowItem, Author, ForYouFlowItem, Venue, Event, BookFair, VenueReview, Bookmark, Conversation, DirectMessage, Notification } from '../types/entities.ts';
 import { MentorIcon } from '../components/icons/MentorIcon.tsx';
 import { ChatIcon } from '../components/icons/ChatIcon.tsx';
 import { QuoteIcon } from '../components/icons/QuoteIcon.tsx';
@@ -967,6 +967,98 @@ export const mockBookmarks: Bookmark[] = [
 ];
 
 
+export const mockConversations: Conversation[] = [
+    {
+        id: 'convo1',
+        contactId: 'jane_smith',
+        contactName: 'Jane Smith',
+        contactAvatar: mockUsers[1].avatarUrl,
+        lastMessage: "Yeah, Becky Chambers' Wayfarers series is peak hopepunk for me.",
+        timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+        unreadCount: 2,
+    },
+    {
+        id: 'convo2',
+        contactId: 'sam_jones',
+        contactName: 'Sam Jones',
+        contactAvatar: mockUsers[2].avatarUrl,
+        lastMessage: "You should definitely check out 'Children of Time'!",
+        timestamp: new Date(Date.now() - 27 * 60 * 60 * 1000).toISOString(),
+        unreadCount: 0,
+    },
+    {
+        id: 'convo3',
+        contactId: 'maria_garcia',
+        contactName: 'Maria Garcia',
+        contactAvatar: mockUsers[3].avatarUrl,
+        lastMessage: 'Oh, I love this! "The House in the Cerulean Sea" is a perfect example.',
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        unreadCount: 0,
+    },
+];
+
+export const mockMessages: Record<string, DirectMessage[]> = {
+    'convo1': [
+        { id: 'm1-1', senderId: 'jane_smith', text: "Just read a fascinating piece on the rise of 'hopepunk'.", timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString() },
+        { id: 'm1-2', senderId: 'alex_doe', text: "Oh really? I'm always looking for something more optimistic.", timestamp: new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString() },
+        { id: 'm1-3', senderId: 'jane_smith', text: "You would love it. What are some of your favorites?", timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
+        { id: 'm1-4', senderId: 'alex_doe', text: "Project Hail Mary was great. And I'm a big fan of Becky Chambers.", timestamp: new Date(Date.now() - 1.5 * 60 * 60 * 1000).toISOString() },
+        { id: 'm1-5', senderId: 'jane_smith', text: "Yeah, Becky Chambers' Wayfarers series is peak hopepunk for me.", timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() },
+        { id: 'm1-6', senderId: 'jane_smith', text: "Totally agree about Project Hail Mary!", timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000 + 1000).toISOString() },
+    ],
+    'convo2': [
+        { id: 'm2-1', senderId: 'sam_jones', text: "You should definitely check out 'Children of Time'!", timestamp: new Date(Date.now() - 27 * 60 * 60 * 1000).toISOString() },
+    ],
+    'convo3': [
+        { id: 'm3-1', senderId: 'maria_garcia', text: 'Oh, I love this! "The House in the Cerulean Sea" is a perfect example.', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
+    ]
+};
+
+export const mockNotifications: Notification[] = [
+    {
+        id: 'n1',
+        type: 'social_reply',
+        actorId: 'jane_smith',
+        postId: 'post8',
+        commentSnippet: "I actually agree! A well-written 'everyman' protagonist is so much more relatable.",
+        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+        isRead: false,
+    },
+    {
+        id: 'n2',
+        type: 'social_like',
+        actorId: 'sam_jones',
+        postId: 'post4',
+        timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+        isRead: false,
+    },
+    {
+        id: 'n3',
+        type: 'system_recommendation',
+        timestamp: new Date(Date.now() - 10 * 60 * 60 * 1000).toISOString(),
+        isRead: false,
+    },
+    {
+        id: 'n4',
+        type: 'activity_shelf_add',
+        actorId: 'maria_garcia',
+        quoteId: 'qotd1',
+        shelfId: 'rec1',
+        shelfOwnerId: 'jane_smith',
+        timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        isRead: true,
+    },
+    {
+        id: 'n5',
+        type: 'social_like',
+        actorId: 'maria_garcia',
+        postId: 'post12',
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        isRead: true,
+    },
+];
+
+
 // --- MOCK DB STRUCTURE ---
 export const MOCK_DATA = {
     users: {
@@ -1006,6 +1098,17 @@ export const MOCK_DATA = {
         acc[review.venueId][review.id] = review;
         return acc;
     }, {} as Record<string, Record<string, VenueReview>>),
+    conversations: mockConversations.reduce((acc, convo) => {
+        acc[convo.id] = convo;
+        return acc;
+    }, {} as Record<string, Conversation>),
+    messages: mockMessages,
+    notifications: {
+        'alex_doe': mockNotifications.reduce((acc, notif) => {
+            acc[notif.id] = notif;
+            return acc;
+        }, {} as Record<string, Notification>),
+    }
 };
 
 // Add shelves and projects for alex_doe to the mock DB

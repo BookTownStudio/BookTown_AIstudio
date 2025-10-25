@@ -284,3 +284,69 @@ export interface Feedback {
     attachments?: string[]; // Array of image URLs/references
     timestamp: string; // ISO string
 }
+
+export interface DirectMessage {
+    id: string;
+    senderId: string;
+    text: string;
+    timestamp: string; // ISO string
+}
+
+export interface Conversation {
+    id: string;
+    contactId: string; // Other user's UID
+    contactName: string; // Denormalized for quick access
+    contactAvatar: string; // Denormalized for quick access
+    lastMessage: string;
+    timestamp: string; // ISO string
+    unreadCount: number;
+}
+
+// --- Notifications ---
+export type NotificationCategory = 'mention' | 'system' | 'activity';
+
+export type NotificationType =
+  | 'social_like'
+  | 'social_reply'
+  | 'system_recommendation'
+  | 'activity_shelf_add';
+
+export interface BaseNotification {
+  id: string;
+  type: NotificationType;
+  timestamp: string; // ISO string
+  isRead: boolean;
+  actorId?: string; // The user who initiated the action (optional for system)
+}
+
+export interface SocialLikeNotification extends BaseNotification {
+  type: 'social_like';
+  actorId: string;
+  postId: string;
+}
+
+export interface SocialReplyNotification extends BaseNotification {
+  type: 'social_reply';
+  actorId: string;
+  postId: string;
+  commentSnippet: string;
+}
+
+export interface SystemRecommendationNotification extends BaseNotification {
+  type: 'system_recommendation';
+  actorId?: undefined; // System notifications have no actor
+}
+
+export interface ActivityShelfAddNotification extends BaseNotification {
+  type: 'activity_shelf_add';
+  actorId: string;
+  quoteId: string;
+  shelfId: string;
+  shelfOwnerId: string;
+}
+
+export type Notification =
+  | SocialLikeNotification
+  | SocialReplyNotification
+  | SystemRecommendationNotification
+  | ActivityShelfAddNotification;

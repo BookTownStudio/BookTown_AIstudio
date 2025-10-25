@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Button from '../ui/Button.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
@@ -15,7 +14,7 @@ interface AppNavProps {
 
 const AppNav: React.FC<AppNavProps> = ({ titleEn, titleAr }) => {
   const { isRTL, lang } = useI18n();
-  const { openDrawer } = useNavigation();
+  const { openDrawer, navigate, currentView } = useNavigation();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-20 bg-gray-50/50 dark:bg-slate-900/50 backdrop-blur-lg border-b border-black/10 dark:border-white/10">
@@ -36,11 +35,10 @@ const AppNav: React.FC<AppNavProps> = ({ titleEn, titleAr }) => {
 
             {/* Right Section */}
             <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
-                <Button variant="icon" aria-label={lang === 'en' ? 'Notifications' : 'الإشعارات'} className="relative">
+                <Button variant="icon" aria-label={lang === 'en' ? 'Notifications' : 'الإشعارات'} onClick={() => navigate({ type: 'immersive', id: 'notificationsFeed', params: { from: currentView } })}>
                     <BellIcon className="h-6 w-6" />
-                    <span className="absolute top-1.5 right-1.5 block h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-gray-50 dark:ring-slate-900"></span>
                 </Button>
-                <Button variant="icon" aria-label={lang === 'en' ? 'Messages' : 'الرسائل'}>
+                <Button variant="icon" aria-label={lang === 'en' ? 'Messages' : 'الرسائل'} onClick={() => navigate({ type: 'immersive', id: 'messengerList', params: { from: currentView } })}>
                     <EmailIcon className="h-6 w-6" />
                 </Button>
             </div>

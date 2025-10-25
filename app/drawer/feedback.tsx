@@ -74,7 +74,7 @@ const FeedbackScreen: React.FC = () => {
         return (
             <div className="h-screen flex flex-col">
                 <ScreenHeader titleEn="Feedback" titleAr="ملاحظات" onBack={handleBack} />
-                <main className="flex-grow overflow-y-auto pt-24 pb-28 flex items-center justify-center">
+                <main className="flex-grow overflow-y-auto pt-24 pb-8 flex items-center justify-center">
                     <div className="container mx-auto px-4 md:px-8 text-center">
                         <CheckCircleIcon className="h-16 w-16 text-accent mx-auto mb-4" />
                         <BilingualText role="H1" className="!text-2xl">
@@ -95,7 +95,7 @@ const FeedbackScreen: React.FC = () => {
     return (
         <div className="h-screen flex flex-col">
             <ScreenHeader titleEn="Feedback" titleAr="ملاحظات" onBack={handleBack} />
-            <main className="flex-grow overflow-y-auto pt-24 pb-28">
+            <main className="flex-grow overflow-y-auto pt-24 pb-8">
                 <form onSubmit={handleSubmit} className="container mx-auto px-4 md:px-8 space-y-6">
                     <div>
                         <BilingualText role="Caption" className="!text-slate-700 dark:!text-white/80 mb-2 block">

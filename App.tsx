@@ -41,6 +41,10 @@ import VenueDetailsScreen from './app/venue-details.tsx';
 // FIX: Add imports for DiscoveryFlowScreen and LiveSearchScreen
 import DiscoveryFlowScreen from './app/discovery/flow.tsx';
 import LiveSearchScreen from './app/search/live.tsx';
+import MessengerListScreen from './app/messenger/list.tsx';
+import MessengerChatScreen from './app/messenger/[id].tsx';
+import NotificationsFeedScreen from './app/notifications/feed.tsx';
+import PostDetailsScreen from './app/post-details.tsx';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -122,6 +126,10 @@ const AppContent: React.FC = () => {
                     // FIX: Add routes for discoveryFlow and liveSearch to the immersive view router.
                     case 'discoveryFlow': return <DiscoveryFlowScreen />;
                     case 'liveSearch': return <LiveSearchScreen />;
+                    case 'messengerList': return <MessengerListScreen />;
+                    case 'messengerChat': return <MessengerChatScreen />;
+                    case 'notificationsFeed': return <NotificationsFeedScreen />;
+                    case 'postDetails': return <PostDetailsScreen />;
                     default: return <TabScreens />; // Fallback
                 }
             default:

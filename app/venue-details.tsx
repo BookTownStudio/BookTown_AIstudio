@@ -86,7 +86,7 @@ const VenueDetailsScreen: React.FC = () => {
                     </Button>
                 </div>
             </header>
-            <main className="flex-grow overflow-y-auto pb-10">
+            <main className="flex-grow overflow-y-auto pb-8">
                 <div className="relative h-64 w-full">
                     <img src={venue.imageUrl} alt={name} className="w-full h-full object-cover"/>
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent"></div>

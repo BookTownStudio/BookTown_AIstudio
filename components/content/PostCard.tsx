@@ -220,6 +220,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, viewMode = 'list', onOpenDisc
     }
     
     const handleProfileClick = (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         navigate({ type: 'immersive', id: 'profile', params: { userId: post.authorId, from: currentView } });
     }
@@ -237,7 +238,18 @@ const PostCard: React.FC<PostCardProps> = ({ post, viewMode = 'list', onOpenDisc
             }
         };
 
-        const mainClickHandler = isBookPost ? handleNavigateToBook : onOpenDiscussion;
+        const mainClickHandler = (e: React.MouseEvent) => {
+            // If the click originated inside any button, let that button handle it and do nothing here.
+            if ((e.target as HTMLElement).closest('button')) {
+                return;
+            }
+
+            if (isBookPost) {
+                handleNavigateToBook();
+            } else if (onOpenDiscussion) {
+                onOpenDiscussion();
+            }
+        };
 
         return (
             <div 
@@ -247,19 +259,19 @@ const PostCard: React.FC<PostCardProps> = ({ post, viewMode = 'list', onOpenDisc
                 <img src={backgroundUrl} alt="Post background" className="absolute inset-0 w-full h-full object-cover blur-md scale-110" />
                 <div className="absolute inset-0 bg-black/60" />
 
-                {/* User Info Header - Top Left */}
-                <div className="absolute top-0 left-0 z-10 p-6">
+                {/* User Info - Bottom Left */}
+                <div className="absolute bottom-28 left-6 z-20">
                     <button onClick={handleProfileClick} className="flex items-center gap-3 text-left">
-                        <img src={post.authorAvatar} alt={post.authorName} className="h-10 w-10 rounded-full" />
+                        <img src={post.authorAvatar} alt={post.authorName} className="h-10 w-10 rounded-full border-2 border-white/30" />
                         <div>
-                            <BilingualText className="font-bold !text-white">{post.authorName}</BilingualText>
-                            <BilingualText role="Caption" className="!text-white/80">{post.authorHandle}</BilingualText>
+                            <BilingualText className="font-bold !text-white drop-shadow-md">{post.authorName}</BilingualText>
+                            <BilingualText role="Caption" className="!text-white/80 drop-shadow-md">{post.authorHandle}</BilingualText>
                         </div>
                     </button>
                 </div>
 
                 {/* Centered Content */}
-                <div className="relative z-10 flex flex-col h-full justify-center items-center p-8 pr-24 text-center">
+                <div className="relative z-10 flex flex-col h-full justify-center items-center p-8 pr-24 text-center pt-20">
                     {isBookPost && book ? (
                         <>
                             <div className="relative w-64 shadow-2xl shadow-black/50" style={{ perspective: '1000px' }}>

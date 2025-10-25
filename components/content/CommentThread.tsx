@@ -4,6 +4,7 @@ import { useI18n } from '../../store/i18n.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
 import Button from '../ui/Button.tsx';
 import { SendIcon } from '../icons/SendIcon.tsx';
+import { useNavigation } from '../../store/navigation.tsx';
 
 interface CommentThreadProps {
     post: Post;
@@ -11,6 +12,13 @@ interface CommentThreadProps {
 
 const CommentItem: React.FC<{ comment: PostComment }> = ({ comment }) => {
     const { lang } = useI18n();
+    const { navigate, currentView } = useNavigation();
+
+    const handleProfileClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        navigate({ type: 'immersive', id: 'profile', params: { userId: comment.authorId, from: currentView } });
+    };
+
     const timeAgo = (dateString: string) => {
         const seconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
         let interval = seconds / 86400;
@@ -24,12 +32,16 @@ const CommentItem: React.FC<{ comment: PostComment }> = ({ comment }) => {
 
     return (
         <div className="flex items-start gap-3 py-3">
-            <img src={comment.authorAvatar} alt={comment.authorName} className="h-10 w-10 rounded-full" />
+            <button onClick={handleProfileClick} className="flex-shrink-0">
+                <img src={comment.authorAvatar} alt={comment.authorName} className="h-10 w-10 rounded-full" />
+            </button>
             <div className="flex-grow">
-                 <div className="flex items-baseline gap-2">
-                    <BilingualText className="font-semibold">{comment.authorName}</BilingualText>
-                    <BilingualText role="Caption">{comment.authorHandle} · {timeAgo(comment.timestamp)}</BilingualText>
-                </div>
+                 <button onClick={handleProfileClick} className="text-left w-full group">
+                    <div className="flex items-baseline gap-2">
+                        <BilingualText className="font-semibold group-hover:underline">{comment.authorName}</BilingualText>
+                        <BilingualText role="Caption">{comment.authorHandle} · {timeAgo(comment.timestamp)}</BilingualText>
+                    </div>
+                 </button>
                 <BilingualText>{comment.text}</BilingualText>
             </div>
         </div>

@@ -53,7 +53,7 @@ const ReaderScreen: React.FC = () => {
                 </div>
             </header>
 
-            <main className="flex-grow pt-20 overflow-y-auto">
+            <main className="flex-grow pt-20 pb-8 overflow-y-auto">
                 <div className="container mx-auto p-4 md:p-8">
                     <BilingualText role="Body" className="text-lg leading-loose">
                         {lang === 'en' ? `This is a placeholder for the book content of "${book?.titleEn}". In a real application, this would be a paginated or scrollable view of the book's text. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.` : `هذا هو محتوى نائب لكتاب "${book?.titleAr}". في تطبيق حقيقي ، سيكون هذا عرضًا مقسمًا إلى صفحات أو قابلًا للتمرير لنص الكتاب. لوريم إيبسوم دولار سيت أميت ، كونسيكتيتور أديبيسينج إليت ، سيد دو إيوسمود تيمبور إنسيديدونت أوت لابور إت دولور ماجنا أليكوا. أوت إنيم أد مينيم فينيام ، كويز نوسترود إكسيرسيتاتيون أولامكو لابوريس نيسي أوت أليكويب إكس إيا كومودو كونسيكوات. دويز أوت إيرور دولار إن ريبريهينديريت إن فولوبتات فيليت إيس سيليوم دولور إيو فوجيات نولا بارياتور. إكسسيبتور سينت أوكيكات كوبيداتات نون برويدنت ، سانت إن كولبا كوي أوفيسيا ديسيرونت مولليت أنيم إد إست لابوروم.`}

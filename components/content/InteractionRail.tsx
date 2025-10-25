@@ -58,16 +58,19 @@ const InteractionRail: React.FC<InteractionRailProps> = ({ post, onOpenDiscussio
     const [isExpanded, setIsExpanded] = useState(true);
 
     const handleAction = (e: React.MouseEvent, action: string) => {
+        e.preventDefault();
         e.stopPropagation();
         console.log(`[Mock Action] ${action} on post ${post.id}`);
     }
 
-    const handleLike = (e: React.MouseEvent) => {
+    const handleLike = (e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
         e.stopPropagation();
-        handleAction(e, 'Like');
+        handleAction(e as React.MouseEvent, 'Like');
     };
     
     const handleLongPress = (e: React.MouseEvent | React.TouchEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         setShowReactionMenu(true);
     };
@@ -84,11 +87,11 @@ const InteractionRail: React.FC<InteractionRailProps> = ({ post, onOpenDiscussio
         { id: 'repost', props: { icon: RepostIcon, label: lang === 'en' ? 'Repost' : 'إعادة نشر', count: post.stats.reposts, iconClassName: 'text-green-400', onClick: (e: React.MouseEvent) => handleAction(e, 'Repost') } },
         { id: 'share', props: { icon: ShareIcon, label: lang === 'en' ? 'Share' : 'مشاركة', iconClassName: 'text-sky-400', onClick: (e: React.MouseEvent) => handleAction(e, 'Share') } },
         { id: 'bookmark', props: { icon: BookmarkIcon, label: lang === 'en' ? 'Bookmark' : 'حفظ', iconClassName: 'text-amber-400', onClick: (e: React.MouseEvent) => handleAction(e, 'Bookmark') } },
-        { id: 'comment', props: { icon: ChatIcon, label: lang === 'en' ? 'Comment' : 'تعليق', count: post.stats.comments, iconClassName: 'text-blue-300', onClick: (e: React.MouseEvent) => { e.stopPropagation(); onOpenDiscussion(); } } }
+        { id: 'comment', props: { icon: ChatIcon, label: lang === 'en' ? 'Comment' : 'تعليق', count: post.stats.comments, iconClassName: 'text-blue-300', onClick: (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); onOpenDiscussion(); } } }
     ];
 
     const allActionsProps = (onNewPost
-        ? [{ id: 'new-post', props: { icon: PlusIcon, label: lang === 'en' ? 'New Post' : 'منشور جديد', onClick: (e: React.MouseEvent) => { e.stopPropagation(); onNewPost!(); } } }, ...baseActionsProps]
+        ? [{ id: 'new-post', props: { icon: PlusIcon, label: lang === 'en' ? 'New Post' : 'منشور جديد', onClick: (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); onNewPost!(); } } }, ...baseActionsProps]
         : baseActionsProps).reverse();
 
 
