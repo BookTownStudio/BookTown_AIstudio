@@ -461,6 +461,10 @@ export const mockShelves: Shelf[] = [
     { id: 'sci-fi-faves', ownerId: 'alex_doe', titleEn: 'Sci-Fi Faves', titleAr: 'مفضلاتي من الخيال العلمي', entries: { 'book2': { bookId: 'book2', addedAt: '2023-09-15T10:00:00Z' }, 'book3': { bookId: 'book3', addedAt: '2023-09-01T10:00:00Z' } } },
 ];
 
+export const mockSamJonesShelves: Shelf[] = [
+    { id: '2024-reading-challenge', ownerId: 'sam_jones', titleEn: '2024 Reading Challenge', titleAr: 'تحدي قراءة 2024', entries: { 'book7': { bookId: 'book7', addedAt: '2024-01-01T10:00:00Z' } } },
+];
+
 export const mockRecommendedShelves: RecommendedShelf[] = [
     { id: 'rec1', titleEn: "Epic Fantasy Worlds", titleAr: 'عوالم الفانتازيا الملحمية', ownerName: 'Jane Smith', bookCovers: [mockBooks['book3'].coverUrl, mockBooks['book1'].coverUrl], followerCount: 12500 },
     { id: 'rec2', titleEn: "Mind-Bending Sci-Fi", titleAr: 'خيال علمي محير للعقل', ownerName: 'BookBot5000', bookCovers: [mockBooks['book2'].coverUrl, mockBooks['book1'].coverUrl], followerCount: 8432 },
@@ -482,6 +486,7 @@ export const mockUserQuotes: Quote[] = [
     mockQuoteOfTheDay,
     { id: 'q2', bookId: 'book_slaughterhouse_five', authorId: 'author_matt_haig', textEn: "So it goes.", textAr: "هكذا تسير الأمور.", sourceEn: "Kurt Vonnegut, Slaughterhouse-Five", sourceAr: "كورت فونيجت، المسلخ الخامس" },
     { id: 'q3', bookId: 'book1', authorId: 'author_matt_haig', textEn: "The only way to learn is to live.", textAr: "الطريقة الوحيدة للتعلم هي أن تعيش.", sourceEn: "Matt Haig, The Midnight Library", sourceAr: "مات هيغ, مكتبة منتصف الليل" },
+    { id: 'q4', bookId: undefined, authorId: undefined, textEn: "A blank page is a canvas for a new world.", textAr: "الصفحة البيضاء هي لوحة لعالم جديد.", sourceEn: "Anonymous", sourceAr: "مجهول" },
 ];
 
 
@@ -492,21 +497,129 @@ export const mockProjects: Project[] = [
 ];
 
 // --- POSTS ---
-export const mockPosts: Post[] = [
+export const mockSocialFeedPosts: Post[] = [
+    {
+        id: 'post2', authorId: 'sam_jones', authorName: 'Sam Jones', authorHandle: '@samjones', authorAvatar: mockUsers[2].avatarUrl,
+        content: "`Project Hail Mary` was phenomenal! The science, the friendship... everything. 🚀 Any other sci-fi books with a strong sense of optimism and problem-solving?",
+        timestamp: new Date(Date.now() - 28 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 132, comments: 1, reposts: 11 },
+        attachment: { type: 'book', bookId: 'book2' },
+        comments: [
+            { id: 'c2-1', authorId: 'alex_doe', authorName: 'Alex Doe', authorHandle: '@alexdoe', authorAvatar: mockUsers[0].avatarUrl, text: 'You should definitely check out "Children of Time" by Adrian Tchaikovsky!', timestamp: new Date(Date.now() - 27 * 60 * 60 * 1000).toISOString() },
+        ]
+    },
     {
         id: 'post1', authorId: 'jane_smith', authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
-        content: "Just finished The Midnight Library and I'm speechless. What an incredible concept. Has anyone else read it?",
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        stats: { likes: 15, comments: 4, reposts: 2 },
-        bookTagId: 'book1'
+        content: "Just read a fascinating piece on the rise of 'hopepunk'. It's such a refreshing counter to the grimdark trend. What are your favorite hopepunk novels?",
+        timestamp: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 74, comments: 2, reposts: 6 },
+        attachment: { type: 'book', bookId: 'book1' },
+        comments: [
+            { id: 'c1-1', authorId: 'maria_garcia', authorName: 'Maria Garcia', authorHandle: '@mariagarcia', authorAvatar: mockUsers[3].avatarUrl, text: 'Oh, I love this! "The House in the Cerulean Sea" is a perfect example.', timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() },
+            { id: 'c1-2', authorId: 'sam_jones', authorName: 'Sam Jones', authorHandle: '@samjones', authorAvatar: mockUsers[2].avatarUrl, text: 'Becky Chambers\' Wayfarers series is peak hopepunk for me.', timestamp: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString() },
+        ]
     },
     {
-        id: 'post2', authorId: 'alex_doe', authorName: 'Alex Doe', authorHandle: '@alexdoe', authorAvatar: mockUsers[0].avatarUrl,
-        content: "I'm about 65% through The Midnight Library. It's making me think about so many of my past choices. Highly recommend so far!",
-        timestamp: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(), // 22 hours ago
-        stats: { likes: 8, comments: 1, reposts: 0 },
-        bookTagId: 'book1'
+        id: 'post3', authorId: 'maria_garcia', authorName: 'Maria Garcia', authorHandle: '@mariagarcia', authorAvatar: mockUsers[3].avatarUrl,
+        content: "This quote has been on my mind all week. A reminder to embrace every experience. ✨",
+        timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 190, comments: 12, reposts: 15 },
+        attachment: { type: 'quote', quoteId: 'q3', quoteOwnerId: 'alex_doe' }, // Owner of quote is Alex
+        comments: []
     },
+    {
+        id: 'post4', authorId: 'alex_doe', authorName: 'Alex Doe', authorHandle: '@alexdoe', authorAvatar: mockUsers[0].avatarUrl,
+        content: "Just updated my 'Sci-Fi Faves' shelf. It's my personal hall of fame. What do you think of my picks?",
+        timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 62, comments: 9, reposts: 4 },
+        attachment: { type: 'shelf', shelfId: 'sci-fi-faves', ownerId: 'alex_doe' },
+        comments: []
+    },
+    {
+        id: 'post5', authorId: 'jane_smith', authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
+        content: "So excited for this! Elara Vance is one of my favorite new authors. Who's planning on going to The Gilded Page for the signing? ✒️",
+        timestamp: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 85, comments: 14, reposts: 7 },
+        attachment: { type: 'venue', venueId: 'event_elara_vance_signing' },
+        comments: []
+    },
+    {
+        id: 'post6', authorId: 'sam_jones', authorName: 'Sam Jones', authorHandle: '@samjones', authorAvatar: mockUsers[2].avatarUrl,
+        content: "Do you prefer reading one book at a time, or do you juggle multiple books at once? I'm a serial monogamist with my reading, but curious about others!",
+        timestamp: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 99, comments: 45, reposts: 2 },
+        comments: []
+    },
+    {
+        id: 'post7', authorId: 'maria_garcia', authorName: 'Maria Garcia', authorHandle: '@mariagarcia', authorAvatar: mockUsers[3].avatarUrl,
+        content: "I will never get tired of Greek mythology retellings. `Circe` was an absolute masterpiece. Madeline Miller's writing is pure magic.",
+        timestamp: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 280, comments: 21, reposts: 19 },
+        attachment: { type: 'book', bookId: 'book5' },
+        comments: []
+    },
+    {
+        id: 'post8', authorId: 'alex_doe', authorName: 'Alex Doe', authorHandle: '@alexdoe', authorAvatar: mockUsers[0].avatarUrl,
+        content: "Unpopular opinion: The 'chosen one' trope is overdone and I'm tired of it. Give me a protagonist who's just a regular person trying their best.",
+        timestamp: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 450, comments: 88, reposts: 40 },
+        comments: []
+    },
+    {
+        id: 'post9', authorId: 'jane_smith', authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
+        content: "My happy place. The best coffee and an even better atmosphere for diving into a new book. If you're in town, you have to visit The Gilded Page.",
+        timestamp: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 110, comments: 6, reposts: 3 },
+        attachment: { type: 'venue', venueId: 'venue_the_gilded_page' },
+        comments: []
+    },
+    {
+        id: 'post10', authorId: 'sam_jones', authorName: 'Sam Jones', authorHandle: '@samjones', authorAvatar: mockUsers[2].avatarUrl,
+        content: "Reading `Atomic Habits` has genuinely changed my daily routine. The idea of '1% better every day' is so powerful. Small changes, big results.",
+        timestamp: new Date(Date.now() - 9 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 180, comments: 15, reposts: 20 },
+        attachment: { type: 'book', bookId: 'book6' },
+        comments: []
+    },
+    {
+        id: 'post11', authorId: 'maria_garcia', authorName: 'Maria Garcia', authorHandle: '@mariagarcia', authorAvatar: mockUsers[3].avatarUrl,
+        content: "autumn leaves / a turning page / the story settles. #poetry #booklove",
+        timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 95, comments: 4, reposts: 8 },
+        comments: []
+    },
+    {
+        id: 'post12', authorId: 'alex_doe', authorName: 'Alex Doe', authorHandle: '@alexdoe', authorAvatar: mockUsers[0].avatarUrl,
+        content: "A huge shoutout to Andy Weir for making complex science so accessible and thrilling. Your books are a masterclass in storytelling. Can't wait for what's next!",
+        timestamp: new Date(Date.now() - 11 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 215, comments: 22, reposts: 30 },
+        attachment: { type: 'author', authorId: 'author_andy_weir' },
+        comments: []
+    },
+    {
+        id: 'post13', authorId: 'jane_smith', authorName: 'Jane Smith', authorHandle: '@janesmith', authorAvatar: mockUsers[1].avatarUrl,
+        content: "Needed this little bit of inspiration for my current writing project. Sometimes you just have to start.",
+        timestamp: new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 150, comments: 7, reposts: 12 },
+        attachment: { type: 'quote', quoteId: 'q4', quoteOwnerId: 'jane_smith' },
+        comments: []
+    },
+    {
+        id: 'post14', authorId: 'sam_jones', authorName: 'Sam Jones', authorHandle: '@samjones', authorAvatar: mockUsers[2].avatarUrl,
+        content: "Kicking off my '2024 Reading Challenge' shelf! I'm aiming for 50 books this year. Follow my progress and let's share recommendations!",
+        timestamp: new Date(Date.now() - 13 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 78, comments: 11, reposts: 5 },
+        attachment: { type: 'shelf', shelfId: '2024-reading-challenge', ownerId: 'sam_jones' },
+        comments: []
+    },
+    {
+        id: 'post15', authorId: 'maria_garcia', authorName: 'Maria Garcia', authorHandle: '@mariagarcia', authorAvatar: mockUsers[3].avatarUrl,
+        content: "Finished `Where the Crawdads Sing` and... wow. The atmosphere, the mystery, the prose. It's a story that will linger. So beautifully written.",
+        timestamp: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+        stats: { likes: 302, comments: 18, reposts: 25 },
+        attachment: { type: 'book', bookId: 'book8' },
+        comments: []
+    }
 ];
 
 // --- AGENTS ---
@@ -878,10 +991,10 @@ export const MOCK_DATA = {
         'review-mock-1': mockBookDetailsReviews[0],
         'review-mock-2': mockBookDetailsReviews[1],
     },
-    posts: {
-        'post1': mockPosts[0],
-        'post2': mockPosts[1],
-    },
+    posts: mockSocialFeedPosts.reduce((acc, post) => {
+        acc[post.id] = post;
+        return acc;
+    }, {} as Record<string, Post>),
     venues: mockVenuesAndEvents.reduce((acc, item) => {
         acc[item.id] = item;
         return acc;
@@ -914,4 +1027,14 @@ export const MOCK_DATA = {
 (MOCK_DATA.users['alex_doe'] as any).bookmarks = mockBookmarks.reduce((acc, bookmark) => {
     acc[bookmark.id] = bookmark;
     return acc;
-}, {} as Record<string, Bookmark>)
+}, {} as Record<string, Bookmark>);
+
+// Add shelves/quotes for other users to support attachments
+(MOCK_DATA.users['sam_jones'] as any).shelves = mockSamJonesShelves.reduce((acc, shelf) => {
+    acc[shelf.id] = shelf;
+    return acc;
+}, {} as Record<string, Shelf>);
+
+(MOCK_DATA.users['jane_smith'] as any).quotes = {
+    'q4': mockUserQuotes.find(q => q.id === 'q4')
+};

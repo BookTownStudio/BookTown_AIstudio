@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import AppNav from '../../components/navigation/AppNav.tsx';
 import { useI18n } from '../../store/i18n.tsx';
-import Fab from '../../components/ui/Fab.tsx';
 import { PlusIcon } from '../../components/icons/PlusIcon.tsx';
 import { useUserProjects } from '../../lib/hooks/useUserProjects.ts';
 import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
@@ -12,6 +11,7 @@ import TemplateCard from '../../components/content/TemplateCard.tsx';
 import { useNavigation } from '../../store/navigation.tsx';
 import { mockTemplates } from '../../data/mocks.ts';
 import { TemplatesIcon } from '../../components/icons/TemplatesIcon.tsx';
+import Button from '../../components/ui/Button.tsx';
 
 interface TemplatesPanelTriggerProps {
     isOpen: boolean;
@@ -175,6 +175,15 @@ const WriteScreen: React.FC = () => {
             <AppNav titleEn="Write" titleAr="اكتب" />
             <main className="flex-grow overflow-y-auto pt-20 pb-40">
                 <div className="container mx-auto px-4 md:px-8 py-6">
+                    <div className="flex justify-between items-center mb-6">
+                        <BilingualText role="H1" className="!text-2xl !font-semibold">
+                            {lang === 'en' ? 'Your Projects' : 'مشاريعك'}
+                        </BilingualText>
+                        <Button variant="primary" onClick={handleNewProject}>
+                            <PlusIcon className="h-5 w-5 sm:mr-2" />
+                            <span className="hidden sm:inline">{lang === 'en' ? 'New Project' : 'مشروع جديد'}</span>
+                        </Button>
+                    </div>
                     {renderContent()}
                 </div>
             </main>
@@ -183,9 +192,6 @@ const WriteScreen: React.FC = () => {
                 onOpen={() => setPanelOpen(true)}
                 onClose={() => setPanelOpen(false)}
             />
-            <Fab onClick={handleNewProject} aria-label={lang === 'en' ? 'New Blank Project' : 'مشروع فارغ جديد'}>
-                <PlusIcon className="h-8 w-8" />
-            </Fab>
         </div>
     );
 };

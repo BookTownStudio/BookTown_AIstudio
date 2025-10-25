@@ -112,6 +112,16 @@ export type PostAttachment =
   | { type: 'post'; postId: string };
 
 
+export interface PostComment {
+    id: string;
+    authorId: string;
+    authorName: string;
+    authorHandle: string;
+    authorAvatar: string;
+    text: string;
+    timestamp: string; // ISO string
+}
+
 export interface Post {
     id: string;
     authorId: string;
@@ -123,11 +133,11 @@ export interface Post {
     stats: {
         likes: number;
         comments: number;
-
         reposts: number;
     };
     bookTagId?: string; // Optional book tag
     attachment?: PostAttachment;
+    comments?: PostComment[];
 }
 
 export interface Agent {

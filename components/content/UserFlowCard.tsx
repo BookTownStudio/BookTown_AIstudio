@@ -33,7 +33,7 @@ const UserFlowCard: React.FC<UserFlowCardProps> = ({ user }) => {
 
     return (
         <div 
-            className="relative h-screen w-screen flex-shrink-0 scroll-snap-align-start cursor-pointer"
+            className="relative h-screen w-full flex-shrink-0 scroll-snap-align-start cursor-pointer"
             onClick={handleViewProfile}
         >
             {/* Background Image */}

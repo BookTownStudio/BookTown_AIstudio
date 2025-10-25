@@ -9,9 +9,9 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
 import { Venue, Event } from '../../types/entities.ts';
 import VenueCard from '../../components/content/VenueCard.tsx';
 import EventCard from '../../components/content/EventCard.tsx';
-import Fab from '../../components/ui/Fab.tsx';
 import { PlusIcon } from '../../components/icons/PlusIcon.tsx';
 import CreateVenueModal from '../../components/modals/CreateVenueModal.tsx';
+import Button from '../../components/ui/Button.tsx';
 
 type VenuesTab = 'locations' | 'events';
 
@@ -73,14 +73,21 @@ const VenuesScreen: React.FC = () => {
                 <ScreenHeader titleEn="Venues" titleAr="الأماكن" onBack={handleBack} />
                 <main className="flex-grow overflow-y-auto pt-20 pb-28">
                     <div className="container mx-auto px-4 md:px-8 h-full">
-                        <InputField
-                            id="venue-search"
-                            label=""
-                            type="search"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder={lang === 'en' ? 'Search bookshops, libraries, or fairs...' : 'ابحث عن متاجر كتب، مكتبات، أو معارض...'}
-                        />
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="flex-grow">
+                                <InputField
+                                    id="venue-search"
+                                    label=""
+                                    type="search"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    placeholder={lang === 'en' ? 'Search bookshops, libraries, or fairs...' : 'ابحث عن متاجر كتب، مكتبات، أو معارض...'}
+                                />
+                            </div>
+                             <Button variant="primary" onClick={() => setCreateModalOpen(true)} className="!px-3 !h-11 flex-shrink-0">
+                                <PlusIcon className="h-5 w-5" />
+                            </Button>
+                        </div>
                         
                         <div className="my-4 border-b border-white/10 flex items-center">
                             {TABS.map(tab => (
@@ -93,9 +100,6 @@ const VenuesScreen: React.FC = () => {
                         {renderContent()}
                     </div>
                 </main>
-                <Fab onClick={() => setCreateModalOpen(true)} aria-label={lang === 'en' ? 'Create Venue' : 'إنشاء مكان'}>
-                    <PlusIcon className="h-8 w-8" />
-                </Fab>
             </div>
             <CreateVenueModal
                 isOpen={isCreateModalOpen}

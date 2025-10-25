@@ -1,4 +1,4 @@
-import { mockPosts } from '../data/mocks.ts';
+import { Post } from '../types/entities.ts';
 import { MOCK_DATA } from '../data/mocks.ts';
 
 const getDeepValue = (obj: any, path: string[]) => {
@@ -68,7 +68,9 @@ const mockDb = {
         await new Promise(res => setTimeout(res, 200));
 
         if (colRef.path.join('/') === 'posts') {
-            const sortedPosts = [...mockPosts].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+            const postsObject = getDeepValue(MOCK_DATA, ['posts']);
+            const allPosts = postsObject ? Object.values(postsObject) as Post[] : [];
+            const sortedPosts = allPosts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             
             let startIndex = 0;
             if (colRef._startAfter) {

@@ -21,7 +21,7 @@ const BookFlowPage: React.FC<BookFlowPageProps> = ({ item }) => {
 
     return (
         <div 
-            className="relative h-screen w-screen flex-shrink-0 scroll-snap-align-start cursor-pointer"
+            className="relative h-screen w-full flex-shrink-0 scroll-snap-align-start cursor-pointer"
             onClick={handleNavigateToDetails}
             aria-label={`View details for ${lang === 'en' ? 'the book' : 'الكتاب'}`}
         >

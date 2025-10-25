@@ -13,7 +13,8 @@ export type DrawerScreenName =
     'adminDashboard' |
     'books';
     
-export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'postComposer' | 'profile' | 'authorDetails' | 'quoteDetails' | 'discoveryFlow' | 'venueDetails';
+// FIX: Add 'discoveryFlow' to allow navigation to the discovery flow screen.
+export type ImmersiveScreenName = 'bookDetails' | 'editor' | 'agentChat' | 'reader' | 'liveSearch' | 'postComposer' | 'profile' | 'authorDetails' | 'quoteDetails' | 'venueDetails' | 'discoveryFlow';
 
 // A flexible params type for navigation
 export interface NavigationParams {

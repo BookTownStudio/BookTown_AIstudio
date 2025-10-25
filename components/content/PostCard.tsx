@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // FIX: Add file extensions to imports
-import { Post, PostAttachment } from '../../types/entities.ts';
+import { Post, PostAttachment, Book } from '../../types/entities.ts';
 import { useI18n } from '../../store/i18n.tsx';
 import GlassCard from '../ui/GlassCard.tsx';
 import BilingualText from '../ui/BilingualText.tsx';
@@ -11,11 +11,6 @@ import { RepostIcon } from '../icons/RepostIcon.tsx';
 import { useBookCatalog } from '../../lib/hooks/useBookCatalog.ts';
 import { ShareIcon } from '../icons/ShareIcon.tsx';
 import { BookmarkIcon } from '../icons/BookmarkIcon.tsx';
-import useLongPress from '../../lib/hooks/useLongPress.ts';
-import { LightbulbIcon } from '../icons/LightbulbIcon.tsx';
-import { ClapIcon } from '../icons/ClapIcon.tsx';
-import { LaughIcon } from '../icons/LaughIcon.tsx';
-import { ThumbsDownIcon } from '../icons/ThumbsDownIcon.tsx';
 import { useNavigation } from '../../store/navigation.tsx';
 // FIX: Import QuoteIcon to resolve 'Cannot find name' error.
 import { QuoteIcon } from '../icons/QuoteIcon.tsx';
@@ -24,31 +19,45 @@ import { useUserProfile } from '../../lib/hooks/useUserProfile.ts';
 import { useShelfEntries, useUserShelves } from '../../lib/hooks/useUserShelves.ts';
 import { VenuesIcon } from '../icons/VenuesIcon.tsx';
 import { useVenueDetails } from '../../lib/hooks/useVenueDetails.ts';
-
+import InteractionRail from './InteractionRail.tsx';
 
 interface PostCardProps {
     post: Post;
+    viewMode?: 'list' | 'flow';
+    onOpenDiscussion?: () => void;
+    onNewPost?: () => void;
 }
 
-const ReactionMenu: React.FC<{ onSelect: (reaction: string) => void }> = ({ onSelect }) => {
-    const reactions = [
-        { name: 'Insightful', icon: LightbulbIcon },
-        { name: 'Appreciate', icon: ClapIcon },
-        { name: 'Funny', icon: LaughIcon },
-        { name: 'Dislike', icon: ThumbsDownIcon },
-    ];
+// --- Attachment Components ---
+
+const BookAttachment: React.FC<{ bookId: string }> = ({ bookId }) => {
+    const { lang, isRTL } = useI18n();
+    const { data: book, isLoading } = useBookCatalog(bookId);
+    const { navigate, currentView } = useNavigation();
+
+    const handleClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (book) {
+            navigate({ type: 'immersive', id: 'bookDetails', params: { bookId: book.id, from: currentView } });
+        }
+    }
+    
+    if (isLoading) return <div className="h-24 w-full bg-black/5 dark:bg-white/5 animate-pulse rounded-lg mt-3" />;
+    if (!book) return null;
+
     return (
-        <GlassCard className="absolute bottom-full mb-2 flex items-center gap-1 !p-1.5">
-            {reactions.map(r => (
-                <Button key={r.name} variant="icon" className="!w-10 !h-10" onClick={() => onSelect(r.name)}>
-                    <r.icon className="h-6 w-6" />
-                </Button>
-            ))}
-        </GlassCard>
+         <button onClick={handleClick} className="w-full text-left mt-3">
+            <div className={`border border-black/10 dark:border-white/10 rounded-lg flex items-center gap-3 p-2 hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}>
+                 <img src={book.coverUrl} alt="book cover" className="h-16 w-11 rounded object-cover" />
+                 <div>
+                     <BilingualText className="font-semibold text-sm">{lang === 'en' ? book.titleEn : book.titleAr}</BilingualText>
+                     <BilingualText role="Caption" className="!text-xs">{lang === 'en' ? book.authorEn : book.authorAr}</BilingualText>
+                 </div>
+             </div>
+         </button>
     );
 };
 
-// --- Attachment Components ---
 
 const QuoteAttachment: React.FC<{ quoteId: string, ownerId: string }> = ({ quoteId, ownerId }) => {
     const { lang } = useI18n();
@@ -157,6 +166,8 @@ const VenueAttachment: React.FC<{ venueId: string }> = ({ venueId }) => {
 
 const AttachmentRenderer: React.FC<{ attachment: PostAttachment }> = ({ attachment }) => {
     switch (attachment.type) {
+        case 'book':
+            return <BookAttachment bookId={attachment.bookId} />;
         case 'quote':
             return <QuoteAttachment quoteId={attachment.quoteId} ownerId={attachment.quoteOwnerId} />;
         case 'media':
@@ -173,19 +184,16 @@ const AttachmentRenderer: React.FC<{ attachment: PostAttachment }> = ({ attachme
 };
 
 
-const PostCard: React.FC<PostCardProps> = ({ post }) => {
+const PostCard: React.FC<PostCardProps> = ({ post, viewMode = 'list', onOpenDiscussion, onNewPost }) => {
     const { lang, isRTL } = useI18n();
     const { navigate, currentView } = useNavigation();
     
-    const bookId = post.attachment?.type === 'book' ? post.attachment.bookId : post.bookTagId;
-    const { data: book } = useBookCatalog(bookId);
+    const bookIdForBackground = post.attachment?.type === 'book' ? post.attachment.bookId : post.bookTagId;
+    const { data: book } = useBookCatalog(bookIdForBackground);
 
-    const [showReactionMenu, setShowReactionMenu] = useState(false);
     const [showRepostMenu, setShowRepostMenu] = useState(false);
 
     const handleLike = () => console.log(`[Mock] Liked post ${post.id}`);
-    const handleLongPress = () => setShowReactionMenu(true);
-    const longPressEvents = useLongPress(handleLongPress, handleLike, { delay: 300 });
 
     const timeAgo = (dateString: string) => {
         const seconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
@@ -216,12 +224,97 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
         navigate({ type: 'immersive', id: 'profile', params: { userId: post.authorId, from: currentView } });
     }
 
-    const handleBookClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (book) {
-            navigate({ type: 'immersive', id: 'bookDetails', params: { bookId: book.id, from: currentView } });
-        }
+    // Unify attachment logic
+    const effectiveAttachment = post.attachment ?? (post.bookTagId ? { type: 'book' as const, bookId: post.bookTagId } : null);
+
+    if (viewMode === 'flow') {
+        const backgroundUrl = book?.coverUrl || post.authorAvatar;
+        const isBookPost = effectiveAttachment?.type === 'book';
+
+        const handleNavigateToBook = () => {
+            if (isBookPost && effectiveAttachment.bookId) {
+                navigate({ type: 'immersive', id: 'bookDetails', params: { bookId: effectiveAttachment.bookId, from: currentView } });
+            }
+        };
+
+        const mainClickHandler = isBookPost ? handleNavigateToBook : onOpenDiscussion;
+
+        return (
+            <div 
+                className="relative h-full w-full flex-shrink-0 cursor-pointer text-white overflow-hidden"
+                onClick={mainClickHandler}
+            >
+                <img src={backgroundUrl} alt="Post background" className="absolute inset-0 w-full h-full object-cover blur-md scale-110" />
+                <div className="absolute inset-0 bg-black/60" />
+
+                {/* User Info Header - Top Left */}
+                <div className="absolute top-0 left-0 z-10 p-6">
+                    <button onClick={handleProfileClick} className="flex items-center gap-3 text-left">
+                        <img src={post.authorAvatar} alt={post.authorName} className="h-10 w-10 rounded-full" />
+                        <div>
+                            <BilingualText className="font-bold !text-white">{post.authorName}</BilingualText>
+                            <BilingualText role="Caption" className="!text-white/80">{post.authorHandle}</BilingualText>
+                        </div>
+                    </button>
+                </div>
+
+                {/* Centered Content */}
+                <div className="relative z-10 flex flex-col h-full justify-center items-center p-8 pr-24 text-center">
+                    {isBookPost && book ? (
+                        <>
+                            <div className="relative w-64 shadow-2xl shadow-black/50" style={{ perspective: '1000px' }}>
+                                <img 
+                                    src={book.coverUrl} 
+                                    alt={lang === 'en' ? book.titleEn : book.titleAr}
+                                    className="w-full h-auto rounded-lg"
+                                    style={{ transform: 'rotateY(-10deg) rotateX(2deg) scale(1.05)' }}
+                                />
+                                <div className="absolute top-0 left-0 w-full h-full rounded-lg" style={{ background: 'linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%)' }}></div>
+                            </div>
+
+                            {post.content && (
+                                <div className="mt-[-40px] relative z-10 max-w-sm">
+                                    <div className="bg-black/50 backdrop-blur-md p-4 rounded-xl shadow-lg">
+                                        <BilingualText role="Body" className="!text-white/90">
+                                            "{post.content}"
+                                        </BilingualText>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    ) : (
+                        // Original render for non-book posts
+                        <>
+                            <BilingualText role="Body" className="text-lg max-w-lg line-clamp-6 mb-4">
+                                {post.content}
+                            </BilingualText>
+                            
+                            {effectiveAttachment && (
+                                <div className="w-full max-w-md">
+                                    <AttachmentRenderer attachment={effectiveAttachment} />
+                                </div>
+                            )}
+                            
+                            <div className="mt-4 flex items-center gap-4 text-sm text-white/80">
+                                 <BilingualText role="Caption">
+                                    <span className="font-bold">{post.stats.likes}</span> {lang === 'en' ? 'Likes' : 'إعجاب'}
+                                </BilingualText>
+                                <BilingualText role="Caption">
+                                    <span className="font-bold">{post.stats.comments}</span> {lang === 'en' ? 'Comments' : 'تعليق'}
+                                </BilingualText>
+                                <BilingualText role="Caption">
+                                    <span className="font-bold">{post.stats.reposts}</span> {lang === 'en' ? 'Reposts' : 'إعادة نشر'}
+                                </BilingualText>
+                            </div>
+                        </>
+                    )}
+                </div>
+                
+                <InteractionRail post={post} onOpenDiscussion={onOpenDiscussion!} onNewPost={onNewPost} />
+            </div>
+        );
     }
+
 
     return (
         <GlassCard className="!p-4">
@@ -239,19 +332,7 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                         {post.content}
                     </BilingualText>
                     
-                    {book && (
-                         <button onClick={handleBookClick} className="w-full text-left mt-3">
-                            <div className={`border border-black/10 dark:border-white/10 rounded-lg flex items-center gap-3 p-2 hover:bg-black/5 dark:hover:bg-white/5 transition-colors ${isRTL ? 'flex-row-reverse' : ''}`}>
-                                 <img src={book.coverUrl} alt="book cover" className="h-16 w-11 rounded object-cover" />
-                                 <div>
-                                     <BilingualText className="font-semibold text-sm">{lang === 'en' ? book.titleEn : book.titleAr}</BilingualText>
-                                     <BilingualText role="Caption" className="!text-xs">{lang === 'en' ? book.authorEn : book.authorAr}</BilingualText>
-                                 </div>
-                             </div>
-                         </button>
-                    )}
-
-                    {post.attachment && post.attachment.type !== 'book' && <AttachmentRenderer attachment={post.attachment} />}
+                    {effectiveAttachment && <AttachmentRenderer attachment={effectiveAttachment} />}
 
                     <div className={`mt-3 flex items-center justify-between text-slate-500 dark:text-white/60 ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
                         <Button variant="ghost" className="!text-inherit hover:!text-sky-400 !px-2">
@@ -276,12 +357,9 @@ const PostCard: React.FC<PostCardProps> = ({ post }) => {
                             )}
                         </div>
                         
-                        <div className="relative" onMouseLeave={() => setShowReactionMenu(false)}>
-                            <Button variant="ghost" className="!text-inherit hover:!text-pink-400 !px-2" {...longPressEvents}>
-                                <LikeIcon className="h-5 w-5 mr-2" /> <span className="text-sm">{post.stats.likes}</span>
-                            </Button>
-                            {showReactionMenu && <ReactionMenu onSelect={(r) => { console.log(r); setShowReactionMenu(false); }} />}
-                        </div>
+                        <Button variant="ghost" className="!text-inherit hover:!text-pink-400 !px-2" onClick={handleLike}>
+                            <LikeIcon className="h-5 w-5 mr-2" /> <span className="text-sm">{post.stats.likes}</span>
+                        </Button>
                          
                         <div className="flex items-center gap-1">
                             <Button variant="icon" className="!text-inherit hover:!text-accent"><ShareIcon className="h-5 w-5" /></Button>

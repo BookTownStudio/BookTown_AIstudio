@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PlusIcon } from '../icons/PlusIcon.tsx';
 import { LikeIcon } from '../icons/LikeIcon.tsx';
 import { ShareIcon } from '../icons/ShareIcon.tsx';
@@ -12,17 +12,26 @@ import { useSaveQuote } from '../../lib/hooks/useSaveQuote.ts';
 import { useFollowUser } from '../../lib/hooks/useFollowUser.ts';
 import { useFollowAuthor } from '../../lib/hooks/useFollowAuthor.ts';
 import { BookmarkIcon } from '../icons/BookmarkIcon.tsx';
-import { ChevronDownIcon } from '../icons/ChevronDownIcon.tsx';
+import { useI18n } from '../../store/i18n.tsx';
 
 interface BookFlowActionsProps {
     entityType: 'book' | 'user' | 'quote' | 'venue' | 'event' | 'bookfair' | 'author';
     entityId: string;
 }
 
+const ActionButton: React.FC<{ icon: React.FC<any>, label: string, onClick: (e: React.MouseEvent) => void }> = ({ icon: Icon, label, onClick }) => (
+    <button onClick={onClick} className="flex flex-col items-center gap-1 group" aria-label={label}>
+        <div className="h-12 w-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white shadow-lg transition-all duration-200 group-hover:scale-110 group-hover:bg-white/20">
+            <Icon className="h-6 w-6" />
+        </div>
+    </button>
+);
+
+
 const BookFlowActions: React.FC<BookFlowActionsProps> = ({ entityType, entityId }) => {
-    const [isExpanded, setIsExpanded] = useState(true);
     const { data: shelves } = useUserShelves();
     const { navigate, currentView } = useNavigation();
+    const { lang } = useI18n();
 
     // Polymorphic hooks
     const { mutate: toggleBookOnShelf } = useToggleBookOnShelf();
@@ -75,8 +84,8 @@ const BookFlowActions: React.FC<BookFlowActionsProps> = ({ entityType, entityId 
             case 'quote':
                 attachment = { type: entityType, bookId: entityId, quoteId: entityId, quoteOwnerId: '' }; // simplified for mock
                 break;
-            case 'user':
-                attachment = { type: 'author', authorId: entityId };
+            case 'author':
+                 attachment = { type: 'author', authorId: entityId };
                 break;
             default:
                 break;
@@ -100,36 +109,16 @@ const BookFlowActions: React.FC<BookFlowActionsProps> = ({ entityType, entityId 
         }
     };
 
-    const actionButtons = [
-        { icon: PlusIcon, handler: handleSave, label: 'Save', color: 'bg-indigo-500/70' },
-        { icon: LikeIcon, handler: handleLike, label: 'Like', color: 'bg-red-500/70' },
-        { icon: ShareIcon, handler: handleShare, label: 'Share', color: 'bg-blue-500/70' },
-        { icon: BookmarkIcon, handler: handleBookmark, label: 'Bookmark', color: 'bg-emerald-500/70' },
-    ];
 
     return (
-        <div className="absolute bottom-24 right-4 z-10 flex flex-col items-center gap-4" style={{ paddingBottom: 'env(safe-area-inset-bottom)'}}>
-            <div className="flex flex-col-reverse items-center gap-4">
-                 {actionButtons.map((btn, index) => (
-                     <button
-                        key={index}
-                        onClick={btn.handler}
-                        className={`
-                            h-12 w-12 rounded-full ${btn.color} backdrop-blur-sm flex items-center justify-center text-white shadow-lg
-                            transition-all duration-300 ease-in-out hover:scale-110
-                            ${isExpanded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-0 pointer-events-none'}
-                        `}
-                        style={{ transitionDelay: `${isExpanded ? (3 - index) * 50 : 0}ms` }}
-                        aria-label={btn.label}
-                        tabIndex={isExpanded ? 0 : -1}
-                    >
-                        <btn.icon className="h-6 w-6" />
-                    </button>
-                ))}
-            </div>
-             <button onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }} className="h-14 w-14 rounded-full bg-white flex items-center justify-center text-slate-800 shadow-lg transition-transform hover:scale-110" aria-label="Toggle actions">
-                <ChevronDownIcon className={`h-8 w-8 transition-transform duration-300 ${!isExpanded ? 'rotate-180' : ''}`} />
-            </button>
+        <div 
+            className="absolute bottom-28 right-4 z-20 flex flex-col items-center gap-4" 
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)'}}
+        >
+            <ActionButton icon={PlusIcon} onClick={handleSave} label={lang === 'en' ? 'Save' : 'حفظ'} />
+            <ActionButton icon={LikeIcon} onClick={handleLike} label={lang === 'en' ? 'Like' : 'إعجاب'} />
+            <ActionButton icon={ShareIcon} onClick={handleShare} label={lang === 'en' ? 'Share' : 'مشاركة'} />
+            <ActionButton icon={BookmarkIcon} onClick={handleBookmark} label={lang === 'en' ? 'Bookmark' : 'حفظ'} />
         </div>
     );
 };

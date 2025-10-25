@@ -23,6 +23,7 @@ import { BookIcon } from '../../components/icons/BookIcon.tsx';
 import { SurpriseIcon } from '../../components/icons/SurpriseIcon.tsx';
 // FIX: Add AddBookModal import to support onAddBookRequest prop for ShelfCarousel.
 import AddBookModal from '../../components/modals/AddBookModal.tsx';
+import { Shelf } from '../../types/entities.ts';
 
 
 const useCollapsibleState = (keys: string[], storageKey: string) => {
@@ -208,6 +209,14 @@ const HomeScreen: React.FC = () => {
         setAddModalOpen(false);
     };
 
+    const handleShareRequest = (shelf: Shelf) => {
+        navigate({
+            type: 'immersive',
+            id: 'postComposer',
+            params: { from: currentView, attachment: { type: 'shelf', id: shelf.id, ownerId: shelf.ownerId } }
+        });
+    };
+
     useEffect(() => {
         if (profile?.lastActive) {
             const lastActiveDate = new Date(profile.lastActive);
@@ -352,6 +361,10 @@ const HomeScreen: React.FC = () => {
                             onAddBookRequest={handleOpenAddBookModal}
                             isOpen={true}
                             onToggle={() => {}}
+                            onShareRequest={handleShareRequest}
+                            onToggleLayout={() => {}}
+                            layout="carousel"
+                            isDeletable={false}
                         />
                     </CollapsibleSection>
                 )

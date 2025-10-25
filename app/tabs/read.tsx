@@ -6,7 +6,6 @@ import { useUserShelves } from '../../lib/hooks/useUserShelves.ts';
 import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
 import BilingualText from '../../components/ui/BilingualText.tsx';
 import { useNavigation } from '../../store/navigation.tsx';
-import Fab from '../../components/ui/Fab.tsx';
 import { PlusIcon } from '../../components/icons/PlusIcon.tsx';
 import AddBookModal from '../../components/modals/AddBookModal.tsx';
 import { useRecommendedShelves } from '../../lib/hooks/useRecommendedShelves.ts';
@@ -18,6 +17,7 @@ import EditShelfModal from '../../components/modals/EditShelfModal.tsx';
 import { Shelf } from '../../types/entities.ts';
 import ConfirmDeleteModal from '../../components/modals/ConfirmDeleteModal.tsx';
 import { useDeleteShelf } from '../../lib/hooks/useDeleteShelf.ts';
+import Button from '../../components/ui/Button.tsx';
 
 const MANDATORY_SHELVES = ['currently-reading', 'want-to-read', 'finished'];
 
@@ -237,15 +237,21 @@ const ReadScreen: React.FC = () => {
         return (
             <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-40">
                 <div className="container mx-auto px-4 md:px-8 py-4">
-                    <header className="mb-6">
-                        <BilingualText role="H1" className="!text-2xl !font-semibold">
-                            {lang === 'en' ? 'Your Library' : 'مكتبتك'}
-                        </BilingualText>
-                        <BilingualText role="Caption" className="mt-1">
-                            {lang === 'en' 
-                                ? `${bookCount} books on ${shelfCount} shelves`
-                                : `${bookCount} كتابًا على ${shelfCount} رفوف`}
-                        </BilingualText>
+                    <header className="mb-6 flex items-center justify-between">
+                        <div>
+                            <BilingualText role="H1" className="!text-2xl !font-semibold">
+                                {lang === 'en' ? 'Your Library' : 'مكتبتك'}
+                            </BilingualText>
+                            <BilingualText role="Caption" className="mt-1">
+                                {lang === 'en' 
+                                    ? `${bookCount} books on ${shelfCount} shelves`
+                                    : `${bookCount} كتابًا على ${shelfCount} رفوف`}
+                            </BilingualText>
+                        </div>
+                        <Button variant="primary" onClick={() => setCreateShelfModalOpen(true)}>
+                            <PlusIcon className="h-5 w-5 sm:mr-2" />
+                            <span className="hidden sm:inline">{lang === 'en' ? 'New Shelf' : 'رف جديد'}</span>
+                        </Button>
                     </header>
 
                     <div className="space-y-4">
@@ -280,9 +286,6 @@ const ReadScreen: React.FC = () => {
                     onOpen={() => setRecPanelOpen(true)}
                     onClose={() => setRecPanelOpen(false)}
                 />
-                <Fab onClick={() => setCreateShelfModalOpen(true)} aria-label={lang === 'en' ? 'Create Shelf' : 'إنشاء رف'}>
-                    <PlusIcon className="h-8 w-8" />
-                </Fab>
             </div>
             <AddBookModal 
                 isOpen={isAddModalOpen}

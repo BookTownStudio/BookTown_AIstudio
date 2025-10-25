@@ -1,4 +1,3 @@
-
 import React from 'react';
 // FIX: Added file extensions to imports
 import { I18nProvider } from './store/i18n.tsx';
@@ -33,14 +32,15 @@ import VenuesScreen from './app/drawer/venues.tsx';
 import FeedbackScreen from './app/drawer/feedback.tsx';
 import EmailScreen from './app/drawer/email.tsx';
 import AdminDashboardScreen from './app/drawer/admin.tsx';
-import BookFlowButton from './components/navigation/BookFlowButton.tsx';
 import { TabName } from './types/navigation.ts';
 import PostComposerScreen from './app/immersive/post-composer.tsx';
 import AuthorDetailsScreen from './app/author-details.tsx';
 import QuoteDetailsScreen from './app/quote-details.tsx';
 import BooksScreen from './app/drawer/books.tsx';
-import DiscoveryFlowScreen from './app/discovery/flow.tsx';
 import VenueDetailsScreen from './app/venue-details.tsx';
+// FIX: Add imports for DiscoveryFlowScreen and LiveSearchScreen
+import DiscoveryFlowScreen from './app/discovery/flow.tsx';
+import LiveSearchScreen from './app/search/live.tsx';
 
 // A single instance of QueryClient
 const queryClient = new QueryClient();
@@ -57,6 +57,7 @@ const TabScreens: React.FC = () => {
     }
 
     const activeTab = currentView.id;
+    const isSocialTab = activeTab === 'social';
 
     return (
         <>
@@ -67,7 +68,6 @@ const TabScreens: React.FC = () => {
                 <div style={{ display: activeTab === 'write' ? 'block' : 'none', height: '100%' }}><WriteScreen /></div>
                 <div style={{ display: activeTab === 'social' ? 'block' : 'none', height: '100%' }}><SocialScreen /></div>
             </div>
-            {activeTab === 'home' && <BookFlowButton />}
             <BottomNavBar activeTab={activeTab} />
         </>
     );
@@ -114,12 +114,14 @@ const AppContent: React.FC = () => {
                     case 'bookDetails': return <BookDetailsScreen />;
                     case 'editor': return <EditorScreen />;
                     case 'reader': return <ReaderScreen />;
-                    case 'discoveryFlow': return <DiscoveryFlowScreen />;
                     case 'postComposer': return <PostComposerScreen />;
                     case 'profile': return <ProfileScreen />;
                     case 'authorDetails': return <AuthorDetailsScreen />;
                     case 'quoteDetails': return <QuoteDetailsScreen />;
                     case 'venueDetails': return <VenueDetailsScreen />;
+                    // FIX: Add routes for discoveryFlow and liveSearch to the immersive view router.
+                    case 'discoveryFlow': return <DiscoveryFlowScreen />;
+                    case 'liveSearch': return <LiveSearchScreen />;
                     default: return <TabScreens />; // Fallback
                 }
             default:
@@ -127,8 +129,12 @@ const AppContent: React.FC = () => {
         }
     }
 
+    const isSocialTabActive = currentView.type === 'tab' && currentView.id === 'social';
+
     return (
-        <div className="h-screen w-full bg-gray-50 dark:bg-slate-900 text-slate-800 dark:text-white selection:bg-accent selection:text-white">
+        <div className={`h-screen w-full text-slate-800 dark:text-white selection:bg-accent selection:text-white ${
+            isSocialTabActive ? 'bg-black dark:bg-black' : 'bg-gray-50 dark:bg-slate-900'
+        }`}>
             <Drawer />
             <div className="h-full">
                 {renderView()}
