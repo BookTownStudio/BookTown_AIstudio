@@ -27,6 +27,7 @@
             animation: {
               'pulse-subtle': 'pulse-subtle 2.5s ease-in-out infinite',
               'twinkle-fade': 'twinkle-fade 1.5s ease-in-out infinite',
+              'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
             },
             keyframes: {
               'pulse-subtle': {
@@ -36,7 +37,11 @@
               'twinkle-fade': {
                 '0%, 100%': { opacity: '0', transform: 'scale(0.5)' },
                 '50%': { opacity: '1', transform: 'scale(1.2)' },
-              }
+              },
+              'fade-in-up': {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
             }
           },
         },
@@ -51,7 +56,10 @@
     "tailwind-merge": "https://aistudiocdn.com/tailwind-merge@^3.3.1",
     "clsx": "https://aistudiocdn.com/clsx@^2.1.1",
     "class-variance-authority": "https://aistudiocdn.com/class-variance-authority@^0.7.1",
-    "use-debounce": "https://aistudiocdn.com/use-debounce@^10.0.6"
+    "use-debounce": "https://aistudiocdn.com/use-debounce@^10.0.6",
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js",
+    "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js",
+    "firebase/": "https://aistudiocdn.com/firebase@^12.4.0/"
   }
 }
 </script>

@@ -97,7 +97,7 @@ const InteractionRail: React.FC<InteractionRailProps> = ({ post, onOpenDiscussio
 
     return (
         <div 
-            className="absolute bottom-28 right-4 z-20 flex flex-col items-center" 
+            className="absolute bottom-20 right-4 z-20 flex flex-col items-center" 
             style={{ paddingBottom: 'env(safe-area-inset-bottom)'}}
         >
             <div className="flex flex-col-reverse items-center gap-3">

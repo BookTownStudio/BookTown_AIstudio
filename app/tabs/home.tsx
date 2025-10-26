@@ -380,7 +380,7 @@ const HomeScreen: React.FC = () => {
         <div className="h-screen flex flex-col">
             <AppNav titleEn="BookTown" titleAr="بوكتاون" />
 
-            <main className="flex-grow overflow-y-auto pt-20 pb-20">
+            <main className="flex-grow overflow-y-auto pt-20 pb-16">
                 <div className="container mx-auto px-4 md:px-8 py-4 space-y-2">
                     <div className="bg-gray-50 dark:bg-slate-900 -mx-4 px-4">
                         <div className="relative flex-grow">

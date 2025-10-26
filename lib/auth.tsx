@@ -1,10 +1,16 @@
 
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-// FIX: Add file extension to firebase import
-import { auth } from './firebase.ts';
+// Import the REAL Firebase auth instance and necessary functions/types
+import { 
+    User, 
+    onAuthStateChanged, 
+    signInWithEmailAndPassword,
+    signOut
+} from "firebase/auth";
+import { auth as firebaseAuth } from './firebase.ts';
 
 interface AuthContextType {
-    user: { uid: string; email: string; } | null;
+    user: User | null; // Use the actual Firebase User type
     isLoading: boolean;
     error: string | null;
     isLoggingIn: boolean;
@@ -19,26 +25,29 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<{ uid: string; email: string; } | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
-            setUser(firebaseUser);
+        // This is the core of the change. We subscribe to Firebase's real auth state.
+        const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
+            setUser(firebaseUser); // The user object is now the real Firebase user
             setIsLoading(false);
         });
-        return unsubscribe; // Cleanup subscription
+        return unsubscribe; // Cleanup subscription on unmount
     }, []);
 
     const login = async (email: string, pass: string) => {
         setIsLoggingIn(true);
         setError(null);
         try {
-            await auth.signInWithEmailAndPassword(email, pass);
+            // Use the real Firebase SDK function
+            await signInWithEmailAndPassword(firebaseAuth, email, pass);
             // The onAuthStateChanged listener will handle setting the user
         } catch (e: any) {
+            // Firebase provides detailed error codes and messages
             setError(e.message || "Failed to sign in.");
         } finally {
             setIsLoggingIn(false);
@@ -46,7 +55,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const logout = async () => {
-        await auth.signOut();
+        // Use the real Firebase SDK function
+        await signOut(firebaseAuth);
         // The onAuthStateChanged listener will handle setting the user to null
     };
 

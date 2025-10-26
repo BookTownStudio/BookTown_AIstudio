@@ -1,36 +1,26 @@
-// This file acts as the entry point for Firebase services, using our mocks.
-import { db as mockDb } from './db';
+// This file acts as the entry point for Firebase services.
+// It now initializes the real Firebase app and exports live services.
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { db as mockDb } from './db.ts';
 
-// Mock Firebase Auth
-const mockAuth = {
-    // A mock user
-    currentUser: {
-        uid: 'alex_doe',
-        email: 'test@booktown.com',
-    },
-    onAuthStateChanged: (callback: (user: any) => void) => {
-        // Immediately call with the mock user
-        setTimeout(() => callback(mockAuth.currentUser), 100);
-        // Return a dummy unsubscribe function
-        return () => {};
-    },
-    signInWithEmailAndPassword: async (email: string, pass: string) => {
-        console.log(`[MockAuth] Signing in with ${email}`);
-        await new Promise(res => setTimeout(res, 500));
-        if (email === 'test@booktown.com' && pass === 'password') {
-            return { user: mockAuth.currentUser };
-        }
-        throw new Error("Invalid credentials");
-    },
-    signOut: async () => {
-        console.log('[MockAuth] Signing out');
-        mockAuth.currentUser = null as any; // This will break things, a real app needs state management
-        // For the demo, we just resolve. The app reloads to login screen anyway.
-        window.location.reload();
-        return Promise.resolve();
-    },
+// TODO: Replace with your actual Firebase configuration from your project settings.
+// It is recommended to use environment variables for this in a production build.
+const firebaseConfig = {
+  apiKey: "AIzaSy...YOUR_API_KEY",
+  authDomain: "your-project-id.firebaseapp.com",
+  projectId: "your-project-id",
+  storageBucket: "your-project-id.appspot.com",
+  messagingSenderId: "your-sender-id",
+  appId: "your-app-id"
 };
 
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-export const auth = mockAuth;
+// Export the LIVE auth service
+export const auth = getAuth(app);
+
+// Continue exporting the mock DB for now.
+// The next step would be to replace this with `getFirestore(app)`.
 export const db = mockDb;

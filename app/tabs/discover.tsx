@@ -39,7 +39,7 @@ const AgentChatUI: React.FC<{ agent: Agent }> = ({ agent }) => {
                 </div>
             )}
 
-             <footer className="fixed bottom-[72px] left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-t border-black/10 dark:border-white/10 mt-auto">
+             <footer className="fixed bottom-16 left-0 right-0 z-30 bg-gray-50 dark:bg-slate-900 border-t border-black/10 dark:border-white/10 mt-auto">
                 <div className="container mx-auto p-2">
                     <div className="relative flex items-center">
                         <input
@@ -107,7 +107,7 @@ const AgentInteractionShell = ({ agent, onBack, onSelectAgent }: { agent: Agent,
                 </div>
             </div>
 
-            <main className="flex-grow overflow-y-auto pb-40">
+            <main className="flex-grow overflow-y-auto pb-32">
                 <AgentChatUI agent={agent} />
             </main>
         </div>
@@ -157,7 +157,7 @@ const DiscoverScreen: React.FC = () => {
     return (
         <div className="h-screen flex flex-col">
             <AppNav titleEn="BookTown" titleAr="بوكتاون" />
-            <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-20">
+            <main ref={mainContentRef} className="flex-grow overflow-y-auto pt-20 pb-16">
                 <div className="container mx-auto px-4 md:px-8 py-6">
                      <div className="flex items-center justify-center gap-2 mb-6 text-slate-500 dark:text-white/60">
                         <ClockIcon className="h-5 w-5"/>
