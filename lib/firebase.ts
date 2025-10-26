@@ -4,15 +4,15 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { db as mockDb } from './db.ts';
 
-// TODO: Replace with your actual Firebase configuration from your project settings.
-// It is recommended to use environment variables for this in a production build.
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSy...YOUR_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id"
+  apiKey: "AIzaSyAJgY4Sjc3Iywm78-I3ELNtzozGYN7frZU",
+  authDomain: "booktown-ai.firebaseapp.com",
+  projectId: "booktown-ai",
+  storageBucket: "booktown-ai.appspot.com",
+  messagingSenderId: "431931238693",
+  appId: "1:431931238693:web:653a41a7ea25481b3152cc",
+  measurementId: "G-XGGHB03493"
 };
 
 // Initialize Firebase

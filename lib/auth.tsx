@@ -5,7 +5,11 @@ import {
     User, 
     onAuthStateChanged, 
     signInWithEmailAndPassword,
-    signOut
+    signOut,
+    GoogleAuthProvider,
+    signInWithPopup,
+    createUserWithEmailAndPassword,
+    sendPasswordResetEmail
 } from "firebase/auth";
 import { auth as firebaseAuth } from './firebase.ts';
 
@@ -18,6 +22,9 @@ interface AuthContextType {
     login: (email: string, pass: string) => void;
     logout: () => void;
     enterGuestMode: () => void;
+    signInWithGoogle: () => void;
+    signUp: (email: string, pass: string) => void;
+    resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,7 +78,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // The onAuthStateChanged listener will handle setting the user to null
     };
 
-    const value = { user, isGuest, isLoading, error, isLoggingIn, login, logout, enterGuestMode };
+    const signInWithGoogle = async () => {
+        setIsLoggingIn(true);
+        setError(null);
+        try {
+            const provider = new GoogleAuthProvider();
+            await signInWithPopup(firebaseAuth, provider);
+        } catch (e: any) {
+            setError(e.message || "Failed to sign in with Google.");
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+
+    const signUp = async (email: string, pass: string) => {
+        setIsLoggingIn(true);
+        setError(null);
+        try {
+            await createUserWithEmailAndPassword(firebaseAuth, email, pass);
+        } catch (e: any) {
+            setError(e.message || "Failed to create account.");
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+
+    const resetPassword = async (email: string) => {
+        setError(null);
+        try {
+            await sendPasswordResetEmail(firebaseAuth, email);
+        } catch (e: any) {
+            setError(e.message || "Failed to send reset email.");
+            throw e;
+        }
+    };
+
+    const value = { user, isGuest, isLoading, error, isLoggingIn, login, logout, enterGuestMode, signInWithGoogle, signUp, resetPassword };
 
     return (
         <AuthContext.Provider value={value}>

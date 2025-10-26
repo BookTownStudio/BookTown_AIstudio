@@ -15,21 +15,42 @@ import { AppleIcon } from '../../components/icons/AppleIcon.tsx';
 import { BookTownLogoIcon } from '../../components/icons/BookTownLogoIcon.tsx';
 
 const LoginScreen: React.FC = () => {
-    const { login, isLoggingIn, error, enterGuestMode } = useAuth();
+    const { login, signUp, signInWithGoogle, resetPassword, isLoggingIn, error, enterGuestMode } = useAuth();
     const { lang } = useI18n();
     const [email, setEmail] = useState('test@booktown.com');
     const [password, setPassword] = useState('password');
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(false);
+    const [resetEmailSent, setResetEmailSent] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        login(email, password);
+        setResetEmailSent(false);
+        if (isSignUp) {
+            signUp(email, password);
+        } else {
+            login(email, password);
+        }
+    };
+    
+    const handleForgotPassword = async () => {
+        if (!email) {
+            alert('Please enter your email address to reset your password.');
+            return;
+        }
+        try {
+            await resetPassword(email);
+            setResetEmailSent(true);
+        } catch (e) {
+            // error is set in auth context
+        }
     };
 
-    const SocialButton: React.FC<{ icon: React.ReactNode, label: string, disabled?: boolean }> = ({ icon, label, disabled }) => (
+    const SocialButton: React.FC<{ icon: React.ReactNode, label: string, disabled?: boolean, onClick?: () => void }> = ({ icon, label, disabled, onClick }) => (
         <button
             aria-label={label}
             disabled={disabled}
+            onClick={onClick}
             className="h-12 w-12 flex items-center justify-center border-2 border-slate-600 rounded-lg transition-all hover:border-accent disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-slate-600 active:scale-95"
         >
             {icon}
@@ -44,9 +65,11 @@ const LoginScreen: React.FC = () => {
                     <BookTownLogoIcon className="w-48 mx-auto h-auto" />
                 </div>
                 
-                <h2 className="text-2xl font-bold text-center mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>Sign In</h2>
+                <h2 className="text-2xl font-bold text-center mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+                    {isSignUp ? (lang === 'en' ? 'Create Account' : 'إنشاء حساب') : (lang === 'en' ? 'Sign In' : 'تسجيل الدخول')}
+                </h2>
 
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                         <InputField
                             id="email"
@@ -86,26 +109,38 @@ const LoginScreen: React.FC = () => {
                         />
                     </div>
                     
-                    <a href="#" className="text-sm text-accent hover:underline text-right block pt-1 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-                        Forgot your password?
-                    </a>
+                    {!isSignUp && (
+                        <button type="button" onClick={handleForgotPassword} className="text-sm text-accent hover:underline text-right block pt-1 animate-fade-in-up bg-transparent border-none w-full" style={{ animationDelay: '400ms' }}>
+                            {lang === 'en' ? 'Forgot your password?' : 'هل نسيت كلمة المرور؟'}
+                        </button>
+                    )}
                     
-                    {error && (
+                    {resetEmailSent && (
+                        <BilingualText role="Caption" className="!text-green-400 text-center animate-fade-in-up">
+                            {lang === 'en' ? 'Password reset email sent. Check your inbox.' : 'تم إرسال بريد إعادة تعيين كلمة المرور. تحقق من بريدك الوارد.'}
+                        </BilingualText>
+                    )}
+
+                    {error && !resetEmailSent && (
                         <BilingualText role="Caption" className="!text-red-400 text-center animate-fade-in-up">{error}</BilingualText>
                     )}
                     
                     <div className="pt-2 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
                         <Button type="submit" className="w-full !h-12 !text-base" disabled={isLoggingIn}>
-                            {isLoggingIn ? <LoadingSpinner /> : (lang === 'en' ? 'Sign In' : 'تسجيل الدخول')}
+                            {isLoggingIn ? <LoadingSpinner /> : (isSignUp ? (lang === 'en' ? 'Create Account' : 'إنشاء حساب') : (lang === 'en' ? 'Sign In' : 'تسجيل الدخول'))}
                         </Button>
                     </div>
                 </form>
 
                 <p className="text-center text-sm text-slate-400 mt-6 animate-fade-in-up" style={{ animationDelay: '600ms' }}>
-                    Need an account?{' '}
-                    <a href="#" className="font-semibold text-accent hover:underline">
-                        Create one
-                    </a>
+                     {isSignUp ? (lang === 'en' ? 'Already have an account? ' : 'هل لديك حساب بالفعل؟ ') : (lang === 'en' ? 'Need an account? ' : 'تحتاج إلى حساب؟ ')}
+                    <button 
+                        type="button" 
+                        onClick={() => { setIsSignUp(!isSignUp); setResetEmailSent(false); }} 
+                        className="font-semibold text-accent hover:underline bg-transparent border-none p-0 cursor-pointer"
+                    >
+                        {isSignUp ? (lang === 'en' ? 'Sign In' : 'تسجيل الدخول') : (lang === 'en' ? 'Create one' : 'أنشئ حسابًا')}
+                    </button>
                 </p>
 
                 <div className="flex items-center my-6 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
@@ -115,7 +150,7 @@ const LoginScreen: React.FC = () => {
                 </div>
 
                 <div className="flex justify-center gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '800ms' }}>
-                    <SocialButton icon={<GoogleIcon className="h-6 w-6" />} label="Continue with Google" />
+                    <SocialButton icon={<GoogleIcon className="h-6 w-6" />} label="Continue with Google" onClick={signInWithGoogle} />
                     <SocialButton icon={<XSocialIcon className="h-6 w-6" />} label="Continue with X" disabled />
                     <SocialButton icon={<AppleIcon className="h-6 w-6" />} label="Continue with Apple" disabled />
                 </div>
