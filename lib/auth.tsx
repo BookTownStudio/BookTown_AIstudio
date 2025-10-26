@@ -1,21 +1,16 @@
+// lib/auth.tsx (Updated for Production)
 
 import React, { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-// Import the REAL Firebase auth instance and necessary functions/types
-import { 
-    User, 
-    onAuthStateChanged, 
-    signInWithEmailAndPassword,
-    signOut
-} from "firebase/auth";
-import { auth as firebaseAuth } from './firebase.ts';
+// FIX: Add file extension to firebase import
+import { auth } from './firebase.ts';
 
 interface AuthContextType {
-    user: User | null; // Use the actual Firebase User type
+    user: { uid: string; email: string; } | null;
     isLoading: boolean;
     error: string | null;
-    isLoggingIn: boolean;
-    login: (email: string, pass: string) => void;
-    logout: () => void;
+    isLoggingIn: boolean; // True during login/logout attempt
+    login: (email: string, pass: string) => Promise<void>;
+    logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,15 +20,15 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<{ uid: string; email: string; } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // CRITICAL: Subscribes to the real Firebase auth state changes
     useEffect(() => {
-        // This is the core of the change. We subscribe to Firebase's real auth state.
-        const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
-            setUser(firebaseUser); // The user object is now the real Firebase user
+        const unsubscribe = auth.onAuthStateChanged(firebaseUser => {
+            setUser(firebaseUser);
             setIsLoading(false);
         });
         return unsubscribe; // Cleanup subscription on unmount
@@ -43,11 +38,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoggingIn(true);
         setError(null);
         try {
-            // Use the real Firebase SDK function
-            await signInWithEmailAndPassword(firebaseAuth, email, pass);
+            await auth.signInWithEmailAndPassword(email, pass);
             // The onAuthStateChanged listener will handle setting the user
         } catch (e: any) {
-            // Firebase provides detailed error codes and messages
             setError(e.message || "Failed to sign in.");
         } finally {
             setIsLoggingIn(false);
@@ -55,8 +48,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     const logout = async () => {
-        // Use the real Firebase SDK function
-        await signOut(firebaseAuth);
+        await auth.signOut();
         // The onAuthStateChanged listener will handle setting the user to null
     };
 
@@ -69,6 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
 };
 
+// Hook remains the same for application-wide use
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (context === undefined) {
