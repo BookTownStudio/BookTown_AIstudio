@@ -79,7 +79,7 @@ const TabScreens: React.FC = () => {
 
 
 const AppContent: React.FC = () => {
-    const { user, isLoading } = useAuth();
+    const { user, isLoading, isGuest } = useAuth();
     const { currentView } = useNavigation();
 
     if (isLoading) {
@@ -90,7 +90,7 @@ const AppContent: React.FC = () => {
         );
     }
 
-    if (!user) {
+    if (!user && !isGuest) {
         return <LoginScreen />;
     }
 

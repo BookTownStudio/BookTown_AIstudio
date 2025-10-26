@@ -1,17 +1,16 @@
 
-
 import React, { useState, useEffect, useRef } from 'react';
 // FIX: Add file extensions to imports
-import { useNavigation } from '../../store/navigation.tsx';
-import { useI18n } from '../../store/i18n.tsx';
-import Button from '../../components/ui/Button.tsx';
-import BilingualText from '../../components/ui/BilingualText.tsx';
-import { ChevronLeftIcon } from '../../components/icons/ChevronLeftIcon.tsx';
-import { SendIcon } from '../../components/icons/SendIcon.tsx';
-import { useAgentChat } from '../../lib/hooks/useAgentChat.ts';
+import { useNavigation } from '../store/navigation.tsx';
+import { useI18n } from '../store/i18n.tsx';
+import Button from '../components/ui/Button.tsx';
+import BilingualText from '../components/ui/BilingualText.tsx';
+import { ChevronLeftIcon } from '../components/icons/ChevronLeftIcon.tsx';
+import { SendIcon } from '../components/icons/SendIcon.tsx';
+import { useAgentChat } from '../lib/hooks/useAgentChat.ts';
 // FIX: Add file extension to mocks.ts import
-import { mockAgents } from '../../data/mocks.ts';
-import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
+import { mockAgents } from '../data/mocks.ts';
+import LoadingSpinner from '../components/ui/LoadingSpinner.tsx';
 
 const AgentChatScreen: React.FC = () => {
     const { currentView, navigate } = useNavigation();

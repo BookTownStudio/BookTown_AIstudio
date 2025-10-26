@@ -15,7 +15,7 @@ import { AppleIcon } from '../../components/icons/AppleIcon.tsx';
 import { BookTownLogoIcon } from '../../components/icons/BookTownLogoIcon.tsx';
 
 const LoginScreen: React.FC = () => {
-    const { login, isLoggingIn, error } = useAuth();
+    const { login, isLoggingIn, error, enterGuestMode } = useAuth();
     const { lang } = useI18n();
     const [email, setEmail] = useState('test@booktown.com');
     const [password, setPassword] = useState('password');
@@ -37,13 +37,14 @@ const LoginScreen: React.FC = () => {
     );
 
     return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black text-white py-4 px-12 font-inter">
+        <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black text-white p-8 font-inter">
             <div className="w-full max-w-sm">
+                
                 <div className="text-center mb-10 animate-fade-in-up" style={{ animationDelay: '0ms' }}>
-                    <BookTownLogoIcon className="w-full max-w-xs mx-auto h-auto" />
+                    <BookTownLogoIcon className="w-48 mx-auto h-auto" />
                 </div>
                 
-                <h2 className="text-2xl font-bold text-left mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>Sign In</h2>
+                <h2 className="text-2xl font-bold text-center mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>Sign In</h2>
 
                 <form onSubmit={handleLogin} className="space-y-4">
                     <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
@@ -93,7 +94,7 @@ const LoginScreen: React.FC = () => {
                         <BilingualText role="Caption" className="!text-red-400 text-center animate-fade-in-up">{error}</BilingualText>
                     )}
                     
-                    <div className="animate-fade-in-up" style={{ animationDelay: '500ms' }}>
+                    <div className="pt-2 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
                         <Button type="submit" className="w-full !h-12 !text-base" disabled={isLoggingIn}>
                             {isLoggingIn ? <LoadingSpinner /> : (lang === 'en' ? 'Sign In' : 'تسجيل الدخول')}
                         </Button>
@@ -107,20 +108,20 @@ const LoginScreen: React.FC = () => {
                     </a>
                 </p>
 
-                <div className="flex items-center my-8 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
+                <div className="flex items-center my-6 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
                     <hr className="flex-grow border-slate-600" />
                     <span className="mx-4 text-xs tracking-widest text-slate-400">OR CONTINUE WITH</span>
                     <hr className="flex-grow border-slate-600" />
                 </div>
 
-                <div className="flex justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '800ms' }}>
+                <div className="flex justify-center gap-4 mb-8 animate-fade-in-up" style={{ animationDelay: '800ms' }}>
                     <SocialButton icon={<GoogleIcon className="h-6 w-6" />} label="Continue with Google" />
                     <SocialButton icon={<XSocialIcon className="h-6 w-6" />} label="Continue with X" disabled />
                     <SocialButton icon={<AppleIcon className="h-6 w-6" />} label="Continue with Apple" disabled />
                 </div>
 
                 <div className="animate-fade-in-up" style={{ animationDelay: '900ms' }}>
-                    <Button variant="ghost" className="w-full !h-12 mt-8 border-2 border-slate-600 !text-white hover:bg-slate-800">
+                    <Button variant="ghost" className="w-full !h-12 border-2 border-slate-600 !text-white hover:bg-slate-800" onClick={enterGuestMode}>
                         Continue as Guest
                     </Button>
                 </div>

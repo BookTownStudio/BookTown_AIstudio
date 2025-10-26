@@ -1,14 +1,14 @@
 import React, { useEffect, useReducer } from 'react';
-import { useNavigation } from '../../store/navigation';
-import { useI18n } from '../../store/i18n';
-import Button from '../../components/ui/Button';
-import BilingualText from '../../components/ui/BilingualText';
-import { ChevronLeftIcon } from '../../components/icons/ChevronLeftIcon';
-import { useProjectDetails } from '../../lib/hooks/useProjectDetails';
-import LoadingSpinner from '../../components/ui/LoadingSpinner';
-import { BrainIcon } from '../../components/icons/BrainIcon';
-import FormattingPane, { Format, Alignment, Style } from '../../components/editor/FormattingPane';
-import { useAutosaveProject } from '../../lib/hooks/useAutosaveProject';
+import { useNavigation } from '../../store/navigation.tsx';
+import { useI18n } from '../../store/i18n.tsx';
+import Button from '../../components/ui/Button.tsx';
+import BilingualText from '../../components/ui/BilingualText.tsx';
+import { ChevronLeftIcon } from '../../components/icons/ChevronLeftIcon.tsx';
+import { useProjectDetails } from '../../lib/hooks/useProjectDetails.ts';
+import LoadingSpinner from '../../components/ui/LoadingSpinner.tsx';
+import { BrainIcon } from '../../components/icons/BrainIcon.tsx';
+import FormattingPane, { Format, Alignment, Style } from '../../components/editor/FormattingPane.tsx';
+import { useAutosaveProject } from '../../lib/hooks/useAutosaveProject.ts';
 import { useDebounce } from 'use-debounce';
 
 // Simple undo/redo reducer
